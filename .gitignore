@@ -1,1 +1,4 @@
 from_skillicorn/
+connections/
+datasets/*/
+lexicons/*/
