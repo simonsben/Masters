@@ -1,4 +1,8 @@
 from_skillicorn/
 connections/
 datasets/*/
+datasets/*.zip
 lexicons/*/
+lexicons/*.zip
+.idea/
+venv/
