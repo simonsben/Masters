@@ -1,5 +1,5 @@
-# Function to parse data in place
 def parse_data(data, data_formats):
+    """ Function to parse 2D list data """
     num_rows = len(data)
 
     for row_id in range(num_rows):  # For each row in data
@@ -8,7 +8,7 @@ def parse_data(data, data_formats):
                 data[row_id][col_id] = formatter(data[row_id][col_id])
 
 
-# Debugging function that prints out a two (or more) dimensional array
 def print_data(data):
+    """ Debugging function to print 2D list """
     for row in data:
         print(row)

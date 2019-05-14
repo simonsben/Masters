@@ -22,6 +22,8 @@ Several techniques will be employed to attempt to rectify this, including
 
 * Extract a metric for the proportion of the document that is written in uppercase
   * This is intended to identify documents that are written in *all caps*
+* Extract a metric for the number of emojis used within the docuent
+  * This could signify exaggeration?
 * Extract the base URL from hyperlinks
   * This is intended to identify sites which may be commonly attributed to malicious comments
   * NOTE: Base URL is defined as `www.example_site.ca/example/extension` -> `example_site.ca/`

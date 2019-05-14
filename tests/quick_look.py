@@ -1,16 +1,28 @@
 # Some code to give a quick look at some of the data
-from utilities.data_management import load_csv, parse_data, print_data
-from utilities.pre_processing import count_upper, process_documents
+from pathlib import Path
+from data.accessors import twitter_24k_accessor, twitter_24k_mutator
+from utilities.pre_processing import count_upper, process_documents, original_length, modified_header, count_emojis
 
-filename = '../datasets/24k-abusive-tweets/24k-abusive-tweets.csv'
-data_format = [int, int, int, int, int, int, None]
+# Generate path
+data_set = '24k-abusive-tweets'
+source_filename = Path('../data/datasets') / data_set / (data_set + '.csv')
+dest_filename = Path('../data/prepared_data') / (data_set + '.csv')
 
-headers, data = load_csv(filename, has_header=True, limit_rows=20)
-parse_data(data, data_format)
+print('source: ' + str(source_filename))
+print('destination: ' + str(dest_filename))
 
-print(headers)
-print_data(data)
+# Defined pre-processing to be applied
+processes = [
+    original_length,
+    count_upper,
+    count_emojis
+]
 
-cont_ind = len(data_format) - 1
-processes = [count_upper]
+options = {
+    'max_documents': 25
+}
 
+# Apply pre-processing
+process_documents(source_filename, dest_filename, processes, twitter_24k_accessor,
+                  twitter_24k_mutator, modified_header, options)
+print('Done processing')

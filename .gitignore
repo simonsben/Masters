@@ -1,8 +1,8 @@
 from_skillicorn/
 connections/
-datasets/*/
-datasets/*.zip
-lexicons/*/
-lexicons/*.zip
+data/*/*.zip
+data/*/*/
+data/*/*.csv
 .idea/
 venv/
+*__pycache__/
