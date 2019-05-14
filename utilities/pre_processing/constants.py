@@ -6,6 +6,7 @@ modified_header = [
     'original_length',
     'emoji_count',
     'num_hashtags',
+    'num_special',
     'upper_count',
     'urls',
     'content'

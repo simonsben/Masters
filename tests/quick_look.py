@@ -2,7 +2,7 @@
 from pathlib import Path
 from data.accessors import twitter_24k_accessor, twitter_24k_mutator
 from utilities.pre_processing import count_upper, process_documents, original_length, modified_header, count_emojis, \
-    pull_hyperlinks, split_hashtags
+    pull_hyperlinks, split_hashtags, manage_special_characters
 
 # Generate path
 data_set = '24k-abusive-tweets'
@@ -17,12 +17,13 @@ processes = [
     original_length,
     count_emojis,
     split_hashtags,
+    manage_special_characters,
     count_upper,
     pull_hyperlinks
 ]
 
 options = {
-    'max_documents': 150
+    # 'max_documents': 1000
 }
 
 # Apply pre-processing

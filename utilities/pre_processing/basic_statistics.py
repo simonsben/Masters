@@ -1,6 +1,6 @@
 from re import compile, subn
 
-emoji_regex = compile(r'&#\d{4,6};')
+emoji_regex = compile(r'&#\d{4,7};')
 
 
 def count_upper(document):

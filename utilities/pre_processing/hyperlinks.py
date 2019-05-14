@@ -1,4 +1,4 @@
-from re import compile, sub, match
+from re import compile, sub
 
 # url_regex = compile(r'http://\w*\.\w+\.\w+\S*')
 url_regex = compile(r'http(s)?://(w{3}\.)?(([\w\-_]+\.)+\w+)(/[\w$\-_.+!*\'()?=]*)*'
@@ -12,7 +12,6 @@ def pull_hyperlinks(document):
             url = _match.group(3)
             if url is not None:
                 urls.append(url)
-            print(_match.group(0), _match.group(3))
 
         return ''
 
