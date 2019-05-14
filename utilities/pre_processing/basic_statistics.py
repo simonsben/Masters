@@ -1,6 +1,6 @@
 from re import compile, subn
 
-emoji_regex = compile(r'&#\d+;')
+emoji_regex = compile(r'&#\d{4,6};')
 
 
 def count_upper(document):
@@ -13,7 +13,7 @@ def count_upper(document):
 
 def count_emojis(document):
     """ Counts the number of emojis in the document and removes them """
-    document, count = emoji_regex.subn('', document)
+    document, count = subn(emoji_regex, '', document)
     return count, document
 
 

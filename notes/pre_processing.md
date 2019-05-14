@@ -48,3 +48,4 @@ The implementation of the previously identified approaches will be implemented a
 * Again, regex can be used to identify symbols within words and replace for common ones (i.e. @, 1, 0, etc.)
 
 **NOTE:** Before any of the above implementations are used, their effect will be considered on a sub-sample of the documents.
+

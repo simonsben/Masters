@@ -2,7 +2,7 @@
 from pathlib import Path
 from data.accessors import twitter_24k_accessor, twitter_24k_mutator
 from utilities.pre_processing import count_upper, process_documents, original_length, modified_header, count_emojis, \
-    pull_hyperlinks
+    pull_hyperlinks, split_hashtags
 
 # Generate path
 data_set = '24k-abusive-tweets'
@@ -10,21 +10,22 @@ source_filename = Path('../data/datasets') / data_set / (data_set + '.csv')
 dest_filename = Path('../data/prepared_data') / (data_set + '.csv')
 
 print('source: ' + str(source_filename))
-print('destination: ' + str(dest_filename))
+print('destination: ' + str(dest_filename) + '\n')
 
 # Defined pre-processing to be applied
 processes = [
     original_length,
-    count_upper,
     count_emojis,
+    split_hashtags,
+    count_upper,
     pull_hyperlinks
 ]
 
 options = {
-    # 'max_documents': 15000
+    'max_documents': 150
 }
 
 # Apply pre-processing
 process_documents(source_filename, dest_filename, processes, twitter_24k_accessor,
                   twitter_24k_mutator, modified_header, options)
-print('Done processing')
+print('\nDone processing')
