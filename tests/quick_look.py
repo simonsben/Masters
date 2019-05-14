@@ -1,7 +1,8 @@
 # Some code to give a quick look at some of the data
 from pathlib import Path
 from data.accessors import twitter_24k_accessor, twitter_24k_mutator
-from utilities.pre_processing import count_upper, process_documents, original_length, modified_header, count_emojis
+from utilities.pre_processing import count_upper, process_documents, original_length, modified_header, count_emojis, \
+    pull_hyperlinks
 
 # Generate path
 data_set = '24k-abusive-tweets'
@@ -15,11 +16,12 @@ print('destination: ' + str(dest_filename))
 processes = [
     original_length,
     count_upper,
-    count_emojis
+    count_emojis,
+    pull_hyperlinks
 ]
 
 options = {
-    'max_documents': 25
+    # 'max_documents': 15000
 }
 
 # Apply pre-processing

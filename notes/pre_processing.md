@@ -22,7 +22,7 @@ Several techniques will be employed to attempt to rectify this, including
 
 * Extract a metric for the proportion of the document that is written in uppercase
   * This is intended to identify documents that are written in *all caps*
-* Extract a metric for the number of emojis used within the docuent
+* Extract a metric for the number of emojis used within the document
   * This could signify exaggeration?
 * Extract the base URL from hyperlinks
   * This is intended to identify sites which may be commonly attributed to malicious comments
@@ -30,6 +30,8 @@ Several techniques will be employed to attempt to rectify this, including
 * Extract a metric for the proportion of the document that uses punctuation
   * This is meant to identify documents that contain a statistically significant number of punctuation (ex. !, ?, etc.)
   * It is hypothesized that the *over-use* of punctuation (or certain punctuation) could identify aggressive behavior
+* Extract words from hashtags where possible
+  * Often times when a user uses a hashtag they will use CamelCase within it, making it possible to extract the words
 * Conditionally replace punctuation instead of removing it
   * In certain cases punctuation (or digits) are used to take the place of letters
   * Instead of removing the symbol it could be replaced with its intended letter (ex. m@chine -> machine)
