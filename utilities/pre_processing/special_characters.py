@@ -6,9 +6,9 @@ special_regex = compile(r'&\S+;')
 special_regex_parser = compile(r'(&amp;)|(&lt;|&le;)|(&gt;|&ge;)|(&160;)|'  # Special characters
                                r'((?<=&)\d+(?=;))')                         # Accented characters
 group_map = {
-    0: 'and',
-    1: 'less than',
-    2: 'greater than',
+    0: ' and ',
+    1: ' less than ',
+    2: ' greater than ',
     3: ' '
 }
 
@@ -23,10 +23,10 @@ def manage_special_characters(document):
 
             if group_id < 4:
                 return group_map.get(group_id)
-            return get_ascii_char(parsed.group(0))
+            return ' ' + get_ascii_char(parsed.group(0)) + ' '
 
         print(character)
-        return ''
+        return ' '
 
     document, num_special = subn(special_regex, replace, document)
 
@@ -34,6 +34,7 @@ def manage_special_characters(document):
 
 
 def get_symbol_index(groups):
+    """ Get matched group number """
     for ind, val in enumerate(groups):
         if val is not None:
             return ind

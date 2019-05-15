@@ -1,11 +1,12 @@
-from os import access, W_OK
+from os import access, W_OK, R_OK
 from csv import reader, writer
 from pathlib import Path
+from pandas import read_csv
 
 
 def make_path(filename):
     """ Makes path from given string """
-    return Path(filename)
+    return Path(filename) if type(filename) is str else filename
 
 
 def check_existance(path):
@@ -14,16 +15,24 @@ def check_existance(path):
         raise FileExistsError('The given file does not exist')
 
 
-# Function to check if the path is valid
 def check_writable(path):
     """ Checks whether the path is valid for writing """
-    directory = path.parents[0]
+    path = make_path(path)
+    directory = path.parents[0] if path.is_file() else path
 
     if not access(directory, W_OK):
-        raise PermissionError('The given file location cannot be written to')
+        raise PermissionError('The given file location cannot be written to.')
 
 
-# Checks filename and open file with a csv reader
+def check_readable(path):
+    """ Checks whether the path is valid for reading """
+    path = make_path(path)
+    directory = path.parents[0] if path.is_file() else path
+
+    if not access(directory, R_OK):
+        raise PermissionError('The given file location cannot be read from.')
+
+
 def prepare_csv_reader(file, delimiter=',', has_header=True):
     """ Creates a CSV reader for the specified file """
     path = make_path(file) if type(file) is str else file
@@ -48,19 +57,9 @@ def prepare_csv_writer(file, header):
     return csv_writer, fl
 
 
-# TODO remove - old function
-def load_csv(filename, delimiter=',', has_header=False, limit_rows=-1):
-    """ Loads contents of a CSV file """
-    csv_reader, fl, header = prepare_csv_reader(filename, delimiter, has_header)
+def open_w_pandas(path, columns=None):
+    """ Opens file as a Panda dataframe """
+    path = make_path(path) if type(path) is str else path
+    data_frame = read_csv(path, usecols=columns)
 
-    data = []
-    for ind, row_data in enumerate(csv_reader):
-        if limit_rows != -1 and ind > limit_rows:
-            break
-
-        data.append(row_data)
-    fl.close()
-
-    if has_header:
-        return header, data
-    return data
+    return data_frame

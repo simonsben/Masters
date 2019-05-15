@@ -43,6 +43,7 @@ As more approaches are considered they will/should be added above.
 The implementation of the previously identified approaches will be implemented as follows
 
 * A simple regex can be used to find uppercase characters, sum, then replace them
+* A regex expression can be used to find the emojis in a document
 * Base URLs can be extracted effectively using regex
 * Metrics for several common/key symbols (i.e. !, ?, $, &, etc.)
 * Again, regex can be used to identify symbols within words and replace for common ones (i.e. @, 1, 0, etc.)

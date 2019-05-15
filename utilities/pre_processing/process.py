@@ -42,3 +42,7 @@ def process_documents(source_filename, dest_filename, processes, get_content, sa
 
         if max_documents != -1 and ind > max_documents:
             break
+
+    # Close files
+    source_fl.close()
+    dest_fl.close()

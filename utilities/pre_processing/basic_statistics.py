@@ -13,7 +13,7 @@ def count_upper(document):
 
 def count_emojis(document):
     """ Counts the number of emojis in the document and removes them """
-    document, count = subn(emoji_regex, '', document)
+    document, count = subn(emoji_regex, ' ', document)
     return count, document
 
 
