@@ -34,7 +34,9 @@ def process_documents(source_filename, dest_filename, processes, get_content, sa
 
         for process in processes:   # For each pre-processing step to be applied
             value, content = process(content)
-            values.append(value)
+
+            if value is not None:
+                values.append(value)
 
         # Save modified document for destination file
         modified_document = save_content(content, values, doc)

@@ -13,8 +13,11 @@ group_map = {
 }
 
 
-def manage_special_characters(document):
+# CHECK current approach is to add additional (potentially unnecessary) spaces, then remove later
+def manage_special_characters(document, get_header=False):
     """ Locates special characters and intelligently replaces (or removes) them """
+    if get_header: return 'special_count'
+
     def replace(_match):
         character = _match.group(0)
         parsed = search(special_regex_parser, character)

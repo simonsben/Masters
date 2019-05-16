@@ -35,6 +35,9 @@ Several techniques will be employed to attempt to rectify this, including
 * Conditionally replace punctuation instead of removing it
   * In certain cases punctuation (or digits) are used to take the place of letters
   * Instead of removing the symbol it could be replaced with its intended letter (ex. m@chine -> machine)
+* Split emails
+  * Email addresses may contain important words and can be used as the subject in a sentence
+  * Potential
 
 As more approaches are considered they will/should be added above.
 
@@ -47,6 +50,8 @@ The implementation of the previously identified approaches will be implemented a
 * Base URLs can be extracted effectively using regex
 * Metrics for several common/key symbols (i.e. !, ?, $, &, etc.)
 * Again, regex can be used to identify symbols within words and replace for common ones (i.e. @, 1, 0, etc.)
+* Use regex to identify and split emails (i.e. user@dept.example.com -> user dept example)
+
 
 **NOTE:** Before any of the above implementations are used, their effect will be considered on a sub-sample of the documents.
 

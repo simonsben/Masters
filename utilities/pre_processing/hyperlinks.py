@@ -1,12 +1,15 @@
 from re import compile, sub
 
-# url_regex = compile(r'http://\w*\.\w+\.\w+\S*')
+# CHECK double check that this characterizes all links seen in other document types
+# For twitter documents this should be good..
 url_regex = compile(r'http(s)?://(w{3}\.)?(([\w\-_]+\.)+\w+)(/[\w$\-_.+!*\'()?=]*)*'
                     r'|http:?(/){0,2}\S*$')
 
 
-def pull_hyperlinks(document):
+def pull_hyperlinks(document, get_header=False):
     """ Locates hyperlinks in document and removes them """
+    if get_header: return 'hyperlinks'
+
     def replace(_match):
         if _match.group(3) != 't.co':
             url = _match.group(3)

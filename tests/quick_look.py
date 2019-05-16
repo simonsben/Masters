@@ -1,8 +1,9 @@
 # Some code to give a quick look at some of the data
 from pathlib import Path
 from data.accessors import twitter_24k_accessor, twitter_24k_mutator
-from utilities.pre_processing import count_upper, process_documents, original_length, modified_header, count_emojis, \
-    pull_hyperlinks, split_hashtags, manage_special_characters
+from utilities.pre_processing import count_upper, process_documents, original_length, generate_header, count_emojis, \
+    pull_hyperlinks, split_hashtags, manage_special_characters, count_express, count_punctuation, count_digits, \
+    remove_spaces
 
 # Generate path
 data_set = '24k-abusive-tweets'
@@ -19,8 +20,13 @@ processes = [
     split_hashtags,
     manage_special_characters,
     count_upper,
-    pull_hyperlinks
+    pull_hyperlinks,
+    count_express,
+    count_punctuation,
+    count_digits,
+    remove_spaces
 ]
+modified_header = generate_header(processes)
 
 options = {
     # 'max_documents': 1000
