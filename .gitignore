@@ -6,3 +6,4 @@ data/*/*.csv
 .idea/
 venv/
 *__pycache__/
+test/
