@@ -50,3 +50,9 @@ def get_ascii_char(unicode):
         unicode = int(unicode)
 
     return unidecode(chr(unicode))
+
+
+# TODO write this 10,000x better to avoid encoding then decoding
+def remove_unicode_values(document):
+    """ Takes a list of items and replaces any unicode values with the HTML entity for it (i.e. 0x080 -> &#128;) """
+    return [doc.encode('ascii', 'xmlcharrefreplace').decode('ascii') for doc in document]
