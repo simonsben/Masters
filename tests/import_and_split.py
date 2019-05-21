@@ -1,5 +1,5 @@
 from utilities.data_management import split_sets, open_w_pandas
-from execution.processing import splitter
+from model.extraction import splitter
 
 filename = '../data/prepared_data/24k-abusive-tweets.csv'
 

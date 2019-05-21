@@ -63,7 +63,7 @@ def prepare_csv_writer(file, header):
     check_writable(path)
 
     fl = path.open(mode='w', newline='')
-    csv_writer = writer(fl, delimiter=',', quotechar='"')
+    csv_writer = writer(fl, delimiter=',')
     csv_writer.writerow(header)
 
     return csv_writer, fl

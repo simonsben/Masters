@@ -3,8 +3,10 @@ from re import compile, subn, sub
 emoji_regex = compile(r'&#\d{4,7};')
 express_regex = compile(r'[!?]+')
 punctuation_regex = compile(r'[^a-zA-Z0-9]')
+partial_clean = compile(r'[^a-zA-Z,.!?\'";:]+')
 digit_regex = compile(r'[0-9]+')
-space_regex = compile(r'\s+(?=\s)|^\s')
+space_regex = compile(r'\s+(?=\s)|^\s|'
+                      r'(?<=\w)\s+(?=[^a-zA-Z0-9])')
 
 
 def count_upper(document, get_header=False):
@@ -63,4 +65,12 @@ def remove_spaces(document, get_header=False):
     if get_header: return None
 
     document = sub(space_regex, '', document)
+    return None, document
+
+
+def run_partial_clean(document, get_header=False):
+    """ Partially clean document, meant for SpaCY relatex pre-processing """
+    if get_header: return None
+
+    document = sub(partial_clean, ' ', document)
     return None, document
