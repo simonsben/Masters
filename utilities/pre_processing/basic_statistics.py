@@ -4,7 +4,7 @@ emoji_regex = compile(r'&#\d{4,7};')
 express_regex = compile(r'[!?]+')
 punctuation_regex = compile(r'[^a-zA-Z0-9]')
 digit_regex = compile(r'[0-9]+')
-space_regex = compile(r'\s+(?=\s)')
+space_regex = compile(r'\s+(?=\s)|^\s')
 
 
 def count_upper(document, get_header=False):

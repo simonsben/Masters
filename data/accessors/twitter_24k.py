@@ -13,8 +13,7 @@ def twitter_24k_mutator(modified_content, values, document):
 
     :return: Modified document, list
     """
-    index = document[0]
     is_abusive = 0 if int(document[5]) == 2 else 1
 
-    modified_document = [index, is_abusive] + values + [modified_content]
+    modified_document = [is_abusive] + values + [modified_content]
     return modified_document
