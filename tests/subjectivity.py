@@ -8,7 +8,6 @@ lex_filename = '../data/prepared_lexicon/mpqa_subjectivity_lexicon.csv'
 dataset = open_w_pandas(filename)
 lexicon = open_w_pandas(lex_filename)
 
-# 327s to execute -> 5.45 min
 start = time()
 document_matrix = subjectivity(dataset, lexicon)
 end = time()
