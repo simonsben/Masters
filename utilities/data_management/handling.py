@@ -38,10 +38,3 @@ def split_sets(dataset, splitter, test_frac=.2):
     test_set = dataset.iloc[pivot_index:, :]
 
     return splitter(train_set), splitter(test_set)
-
-
-def get_content(dataset):
-    if type(dataset) is not DataFrame:
-        raise TypeError('Dataset must be a (Pandas) DataFrame')
-
-    return dataset[['document_content']]

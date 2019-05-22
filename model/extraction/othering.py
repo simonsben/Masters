@@ -1,6 +1,5 @@
 from spacy import load
 from pandas import DataFrame, SparseDataFrame
-from utilities.data_management import get_content
 from sklearn.feature_extraction.text import CountVectorizer
 
 othering_pos = {
@@ -23,24 +22,13 @@ othering_dep = {
 }
 
 
-# def process(content):
-#     tokens = processor(content)
-#
-#     num_propositions = sum(1 for token in tokens if token.pos_ == 'PRON')
-#     if num_propositions < 2:
-#         return None
-#
-#     return [token for token in tokens if token.pos_ in othering_pos]
-
 def gen_dep(token):
+    """ Convert a relation to a string of the form child-relation-parent """
     return '-'.join([token.text, str(token.dep_), str(token.head)]).lower()
 
 
 def filter_tokens(tokens):
-    num_propositions = sum(1 for token in tokens if token.pos_ == 'PRON')
-    if num_propositions < 2:
-        return []
-
+    """ Filters tokens and returns a string with remaining terms """
     terms = []
     for token in tokens:
         if token.pos_ in othering_pos:
@@ -48,21 +36,26 @@ def filter_tokens(tokens):
         if token.dep_ in othering_dep:
             terms.append(gen_dep(token))
 
-    return terms
+    return ' '.join(terms)
 
 
-def othering_dictionary(tokenized, max_terms=10000):
-    dictionary = {}
-    for tokens in tokenized:
-        f_tokens = filter_tokens(tokens)
-        for token in f_tokens:
-            if token in dictionary:
-                dictionary[token] += 1
-            else:
-                dictionary[token] = 1
+def count_pronouns(tokens):
+    """ Returns a bool indicating whether the document has at least two pronouns """
+    num_propositions = sum(1 for token in tokens if token.pos_ == 'PRON')
+    return num_propositions >= 2
 
-    dictionary = sorted(dictionary.items(), key=lambda term: term[1], reverse=True)
-    return [term for term, _ in dictionary[:max_terms]]
+
+def othering_vectorizer(tokenized, max_terms=10000):
+    """ Generates the othering vectorizer from the filtered document tokens """
+    vectorizer = CountVectorizer(max_features=max_terms, token_pattern=r'\b\w{2,}[a-zA-Z\-]+\b',
+                                 lowercase=False)
+
+    tokenized['multi_props'] = tokenized['document_content'].apply(count_pronouns)
+    tokenized['split_content'] = tokenized['document_content'].apply(filter_tokens)
+
+    vectorizer.fit(tokenized['split_content'] * tokenized['multi_props'])
+
+    return vectorizer
 
 
 def othering_vector(dataset):
@@ -73,17 +66,13 @@ def othering_vector(dataset):
     # Initialize SpaCy processor and tag documents
     processor = load('en_core_web_sm')
     tokenized = DataFrame(
-        get_content(dataset).applymap(processor)
+        dataset['document_content'].apply(lambda row: processor(row))
     )
+    vectorizer = othering_vectorizer(tokenized)
 
-    # Generate othering dictionary
-    dictionary = othering_dictionary(tokenized['document_content'])
-    print('dictionary', dictionary)
-
-    vectorizer = CountVectorizer(vocabulary=dictionary)
     vector_data = vectorizer.transform(
-        dataset['document_content'].astype('|S')
+        tokenized['split_content']
     )
 
     document_matrix = SparseDataFrame(vector_data, columns=vectorizer.get_feature_names())
-    print('document matrix', document_matrix)
+    return document_matrix
