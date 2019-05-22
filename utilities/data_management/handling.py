@@ -1,4 +1,5 @@
 from pandas import DataFrame
+from scipy.special import digamma
 
 
 def parse_data(data, data_formats):
@@ -38,3 +39,12 @@ def split_sets(dataset, splitter, test_frac=.2):
     test_set = dataset.iloc[pivot_index:, :]
 
     return splitter(train_set), splitter(test_set)
+
+
+# TODO double check function
+def normalize_doc_term(dataset):
+    """ Normalizes a document-term matrix using the di-gamma function """
+    if type(dataset) is not DataFrame:
+        return TypeError('Dataset must be a (Pandas) Dataframe')
+
+    return dataset.applymap(digamma)
