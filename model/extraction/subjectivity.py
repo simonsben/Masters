@@ -4,10 +4,12 @@ from numpy import nan
 
 
 def cond_mult(val):
+    """ If the value is not NaN the value is set to 2 """
     return nan if val is nan else val * 2
 
 
 def subjectivity(dataset, lexicon):
+    """ Constructs a document-term matrix using the subjectivity lexicon """
     if type(dataset) is not DataFrame:
         raise TypeError('Dataset must be a (Pandas) Dataframe')
 
