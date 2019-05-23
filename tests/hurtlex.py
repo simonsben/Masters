@@ -1,5 +1,6 @@
 from utilities.data_management import open_w_pandas
 from model.extraction import hurtlex
+from model.training import train_xg_boost
 from time import time
 
 filename = '../data/prepared_data/24k-abusive-tweets.csv'
@@ -14,3 +15,13 @@ end = time()
 
 print('Time to execute: ' + str(end - start))
 print(document_matrix)
+
+model = train_xg_boost(document_matrix, dataset['is_abusive'])
+
+print(model)
+print(model.evals_result())
+print(model.feature_importances_)
+
+for word, val in zip(document_matrix.columns, model.feature_importances_):
+    if val != 0:
+        print(word, val)
