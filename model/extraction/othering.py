@@ -58,7 +58,7 @@ def othering_vectorizer(tokenized, max_terms=10000):
     return vectorizer
 
 
-def othering_vector(dataset):
+def othering_matrix(dataset):
     """ Takes dataset and tags it with othering features """
     if type(dataset) is not DataFrame:
         raise TypeError('Dataset must be a (Pandas) DataFrame')
