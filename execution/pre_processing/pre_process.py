@@ -1,5 +1,6 @@
 # Some code to give a quick look at some of the data
-from data.accessors import twitter_24k_accessor, twitter_24k_mutator, twitter_100k_accessor, twitter_100k_mutator
+from data.accessors import twitter_24k_accessor, twitter_24k_mutator, twitter_100k_accessor, twitter_100k_mutator, \
+    kaggle_accessor, kaggle_mutator
 from utilities.pre_processing import count_upper, process_documents, original_length, generate_header, count_emojis, \
     pull_hyperlinks, split_hashtags, manage_special_characters, count_express, count_punctuation, count_digits, \
     remove_spaces, run_partial_clean
@@ -18,6 +19,11 @@ data_sets = [
         'data_set': '100k-abusive-tweets',
         'accessor': twitter_100k_accessor,
         'mutator': twitter_100k_mutator
+    },
+    {
+        'data_set': 'kaggle',
+        'accessor': kaggle_accessor,
+        'mutator': kaggle_mutator
     }
 ]
 base_directory = make_path('../../data/')
@@ -34,9 +40,9 @@ pre_processes = [
     original_length,
     count_emojis,
     split_hashtags,
+    pull_hyperlinks,
     manage_special_characters,
     count_upper,
-    pull_hyperlinks,
     count_express,
     count_punctuation,
     count_digits,
@@ -46,6 +52,7 @@ partial_processes = [
     original_length,
     count_emojis,
     split_hashtags,
+    pull_hyperlinks,
     manage_special_characters,
     count_upper,
     run_partial_clean,
@@ -54,7 +61,7 @@ partial_processes = [
 
 for run_partial_process in runs:
     run_name = 'partial' if run_partial_process else 'pre'
-    print('\nunning', run_name, 'process.')
+    print('\nRunning', run_name, 'process.')
 
     processes = partial_processes if run_partial_process else pre_processes
 

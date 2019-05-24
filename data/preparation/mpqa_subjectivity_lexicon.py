@@ -58,7 +58,5 @@ lexicon.drop_duplicates(subset='word', inplace=True)
 lexicon['score'] = where(lexicon['is_strong'], 2, 1)
 lexicon.drop(labels='is_strong', axis=1, inplace=True)
 
-print(lexicon)
-
 # Save lexicon
 lexicon.to_csv(dest_path)

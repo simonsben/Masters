@@ -28,7 +28,7 @@ def manage_special_characters(document, get_header=False):
                 return group_map.get(group_id)
             return ' ' + get_ascii_char(parsed.group(0)) + ' '
 
-        print(character)
+        # print(character)
         return ' '
 
     document, num_special = subn(special_regex, replace, document)

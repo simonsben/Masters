@@ -10,8 +10,6 @@ directory = make_path(directory_filename)
 source_path = directory / (filename + '_backup.csv')
 dest_path = directory / (filename + '.csv')
 
-print(source_path, dest_path)
-
 file_header = ['label', 'content']
 
 if not source_path.exists():

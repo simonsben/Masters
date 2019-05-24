@@ -2,8 +2,8 @@ from re import compile, sub
 
 # CHECK double check that this characterizes all links seen in other document types
 # For twitter documents this should be good..
-url_regex = compile(r'http(s)?://(w{3}\.)?(([\w\-_]+\.)+\w+)(/[\w$\-_.+!*\'()?=]*)*'
-                    r'|http:?(/){0,2}\S*$')
+url_regex = compile(r'http(s)?://(w{3}\.)?(([\w\-_]+\.)+\w{1,6})(/[\w&$\-_.+!*\'()?=#;%:~,]*)*|'
+                    r'http:?(/){0,2}\S*$')
 
 
 def pull_hyperlinks(document, get_header=False):
@@ -16,7 +16,7 @@ def pull_hyperlinks(document, get_header=False):
             if url is not None:
                 urls.append(url)
 
-        return ''
+        return ' url '
 
     urls = []
     document = sub(url_regex, replace, document)
