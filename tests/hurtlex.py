@@ -16,7 +16,7 @@ end = time()
 print('Time to execute: ' + str(end - start))
 print(document_matrix)
 
-model = train_xg_boost(document_matrix, dataset['is_abusive'])
+model, [test_data, test_labels] = train_xg_boost(document_matrix, dataset['is_abusive'], return_test=True)
 
 print(model)
 print(model.feature_importances_)
@@ -24,3 +24,7 @@ print(model.feature_importances_)
 for word, val in zip(document_matrix.columns, model.feature_importances_):
     if val != 0:
         print(word, val)
+
+
+predictions = model.predict(test_data)
+print('predictions ', predictions)

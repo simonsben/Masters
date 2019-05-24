@@ -3,6 +3,7 @@ from pandas import DataFrame
 non_features = ['is_abusive']
 
 
+# CHECK double check this isnt used and remove
 def splitter(dataset):
     """ Takes a pre-processed dataset and splits it into features and labels """
 

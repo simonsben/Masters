@@ -4,7 +4,7 @@ from utilities.data_management import split_sets, to_csr_matrix, normalize_doc_t
 
 
 # TODO play with number of estimators (and other) within the XGBoost parameters
-def train_xg_boost(document_matrix, is_abusive):
+def train_xg_boost(document_matrix, is_abusive, return_test=False):
     if type(document_matrix) is not SparseDataFrame:
         raise TypeError('Document matrix must be a (Pandas) SparseDataFrame.')
 
@@ -21,4 +21,6 @@ def train_xg_boost(document_matrix, is_abusive):
     classifier.fit(sparse_train, train_label,
                    eval_set=[(sparse_train, train_label), (sparse_test, test_label)], verbose=False)
 
+    if return_test:
+        return classifier, (sparse_test, test_label)
     return classifier

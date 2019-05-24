@@ -32,6 +32,5 @@ def emotions(dataset, lexicon):
         )
 
         matrix_emotions.append(emotion)
-        print(emotion, ' complete.')
 
     return emotion_matrices, matrix_emotions

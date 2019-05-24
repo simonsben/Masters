@@ -3,6 +3,7 @@ connections/
 data/*/*.zip
 data/*/*/
 data/*/*.csv
+data/*.mod
 .idea/
 venv/
 *__pycache__/

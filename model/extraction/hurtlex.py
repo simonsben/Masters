@@ -7,7 +7,7 @@ def hurtlex(dataset, lexicon):
     if type(dataset) is not DataFrame:
         raise TypeError('Dataset must be a (Pandas) Dataframe')
 
-    # TODO consider lemming the source text to better match the dictionary
+    # TODO consider lemming or stemming the source text to better match the dictionary
     dictionary = lexicon['lemma']
 
     vectorizer = CountVectorizer(vocabulary=dictionary)
