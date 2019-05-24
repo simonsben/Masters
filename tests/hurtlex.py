@@ -19,7 +19,6 @@ print(document_matrix)
 model = train_xg_boost(document_matrix, dataset['is_abusive'])
 
 print(model)
-print(model.evals_result())
 print(model.feature_importances_)
 
 for word, val in zip(document_matrix.columns, model.feature_importances_):

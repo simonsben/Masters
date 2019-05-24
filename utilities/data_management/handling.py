@@ -1,7 +1,7 @@
 from pandas import DataFrame, SparseDataFrame, Series
 from scipy.special import digamma
 from scipy.sparse import csr_matrix
-from numpy import float32
+from numpy import float64
 
 
 def parse_data(data, data_formats):
@@ -54,13 +54,17 @@ def split_sets(dataset, splitter, test_frac=.2, labels=None):
 # TODO double check function
 def normalize_doc_term(dataset):
     """ Normalizes a document-term matrix using the di-gamma function """
-    if type(dataset) is not DataFrame:
-        return TypeError('Dataset must be a (Pandas) Dataframe')
+    if type(dataset) is not list:
+        dataset = [dataset]
 
-    return dataset.applymap(digamma)
+    for matrix in dataset:
+        if type(matrix) is not csr_matrix:
+            return TypeError('Dataset must be a CSR matrix (sparse)')
+
+        matrix.data = digamma(matrix.data)
 
 
-def to_csr_matrix(dataset, conv_type=float32):
+def to_csr_matrix(dataset, conv_type=float64):
     """ Takes a (most likely sparse) dataset and converts it to a Scipy CSR matrix, necessary for XGBoost """
     set_type = type(dataset)
     if set_type is not DataFrame and set_type is not SparseDataFrame:
