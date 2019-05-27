@@ -2,6 +2,7 @@ from_skillicorn/
 connections/
 data/*/*.zip
 data/*/*/
+data/*/*.pkl
 data/*/*.csv
 data/*.mod
 .idea/

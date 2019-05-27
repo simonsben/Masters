@@ -7,3 +7,5 @@
 * utilities
   * pre_processing
     * Write out methodology in a README
+* dependancies
+  * Wipe all dependancies and re-install, unused in requirements.. I think
