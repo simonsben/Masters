@@ -15,7 +15,7 @@ def load_vectors(filename):
     vectors = {}
     for line in fin:
         tokens = line.rstrip().split(' ')
-        vectors[tokens[0]] = map(float, tokens[1:])
+        vectors[tokens[0]] = list(map(float, tokens[1:]))
 
     return vectors, (num_words, vector_dimension)
 
@@ -26,7 +26,7 @@ def vectorize_content(content, vectors, vector_dim):
     vector_content = zeros((len(prepared_content), vector_dim))
 
     for ind, token in enumerate(prepared_content):
-        vector = vectors[token]
+        vector = vectors.get(token)
         if vector is not None:
             vector_content[ind] = vector
 
@@ -38,5 +38,7 @@ def vectorize_data(dataset, vectors, vector_dim=300):
     if type(dataset) is not DataFrame:
         raise TypeError('Dataset must be a (Pandas) DataFrame')
 
-    vectorizer = lambda doc: vectorize_content(doc, vectors, vector_dim)
+    def vectorizer(doc):
+        return vectorize_content(doc, vectors, vector_dim)
+
     dataset['vectorized_content'] = dataset['document_content'].apply(vectorizer)
