@@ -1,23 +1,26 @@
 from utilities.data_management import open_w_pandas, check_existence,  make_path, check_writable, split_sets, \
-    to_numpy_array
+    to_numpy_array, move_to_root
 from model.extraction import vectorize_data
-from keras.models import Sequential
-from keras.layers import Dense, LSTM, Bidirectional
-from keras.callbacks import EarlyStopping
+from model.training import generate_deep_model, train_deep_model
 from fastText import load_model
 from pandas import read_pickle
 
+move_to_root()
 
-filename = make_path('../../data/prepared_data/24k-abusive-tweets.csv')
-fast_text_filename = make_path('../../data/lexicons/fast_text/fast_text.bin')
-vectorized_directory = make_path('../../data/processed_data/')
-vectorized_path = vectorized_directory / (filename.stem + '.pkl')
-model_filename = make_path('../../data/models/derived/fast_text.h5')
+filename = make_path('data/prepared_data/24k-abusive-tweets.csv')
+fast_text_filename = make_path('data/lexicons/fast_text/fast_text.bin')
+dataset_name = filename.stem
+vectorized_path = make_path('data/processed_data/' + dataset_name + '/derived/fast_text.pkl')
+model_filename = make_path('data/models/derived/fast_text.h5')
 
 check_existence(filename)
 check_existence(fast_text_filename)
-check_writable(vectorized_directory)
+check_writable(vectorized_path)
 check_writable(model_filename)
+
+if model_filename.exists():
+    print('Skipping deep model')
+    exit(0)
 
 dataset = open_w_pandas(filename)
 print('Dataset loaded\n', dataset)
@@ -47,27 +50,11 @@ print('Vectors ready\n', dataset['vectorized_content'])
 train, test, train_label, test_label = to_numpy_array([train, test, train_label, test_label])
 print(train.shape, train_label.shape)
 
-deep_model = Sequential([
-    Bidirectional(LSTM(
-            100,
-            dropout=.3,
-            recurrent_dropout=.3
-        ),
-        input_shape=(50, 300)
-    ),
-    Dense(1, activation='sigmoid')
-])
-print('Model\n', deep_model.summary())
 
+# Generate and train model
+deep_model = generate_deep_model(True)
+history = train_deep_model(deep_model, train, train_label)
 
-deep_model.compile('adam', 'binary_crossentropy', metrics=['accuracy'])
-early_stopping = EarlyStopping(monitor='val_loss', min_delta=0, patience=3, verbose=0, mode='auto')
-history = deep_model.fit(
-    train, train_label,
-    epochs=50, verbose=1,
-    callbacks=[early_stopping],
-    validation_split=.2, shuffle=True, batch_size=512
-).history
 print('Deep model trained.')
 
 deep_model.save(str(model_filename))

@@ -27,3 +27,22 @@ The following steps were taken to install it:
 SpaCy will be installed by executing the `pip install` listed above, however the chosen model will still have to be downloaded.
 By default the one used in the code is the `en_core_web_sm` model (small english model).
 It can be installed by opening the shell/command prompt, entering the virtual environment, then running `python -m spacy download en_core_web_sm`.
+
+## Data
+
+### Preparing and pre-processing
+
+In this repo the document pre-processing is broken into two stages, preparing and pre-processing.
+Pre-processing applies the expected processing (ex. removes symbols, capitals, etc.) using a standardized set of functions.
+However, in order to do this, most of the dataset/lexicons require some degree of modification before this can be applied.
+
+To **prepare** the data, simply execute the [`prepare.py`](../execution/pre_processing/prepare.py) script.
+To **pre-process** the data, again, just execute the [`pre-process`](../execution/pre_processing/pre_process.py) script.
+
+### Before executing
+
+Before executing a new dataset make sure that the dataset is downloaded and the destination directories are ready.
+To do this, you can simply go to the [scripts directory](../utilities/scripts), then run the 
+[`prep_dataset_run.sh`](../utilities/scripts/prep_dataset_run.sh) bash script.
+
+**NOTE:** This requires the **exact** dataset name as its only argument

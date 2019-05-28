@@ -91,3 +91,16 @@ def to_numpy_array(dataset):
         numpy_matrices.append(array(matrix.to_list()))
 
     return numpy_matrices
+
+
+def prepare_doc_matrix(document_matrix, is_abusive):
+    """ Takes a document term matrix, normalizes the rows, and converts it to a CSR matrix """
+    # Split dataset into training and testing portions
+    (train_matrix, test_matrix), (train_label, test_label) \
+        = split_sets(document_matrix, lambda docs: docs, labels=is_abusive)
+
+    # Convert dataset to sparse matrices
+    sparse_train, sparse_test = to_csr_matrix(train_matrix), to_csr_matrix(test_matrix)
+    normalize_doc_term([sparse_train, sparse_test])
+
+    return (sparse_train, train_label), (sparse_test, test_label)
