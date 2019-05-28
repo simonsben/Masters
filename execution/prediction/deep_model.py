@@ -2,6 +2,7 @@ from utilities.data_management import open_w_pandas, make_path, move_to_root, ch
     to_numpy_array
 from keras.models import load_model
 from pandas import read_pickle
+from numpy import where
 
 move_to_root()
 
@@ -29,8 +30,8 @@ train_set, test_set = to_numpy_array([train_set, test_set])
 
 # Load model and make predictions
 model = load_model(str(model_path))
-train_predictions['fast_text'] = model.predict(train_set)
-test_predictions['fast_text'] = model.predict(test_set)
+train_predictions['fast_text'] = where(model.predict(train_set) > .5, 1, 0)
+test_predictions['fast_text'] = where(model.predict(test_set) > .5, 1, 0)
 print('Data and model loaded, making predictions')
 
 # Save predictions
