@@ -2,6 +2,7 @@ from utilities.data_management import open_w_pandas, make_path, check_existence,
     save_prepared
 from model.extraction import hurtlex, subjectivity
 from model.training import train_xg_boost
+from pickle import dump
 
 move_to_root()
 
@@ -40,7 +41,7 @@ print('Data loaded.')
 # Train models
 for layer in sub_layers:
     model_name = layer['model_name']
-    model_filename = model_dir / (model_name + '.bin')
+    model_filename = model_dir / (model_name + '.pkl')
     if model_filename.exists():
         print('Skipping', model_name)
         continue
@@ -56,6 +57,7 @@ for layer in sub_layers:
         = train_xg_boost(document_matrix, dataset['is_abusive'], return_data=True)
 
     # Save model
+    # dump(model, model_filename)
     model.save_model(str(model_filename))
     save_prepared(processed_base, model_name, train[0], test[0])
     print(model_name, 'completed.')
