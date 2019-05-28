@@ -45,6 +45,6 @@ for layer in sub_layers:
         = train_xg_boost(document_matrix, dataset['is_abusive'], return_test=True)
 
     # Save model
-    model_filename = str(model_dir / (model_name + '.mod'))
+    model_filename = str(model_dir / (model_name + '.bin'))
     model.save_model(model_filename)
     print(model_name, ' completed.')

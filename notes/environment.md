@@ -21,3 +21,9 @@ The following steps were taken to install it:
     *Terminal* tab at the bottom to navigate into the fastText directory in order to build it.
 3. Download the English `.bin` pre-trained [model](https://fasttext.cc/docs/en/crawl-vectors.html)
     1. **NOTE:** The simple `.txt` model can be used if you don't have any out-of-vocabulary (OOV) words
+
+### SpaCy
+
+SpaCy will be installed by executing the `pip install` listed above, however the chosen model will still have to be downloaded.
+By default the one used in the code is the `en_core_web_sm` model (small english model).
+It can be installed by opening the shell/command prompt, entering the virtual environment, then running `python -m spacy download en_core_web_sm`.

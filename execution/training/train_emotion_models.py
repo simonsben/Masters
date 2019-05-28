@@ -28,6 +28,6 @@ for document_matrix, emotion in zip(document_matrices, emotions):
         = train_xg_boost(document_matrix, dataset['is_abusive'], return_test=True)
 
     # Save model
-    model_filename = str(model_dir / (emotion + '.mod'))
+    model_filename = str(model_dir / (emotion + '.bin'))
     model.save_model(model_filename)
     print(emotion, ' completed.')

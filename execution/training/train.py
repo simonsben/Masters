@@ -6,7 +6,8 @@ file_regex = compile(r'\.py$')
 files = listdir('.')
 
 exclusions = [
-    'train.py'
+    'train.py',
+    'train_deep_models.py'
 ]
 
 for file in files:
@@ -15,3 +16,5 @@ for file in files:
 
         with open(file) as fl:
             sub = exec(fl.read())
+
+print('\nAll models trained.')
