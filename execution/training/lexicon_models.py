@@ -1,5 +1,5 @@
 from utilities.data_management import open_w_pandas, make_path, check_existence, check_writable, move_to_root, \
-    save_prepared
+    save_prepared, match_feature_weights
 from model.extraction import hurtlex, subjectivity
 from model.training import train_xg_boost
 

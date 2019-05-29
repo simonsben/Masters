@@ -9,6 +9,7 @@ check_writable(dest_filename)
 
 lexicon = read_csv(source_filename, delimiter='\t',
                    names=['category', 'macro-category', 'lemma'], usecols=['lemma'])
+lexicon.rename(index=str, columns={'lemma': 'word'}, inplace=True)
 
-lexicon.drop_duplicates(subset='lemma', inplace=True)
+lexicon.drop_duplicates(subset='word', inplace=True)
 lexicon.to_csv(dest_filename)

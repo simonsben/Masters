@@ -40,5 +40,10 @@
 
     "hurtlex":      "Hurtlex",
     "subjectivity": "Subjectivity"
+  },
+  "lexicon_names": {
+    "hurtlex": "hurtlex.csv",
+    "subjectivity": "mpqa_subjectivity_lexicon.csv",
+    "emotion": "nrc_emotion_lexicon.csv"
   }
 }

@@ -37,13 +37,11 @@ def confusion_matrix(predicted, labels, plot_title, filename=None):
         savefig(filename)
 
 
-def feature_significance(features, weights, figure_title, filename=None, max_features=30, is_weight=True, x_log=False):
-    feature_weights = array(
-        sorted(zip(features, weights), key=lambda feat: feat[1])
-    )[:max_features]
+def feature_significance(feature_weights, figure_title, filename=None, max_features=20, is_weight=True, x_log=False):
+    feature_weights = array(feature_weights[:max_features])
 
     y_ticks = arange(len(feature_weights))
-    x_ticks = around(linspace(0, max(weights), 10, dtype=float), decimals=1)
+    x_ticks = around(linspace(0, max(feature_weights[:, 1].astype(float)), 10, dtype=float), decimals=1)
 
     fig, ax = subplots()
     im = ax.barh(y_ticks, feature_weights[:, 1].astype(float), edgecolor='k')

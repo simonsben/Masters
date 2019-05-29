@@ -116,3 +116,15 @@ def load_xgboost_model(filename):
     model._le = LabelEncoder().fit([0, 1])
 
     return model
+
+
+def match_feature_weights(features, weights):
+    """ Generates a matching list of features and their weights in a given model """
+    weights = [(int(key[1:]), weights[key]) for key in weights]
+    feature_weights = sorted(
+        [(features[ind], weight) for (ind, weight) in weights],
+        key=lambda feat: feat[1],
+        reverse=True
+    )
+
+    return feature_weights
