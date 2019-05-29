@@ -5,6 +5,7 @@ data/*/*/
 data/*/*.pkl
 data/*/*.csv
 data/*.mod
+figures/*
 .idea/
 venv/
 *__pycache__/

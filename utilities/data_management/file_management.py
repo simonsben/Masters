@@ -1,6 +1,7 @@
 from os import listdir, chdir
 from pathlib import Path
 from scipy.sparse import save_npz
+from json import load
 
 prediction_filename = Path('data/processed_data/predictions.csv')
 target_file = '.gitignore'
@@ -26,3 +27,11 @@ def save_prepared(directory, model_name, train, test):
     """ Save prepared sparse matrix """
     save_npz(directory / (model_name + '_train.npz'), train)
     save_npz(directory / (model_name + '_test.npz'), test)
+
+
+def get_path_maps():
+    """ Loads the path maps from data/accessors/constants.json """
+    path = Path('data/accessors/constants.json')
+    with path.open(mode='r') as fl:
+        maps = load(fl)
+    return maps

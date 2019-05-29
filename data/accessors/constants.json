@@ -1,0 +1,44 @@
+{
+  "layer_class": {
+    "char_n_grams": "derived",
+    "word_n_grams": "derived",
+    "fast_text":    "derived",
+    "othering":     "derived",
+    "stacked":      "derived",
+
+    "anger":        "emotion",
+    "anticipation": "emotion",
+    "disgust":      "emotion",
+    "fear":         "emotion",
+    "joy":          "emotion",
+    "negative":     "emotion",
+    "positive":     "emotion",
+    "sadness":      "emotion",
+    "surprise":     "emotion",
+    "trust":        "emotion",
+
+    "hurtlex":      "lexicon",
+    "subjectivity": "lexicon"
+  },
+  "layer_names": {
+    "char_n_grams": "Character n-gram",
+    "word_n_grams": "Word n-gram",
+    "fast_text":    "BiLSTM",
+    "othering":     "Othering",
+    "stacked":      "Stacked",
+
+    "anger":        "Anger",
+    "anticipation": "Anticipation",
+    "disgust":      "Disgust",
+    "fear":         "Fear",
+    "joy":          "Joy",
+    "negative":     "Negative",
+    "positive":     "Positive",
+    "sadness":      "Sadness",
+    "surprise":     "Surprise",
+    "trust":        "Trust",
+
+    "hurtlex":      "Hurtlex",
+    "subjectivity": "Subjectivity"
+  }
+}

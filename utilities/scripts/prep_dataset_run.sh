@@ -8,7 +8,7 @@ fi
 
 
 # Define sub directories
-declare -a DIRS=('models' 'processed_data')
+declare -a DIRS=('models' 'processed_data' '../figures')
 declare -a SUB_DIRS=('derived' 'emotion' 'lexicon')
 
 # Move to data directory

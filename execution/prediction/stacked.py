@@ -21,7 +21,7 @@ check_writable(model_path)
 train_set = open_w_pandas(train_path, index_col=0)
 test_set = open_w_pandas(test_path, index_col=0)
 labels = open_w_pandas(dataset_path)['is_abusive'].to_numpy().astype(bool)
-train_labels, test_labels = labels[:len(train_set)], labels[len(test_set):]
+train_labels, test_labels = labels[:len(train_set)], labels[len(train_set):]
 print('Data loaded, making predictions')
 
 # Load model
