@@ -7,8 +7,8 @@ files = listdir('.')
 
 exclusions = [
     'train.py',
-    # 'train_deep_models.py',
-    'train_stacked.py'
+    # 'deep_models.py',
+    'stacked.py'
 ]
 
 for file in files:

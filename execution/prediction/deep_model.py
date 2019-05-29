@@ -20,19 +20,19 @@ check_existence(model_path)
 check_existence(data_path)
 
 # Open predictions
-train_predictions = open_w_pandas(train_pred_path)
-test_predictions = open_w_pandas(test_pred_path)
+train_predictions = open_w_pandas(train_pred_path, index_col=0)
+test_predictions = open_w_pandas(test_pred_path, index_col=0)
 
 # Open and split processed data
 processed_data = read_pickle(data_path)
 train_set, test_set = split_sets(processed_data, lambda docs: docs)
 train_set, test_set = to_numpy_array([train_set, test_set])
+print('Data loaded')
 
 # Load model and make predictions
 model = load_model(str(model_path))
 train_predictions['fast_text'] = where(model.predict(train_set) > .5, 1, 0)
 test_predictions['fast_text'] = where(model.predict(test_set) > .5, 1, 0)
-print('Data and model loaded, making predictions')
 
 # Save predictions
 train_predictions.to_csv(train_pred_path)
