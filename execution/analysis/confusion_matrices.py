@@ -1,6 +1,7 @@
 from utilities.data_management import move_to_root, open_w_pandas, make_path, check_existence, check_writable, get_path_maps
 from utilities.plotting import confusion_matrix
 from matplotlib.pyplot import show
+from os import mkdir
 
 # TODO check data and plotting, values seem wrong..
 
@@ -34,13 +35,15 @@ name_maps = maps['layer_names']
 layers = train_set.columns
 
 for layer in layers:
-    base = figure_dir / dir_maps[layer]
+    base = figure_dir / dir_maps[layer] / 'confusion_matrix'
+    if not base.exists():
+        mkdir(base)
 
-    confusion_matrix(train_set[layer].to_numpy(), train_labels,
+    confusion_matrix(train_set[layer].values, train_labels,
                      name_maps[layer] + ' Predictor, training data',
-                     base / ('cm_' + layer + '_train.png'))
-    confusion_matrix(train_set[layer].to_numpy(), train_labels,
+                     base / (layer + '_train.png'))
+    confusion_matrix(train_set[layer].values, train_labels,
                      name_maps[layer] + ' Predictor, test data',
-                     base / ('cm_' + layer + '_test.png'))
+                     base / (layer + '_test.png'))
 
-# show()
+show()

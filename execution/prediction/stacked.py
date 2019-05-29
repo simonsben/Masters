@@ -20,6 +20,11 @@ check_writable(model_path)
 # Import data
 train_set = open_w_pandas(train_path, index_col=0)
 test_set = open_w_pandas(test_path, index_col=0)
+
+if 'stacked' in train_set:
+    train_set.drop(columns='stacked', inplace=True)
+    test_set.drop(columns='stacked', inplace=True)
+
 labels = open_w_pandas(dataset_path)['is_abusive'].to_numpy().astype(bool)
 train_labels, test_labels = labels[:len(train_set)], labels[len(train_set):]
 print('Data loaded, making predictions')
@@ -30,8 +35,8 @@ model.load_model(str(model_path))
 model._le = LabelEncoder().fit([0, 1])
 
 # Make predictions
-train_set['stacked'] = model.predict(train_set.to_numpy())
-test_set['stacked'] = model.predict(test_set.to_numpy())
+train_set['stacked'] = model.predict(train_set.values)
+test_set['stacked'] = model.predict(test_set.values)
 
 # Save predictions
 train_set.to_csv(train_path)

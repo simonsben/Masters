@@ -17,9 +17,15 @@ check_existence(test_path)
 check_writable(model_path)
 
 # Import data
-train_set = open_w_pandas(train_path).to_numpy()
-test_set = open_w_pandas(test_path).to_numpy()
-labels = open_w_pandas(dataset_path)['is_abusive'].to_numpy().astype(bool)
+train_set = open_w_pandas(train_path, index_col=0)
+test_set = open_w_pandas(test_path, index_col=0)
+
+if 'stacked' in train_set:
+    train_set.drop(columns='stacked', inplace=True)
+    test_set.drop(columns='stacked', inplace=True)
+train_set, test_set = train_set.values, test_set.values
+
+labels = open_w_pandas(dataset_path)['is_abusive'].values.astype(bool)
 train_labels, test_labels = labels[:len(train_set)], labels[len(train_set):]
 print('Data loaded')
 

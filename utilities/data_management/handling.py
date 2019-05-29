@@ -2,6 +2,9 @@ from pandas import DataFrame, SparseDataFrame, Series
 from scipy.special import digamma
 from scipy.sparse import csr_matrix
 from numpy import float64, array
+from xgboost import XGBClassifier
+from sklearn.preprocessing import LabelEncoder
+
 
 
 def parse_data(data, data_formats):
@@ -104,3 +107,12 @@ def prepare_doc_matrix(document_matrix, is_abusive):
     normalize_doc_term([sparse_train, sparse_test])
 
     return (sparse_train, train_label), (sparse_test, test_label)
+
+
+def load_xgboost_model(filename):
+    """ Loads and initializes an XGBoost model """
+    model = XGBClassifier(objective='binary:logistic', n_estimators=600, silent=True)
+    model.load_model(str(filename))
+    model._le = LabelEncoder().fit([0, 1])
+
+    return model
