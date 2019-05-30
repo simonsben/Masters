@@ -47,4 +47,4 @@ for layer in layer_names:
     feature_significance(feature_gains, name_maps[layer] + ' Gains', is_weight=False, x_log=True,
                          filename=figure_dir / (layer + '_gain.png'))
 
-show()
+# show()
