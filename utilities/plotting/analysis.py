@@ -1,6 +1,8 @@
 from matplotlib.pyplot import cm, subplots, title, savefig, tight_layout
 from sklearn.metrics import confusion_matrix as calc_cm
-from numpy import newaxis, sum, around, arange, array, linspace
+from numpy import newaxis, sum, around, arange, array, linspace, abs
+from shap import TreeExplainer, summary_plot
+from utilities.data_management import match_feature_weights
 
 
 classes = ['neutral', 'abusive']
@@ -44,13 +46,13 @@ def feature_significance(feature_weights, figure_title, filename=None, max_featu
     x_ticks = around(linspace(0, max(feature_weights[:, 1].astype(float)), 10, dtype=float), decimals=1)
 
     fig, ax = subplots()
-    im = ax.barh(y_ticks, feature_weights[:, 1].astype(float), edgecolor='k')
+    ax.barh(y_ticks, feature_weights[:, 1].astype(float), edgecolor='k')
 
     ax.set_xticks(x_ticks)
     ax.set_yticks(y_ticks)
     ax.set_yticklabels(feature_weights[:, 0])
     ax.set_xticklabels(x_ticks)
-    ax.set_ylabel('Layer')
+    ax.set_ylabel('Feature')
     ax.set_xlabel('Weight' if is_weight else 'Gain')
 
     if x_log:
@@ -61,3 +63,18 @@ def feature_significance(feature_weights, figure_title, filename=None, max_featu
 
     if filename is not None:
         savefig(filename)
+
+
+def shap_feature_significance(model, dataset, figure_title, features=None, filename=None):
+    """ Generates a bar plot of the SHAP feature weights """
+    shap_values = abs(
+        TreeExplainer(model).shap_values(dataset)
+    ).mean(0)
+
+    features = dataset.columns.values if features is None else features
+    feature_shaps = sorted(
+        [(features[ind], shap_value) for ind, shap_value in enumerate(shap_values)],
+        key=lambda shap: shap[1],
+        reverse=True
+    )
+    feature_significance(feature_shaps, figure_title, filename, x_log=True)

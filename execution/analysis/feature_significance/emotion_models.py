@@ -2,21 +2,25 @@ from utilities.data_management import move_to_root, open_w_pandas, make_path, ch
     get_path_maps, load_xgboost_model, match_feature_weights
 from utilities.analysis import get_feature_values
 from matplotlib.pyplot import show
-from utilities.plotting import feature_significance
+from utilities.plotting import feature_significance, shap_feature_significance
 from os import mkdir
 from numpy import logical_not, isnan
+from scipy.sparse import load_npz
 
 move_to_root(4)
 
 # Define file paths
 dataset_name = '24k-abusive-tweets'
 model_dir = make_path('data/models/') / dataset_name
-figure_dir = make_path('figures/') / dataset_name / 'emotion' / 'feature_significance/'
+figure_base = make_path('figures/') / dataset_name / 'emotion'
+fig_dir = figure_base / 'feature_significance/'
+shap_dir = figure_base / 'shap'
 lexicon_path = make_path('data/prepared_lexicon/nrc_emotion_lexicon.csv')
+dataset_dir = make_path('data/processed_data/') / dataset_name / 'emotion'
 
 # Check for files
-if not figure_dir.exists():
-    mkdir(figure_dir)
+if not fig_dir.exists(): mkdir(fig_dir)
+if not shap_dir.exists(): mkdir(shap_dir)
 
 # Import data
 maps = get_path_maps()
@@ -30,10 +34,12 @@ features = lexicon.index.values
 # Get model and feature values
 for layer in lexicon.columns:
     model_path = model_dir / dir_maps[layer] / (layer + '.bin')
+    dataset_path = dataset_dir / (layer + '_test.npz')
 
     check_existence(model_path)
 
     layer_features = features[logical_not(isnan(lexicon[layer].values))]
+    dataset = load_npz(dataset_path)
 
     model = load_xgboost_model(model_path)
     weights = get_feature_values(model)
@@ -44,8 +50,10 @@ for layer in lexicon.columns:
 
     # Stacked model
     feature_significance(feature_weights, name_maps[layer] + ' Weights',
-                         filename=figure_dir / (layer + '_weight.png'))
+                         filename=fig_dir / (layer + '_weight.png'))
     feature_significance(feature_gains, name_maps[layer] + ' Gains', is_weight=False, x_log=True,
-                         filename=figure_dir / (layer + '_gain.png'))
+                         filename=fig_dir / (layer + '_gain.png'))
+    shap_feature_significance(model, dataset, name_maps[layer] + ' SHAP Weights', features=layer_features,
+                              filename=shap_dir / (layer + '.png'))
 
 # show()
