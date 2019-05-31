@@ -36,6 +36,7 @@ name_maps = maps['layer_names']
 model = load_xgboost_model(model_path)
 weights = get_feature_values(model)
 gains = get_feature_values(model, 'gain')
+t_gains = get_feature_values(model, 'total_gain')
 
 if len(weights) != len(gains) or len(gains) != len(layers):
     raise ValueError('Number of layers and feature usage metrics are not equal.')
@@ -43,8 +44,11 @@ if len(weights) != len(gains) or len(gains) != len(layers):
 # Stacked model
 layer_weights = match_feature_weights(layers, weights)
 layer_gains = match_feature_weights(layers, gains)
+layer_t_gains = match_feature_weights(layers, t_gains)
+
 feature_significance(layer_weights, 'Weights', filename=feat_dir / 'stacked_weight.png')
 feature_significance(layer_gains, 'Gains', is_weight=False, x_log=True, filename=feat_dir / 'stacked_gain.png')
+feature_significance(layer_t_gains, 'Total Gains', is_weight=False, x_log=True, filename=feat_dir / 'stacked_t_gain.png')
 
 shap_feature_significance(model, dataset, 'Stacked Predictor SHAP Weights',
                           filename=shap_dir / 'stacked.png')

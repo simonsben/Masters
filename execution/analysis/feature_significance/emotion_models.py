@@ -44,15 +44,19 @@ for layer in lexicon.columns:
     model = load_xgboost_model(model_path)
     weights = get_feature_values(model)
     gains = get_feature_values(model, 'gain')
+    t_gains = get_feature_values(model, 'total_gain')
 
     feature_weights = match_feature_weights(layer_features, weights)
     feature_gains = match_feature_weights(layer_features, gains)
+    feature_t_gains = match_feature_weights(layer_features, t_gains)
 
     # Stacked model
     feature_significance(feature_weights, name_maps[layer] + ' Weights',
                          filename=fig_dir / (layer + '_weight.png'))
     feature_significance(feature_gains, name_maps[layer] + ' Gains', is_weight=False, x_log=True,
                          filename=fig_dir / (layer + '_gain.png'))
+    feature_significance(feature_t_gains, name_maps[layer] + ' Total Gains', is_weight=False, x_log=True,
+                         filename=fig_dir / (layer + '_t_gain.png'))
     shap_feature_significance(model, dataset, name_maps[layer] + ' SHAP Weights', features=layer_features,
                               filename=shap_dir / (layer + '.png'))
 
