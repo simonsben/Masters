@@ -5,7 +5,8 @@
     "fast_text":    "derived",
     "othering":     "derived",
     "stacked":      "derived",
-    "adverbs":       "derived",
+    "adverbs":      "derived",
+    "doc_stats":    "derived",
 
     "anger":        "emotion",
     "anticipation": "emotion",
@@ -27,7 +28,8 @@
     "fast_text":    "BiLSTM",
     "othering":     "Othering",
     "stacked":      "Stacked",
-    "adverbs":       "Adverb unigram",
+    "adverbs":      "Adverb unigram",
+    "doc_stats":    "Document Statistics",
 
     "anger":        "Anger",
     "anticipation": "Anticipation",

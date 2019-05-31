@@ -40,7 +40,7 @@ print('Data loaded.')
 # Train models
 for layer in sub_layers:
     model_name = layer['model_name']
-    model_filename = model_dir / (model_name + '.pkl')
+    model_filename = model_dir / (model_name + '.bin')
     if model_filename.exists():
         print('Skipping', model_name)
         continue

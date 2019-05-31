@@ -10,8 +10,8 @@ move_to_root()
 filename = make_path('data/prepared_data/24k-abusive-tweets.csv')
 fast_text_filename = make_path('data/lexicons/fast_text/fast_text.bin')
 dataset_name = filename.stem
-vectorized_path = make_path('data/processed_data/' + dataset_name + '/derived/fast_text.pkl')
-model_filename = make_path('data/models/derived/fast_text.h5')
+vectorized_path = make_path('data/processed_data/') / dataset_name / 'derived/' / 'fast_text.pkl'
+model_filename = make_path('data/models/') / dataset_name / 'derived/' / 'fast_text.h5'
 
 check_existence(filename)
 check_existence(fast_text_filename)
@@ -20,47 +20,47 @@ check_writable(model_filename)
 
 if model_filename.exists():
     print('Skipping deep model')
-    exit(0)
-
-dataset = open_w_pandas(filename)
-print('Dataset loaded\n', dataset)
-
-if not vectorized_path.exists():
-    print('Vectorizing data')
-
-    fast_text_model = load_model(str(fast_text_filename))
-    print('Model loaded\n', fast_text_model)
-
-    vectorize_data(dataset, fast_text_model)
-    fast_text_model = None
-    print(dataset['vectorized_content'])
-
-    dataset['vectorized_content'].to_pickle(vectorized_path)
-    print('Saved vectorized data.')
+    
 else:
-    print('Loading vectorized data')
-    dataset['vectorized_content'] = read_pickle(vectorized_path)
+    dataset = open_w_pandas(filename)
+    print('Dataset loaded\n', dataset)
 
-print('Vectors ready\n', dataset['vectorized_content'])
+    if not vectorized_path.exists():
+        print('Vectorizing data')
+
+        fast_text_model = load_model(str(fast_text_filename))
+        print('Model loaded\n', fast_text_model)
+
+        vectorize_data(dataset, fast_text_model)
+        fast_text_model = None
+        print(dataset['vectorized_content'])
+
+        dataset['vectorized_content'].to_pickle(vectorized_path)
+        print('Saved vectorized data.')
+    else:
+        print('Loading vectorized data')
+        dataset['vectorized_content'] = read_pickle(vectorized_path)
+
+    print('Vectors ready\n', dataset['vectorized_content'])
 
 
-# Split training and test sets
-(train, test), (train_label, test_label) \
-    = split_sets(dataset['vectorized_content'], lambda doc: doc, labels=dataset['is_abusive'])
-train, test, train_label, test_label = to_numpy_array([train, test, train_label, test_label])
-print(train.shape, train_label.shape)
+    # Split training and test sets
+    (train, test), (train_label, test_label) \
+        = split_sets(dataset['vectorized_content'], lambda doc: doc, labels=dataset['is_abusive'])
+    train, test, train_label, test_label = to_numpy_array([train, test, train_label, test_label])
+    print(train.shape, train_label.shape)
 
 
-# Generate and train model
-deep_model = generate_deep_model(True)
-history = train_deep_model(deep_model, train, train_label)
+    # Generate and train model
+    deep_model = generate_deep_model(True)
+    history = train_deep_model(deep_model, train, train_label)
 
-print('Deep model trained.')
+    print('Deep model trained.')
 
-deep_model.save(str(model_filename))
-print('Deep model saved.')
+    deep_model.save(str(model_filename))
+    print('Deep model saved.')
 
-print(history['acc'])
-print(history['val_acc'])
-print(history['loss'])
-print(history['val_loss'])
+    print(history['acc'])
+    print(history['val_acc'])
+    print(history['loss'])
+    print(history['val_loss'])

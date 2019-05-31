@@ -46,4 +46,4 @@ for layer in layers:
                      name_maps[layer] + ' Predictor, test data',
                      base / (layer + '_test.png'))
 
-show()
+# show()
