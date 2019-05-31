@@ -1,5 +1,5 @@
 from os import listdir, mkdir
-from utilities.data_management import move_to_root, make_path, check_readable, check_writable
+from utilities.data_management import move_to_root, make_path, check_readable, check_writable, load_execution_params
 from xgboost import XGBClassifier
 from sklearn.preprocessing import LabelEncoder
 from pandas import DataFrame
@@ -7,7 +7,7 @@ from scipy.sparse import load_npz
 
 move_to_root()
 
-dataset = '24k-abusive-tweets'
+dataset = load_execution_params()['dataset']
 model_base_path = make_path('data/models/') / dataset
 data_base_path = make_path('data/processed_data/') / dataset
 predictions_path = make_path('data/predictions') / dataset

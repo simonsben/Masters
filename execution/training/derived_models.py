@@ -1,5 +1,5 @@
 from utilities.data_management import open_w_pandas, make_path, check_existence, check_writable, save_prepared, \
-    move_to_root
+    move_to_root, load_execution_params
 from model.extraction import n_gram_matrix, othering_matrix, adverb_matrix, document_statistics
 from model.training import train_xg_boost
 from numpy import save, array
@@ -7,11 +7,11 @@ from numpy import save, array
 move_to_root()
 
 # Define source files
+dataset_name = load_execution_params()['dataset']
 data_base = make_path('data/prepared_data/')
-pre_filename = data_base / '24k-abusive-tweets.csv'
-partial_filename = data_base / '24k-abusive-tweets_partial.csv'
+pre_filename = data_base / (dataset_name + '.csv')
+partial_filename = data_base / (dataset_name + '_partial.csv')
 lexicon_path = make_path('data/prepared_lexicon/nrc_emotion_lexicon.csv')
-dataset_name = pre_filename.stem
 processed_base = make_path('data/processed_data/') / dataset_name / 'derived'
 model_dir = make_path('data/models/' + dataset_name + '/derived/')
 

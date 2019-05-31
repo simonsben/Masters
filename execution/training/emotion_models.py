@@ -1,14 +1,14 @@
 from utilities.data_management import open_w_pandas, make_path, check_existence, check_writable, move_to_root, \
-    save_prepared
+    save_prepared, load_execution_params
 from model.extraction import emotions
 from model.training import train_xg_boost
 
 move_to_root()  # Change PWD to root project directory
 
 # Define source files
-data_filename = make_path('data/prepared_data/24k-abusive-tweets.csv')
+dataset_name = load_execution_params()['dataset']
+data_filename = make_path('data/prepared_data/') / (dataset_name + '.csv')
 lexicon_path = make_path('data/prepared_lexicon/nrc_emotion_lexicon.csv')
-dataset_name = data_filename.stem
 processed_base = make_path('data/processed_data/') / dataset_name / 'emotion'
 model_dir = make_path('data/models/' + dataset_name + '/emotion/')
 

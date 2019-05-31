@@ -1,5 +1,5 @@
 from utilities.data_management import open_w_pandas, check_existence,  make_path, check_writable, split_sets, \
-    to_numpy_array, move_to_root
+    to_numpy_array, move_to_root, load_execution_params
 from model.extraction import vectorize_data
 from model.training import generate_deep_model, train_deep_model
 from fastText import load_model
@@ -7,9 +7,9 @@ from pandas import read_pickle
 
 move_to_root()
 
-filename = make_path('data/prepared_data/24k-abusive-tweets.csv')
+dataset_name = load_execution_params()['dataset']
+filename = make_path('data/prepared_data/') / (dataset_name + '.csv')
 fast_text_filename = make_path('data/lexicons/fast_text/fast_text.bin')
-dataset_name = filename.stem
 vectorized_path = make_path('data/processed_data/') / dataset_name / 'derived/' / 'fast_text.pkl'
 model_filename = make_path('data/models/') / dataset_name / 'derived/' / 'fast_text.h5'
 
@@ -20,7 +20,7 @@ check_writable(model_filename)
 
 if model_filename.exists():
     print('Skipping deep model')
-    
+
 else:
     dataset = open_w_pandas(filename)
     print('Dataset loaded\n', dataset)

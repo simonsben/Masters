@@ -11,7 +11,6 @@ move_to_root()
 
 exclusions = [
     'train.py',
-    # 'deep_models.py',
     'stacked.py'
 ]
 

@@ -1,4 +1,5 @@
-from utilities.data_management import move_to_root, open_w_pandas, make_path, check_existence, check_writable, get_path_maps
+from utilities.data_management import move_to_root, open_w_pandas, make_path, check_existence, check_writable, \
+    get_path_maps, load_execution_params
 from utilities.plotting import confusion_matrix
 from matplotlib.pyplot import show
 from os import mkdir
@@ -8,7 +9,7 @@ from os import mkdir
 move_to_root()
 
 # Define file paths
-dataset_name = '24k-abusive-tweets'
+dataset_name = load_execution_params()['dataset']
 dataset_path = make_path('data/prepared_data/') / (dataset_name + '.csv')
 predictions_dir = make_path('data/predictions') / dataset_name
 train_path, test_path = predictions_dir / 'train.csv', predictions_dir / 'test.csv'

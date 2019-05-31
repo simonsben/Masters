@@ -34,4 +34,14 @@ def get_path_maps():
     path = Path('data/accessors/constants.json')
     with path.open(mode='r') as fl:
         maps = load(fl)
+
     return maps
+
+
+def load_execution_params():
+    """ Loads the current execution parameters from the config file """
+    path = Path('config.json')
+    with path.open(mode='r') as fl:
+        params = load(fl)['execution']
+
+    return params

@@ -1,5 +1,5 @@
 from utilities.data_management import open_w_pandas, make_path, move_to_root, check_existence, split_sets, \
-    to_numpy_array
+    to_numpy_array, load_execution_params
 from keras.models import load_model
 from pandas import read_pickle
 from numpy import where
@@ -7,7 +7,7 @@ from numpy import where
 move_to_root()
 
 # Define dataset paths
-dataset = '24k-abusive-tweets'
+dataset = load_execution_params()['dataset']
 pred_dir = make_path('data/predictions') / dataset
 data_path = make_path('data/processed_data/') / dataset / 'derived/fast_text.pkl'
 model_path = make_path('data/models/') / dataset / 'derived/fast_text.h5'

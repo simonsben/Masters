@@ -1,14 +1,14 @@
 from utilities.data_management import open_w_pandas, make_path, check_existence, check_writable, move_to_root, \
-    save_prepared, match_feature_weights
+    save_prepared, load_execution_params
 from model.extraction import hurtlex, subjectivity
 from model.training import train_xg_boost
 
 move_to_root()
 
 # Define source files
-data_filename = make_path('data/prepared_data/24k-abusive-tweets.csv')
+dataset_name = load_execution_params()['dataset']
+data_filename = make_path('data/prepared_data/') / (dataset_name + '.csv')
 lexicon_base = make_path('data/prepared_lexicon/')
-dataset_name = data_filename.stem
 processed_base = make_path('data/processed_data/') / dataset_name / 'lexicon'
 sub_layers = [
     {

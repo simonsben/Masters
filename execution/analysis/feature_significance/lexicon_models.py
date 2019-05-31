@@ -1,4 +1,4 @@
-from utilities.data_management import move_to_root, open_w_pandas, make_path, check_existence, check_writable, \
+from utilities.data_management import move_to_root, open_w_pandas, make_path, check_existence, load_execution_params, \
     get_path_maps, load_xgboost_model, match_feature_weights
 from utilities.analysis import get_feature_values
 from matplotlib.pyplot import show
@@ -11,7 +11,7 @@ move_to_root(4)
 layer_names = ['hurtlex', 'subjectivity']
 
 # Define file paths
-dataset_name = '24k-abusive-tweets'
+dataset_name = load_execution_params()['dataset']
 model_dir = make_path('data/models/') / dataset_name
 figure_base = make_path('figures/') / dataset_name / 'lexicon'
 fig_dir = figure_base / 'feature_significance/'
