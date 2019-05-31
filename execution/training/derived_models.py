@@ -1,6 +1,6 @@
 from utilities.data_management import open_w_pandas, make_path, check_existence, check_writable, save_prepared, \
     move_to_root
-from model.extraction import n_gram_matrix, othering_matrix
+from model.extraction import n_gram_matrix, othering_matrix, adverb_matrix
 from model.training import train_xg_boost
 from numpy import save, array
 
@@ -28,20 +28,25 @@ partial_dataset = open_w_pandas(partial_filename)
 print('Data loaded.')
 
 sub_layers = [
+    # {
+    #     'model_name': 'othering',
+    #     'executor': othering_matrix,
+    #     'dataset': partial_dataset
+    # },
+    # {
+    #     'model_name': 'word_n_grams',
+    #     'executor': n_gram_matrix,
+    #     'dataset': pre_dataset
+    # },
+    # {
+    #     'model_name': 'char_n_grams',
+    #     'executor': lambda doc: n_gram_matrix(doc, 5000, False),
+    #     'dataset': pre_dataset
+    # },
     {
-        'model_name': 'othering',
-        'executor': othering_matrix,
+        'model_name': 'adverbs',
+        'executor': adverb_matrix,
         'dataset': partial_dataset
-    },
-    {
-        'model_name': 'word_n_grams',
-        'executor': n_gram_matrix,
-        'dataset': pre_dataset
-    },
-    {
-        'model_name': 'char_n_grams',
-        'executor': lambda doc: n_gram_matrix(doc, 5000, False),
-        'dataset': pre_dataset
     }
 ]
 

@@ -26,7 +26,7 @@ maps = get_path_maps()
 dir_maps = maps['layer_class']
 name_maps = maps['layer_names']
 
-layers = ['char_n_grams', 'othering', 'word_n_grams']
+layers = ['char_n_grams', 'othering', 'word_n_grams',  'adverbs']
 
 # Get model and feature values
 for layer in layers:

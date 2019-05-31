@@ -38,8 +38,6 @@ weights = get_feature_values(model)
 gains = get_feature_values(model, 'gain')
 t_gains = get_feature_values(model, 'total_gain')
 
-if len(weights) != len(gains) or len(gains) != len(layers):
-    raise ValueError('Number of layers and feature usage metrics are not equal.')
 
 # Stacked model
 layer_weights = match_feature_weights(layers, weights)
