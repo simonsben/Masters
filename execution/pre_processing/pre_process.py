@@ -3,8 +3,9 @@ from data.accessors import twitter_24k_accessor, twitter_24k_mutator, twitter_10
     kaggle_accessor, kaggle_mutator
 from utilities.pre_processing import count_upper, process_documents, original_length, generate_header, count_emojis, \
     pull_hyperlinks, split_hashtags, manage_special_characters, count_express, count_punctuation, count_digits, \
-    remove_spaces, run_partial_clean
-from utilities.data_management import make_path, check_existence, check_writable
+    remove_spaces, run_partial_clean, count_images
+from utilities.data_management import make_path, check_existence, check_writable, open_w_pandas
+from pandas import concat
 
 runs = [False, True]
 
@@ -38,6 +39,7 @@ for data_set in data_sets:
 # Defined pre-processing to be applied
 pre_processes = [
     original_length,
+    count_images,
     count_emojis,
     split_hashtags,
     pull_hyperlinks,
@@ -59,6 +61,7 @@ partial_processes = [
     remove_spaces
 ]
 
+# Pre process datasets
 for run_partial_process in runs:
     run_name = 'partial' if run_partial_process else 'pre'
     print('\nRunning', run_name, 'process.')
@@ -81,3 +84,15 @@ for run_partial_process in runs:
                           data_set['mutator'], modified_header, options)
 
         print(set_name, 'done.')
+
+
+# Generate mixed dataset
+print('\nGenerating mixed dataset')
+
+datasets = ['24k-abusive-tweets', '100k-abusive-tweets']
+
+variants = ['', '_partial']
+for variant in variants:
+    loaded_datasets = [open_w_pandas(dest_directory / (dataset + variant + '.csv')) for dataset in datasets]
+    mixed_dataset = concat(loaded_datasets).sample(frac=1).reset_index(drop=True)
+    mixed_dataset.to_csv(dest_directory / ('mixed_dataset' + variant + '.csv'))

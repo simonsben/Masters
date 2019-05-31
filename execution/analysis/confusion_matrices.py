@@ -23,8 +23,8 @@ check_existence(test_path)
 check_writable(figure_dir)
 
 # Import data
-train_set = open_w_pandas(train_path, index_col=0)
-test_set = open_w_pandas(test_path, index_col=0)
+train_set = open_w_pandas(train_path)
+test_set = open_w_pandas(test_path)
 labels = open_w_pandas(dataset_path)['is_abusive'].to_numpy().astype(bool)
 train_labels, test_labels = labels[:len(train_set)], labels[len(train_set):]
 print('Data loaded, generating figures')

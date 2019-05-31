@@ -69,7 +69,7 @@ def prepare_csv_writer(file, header):
     return csv_writer, fl
 
 
-def open_w_pandas(path, columns=None, index_col=False):
+def open_w_pandas(path, columns=None, index_col=0):
     """ Opens file as a Panda dataframe """
     path = make_path(path) if type(path) is str else path
     data_frame = read_csv(path, usecols=columns, index_col=index_col)

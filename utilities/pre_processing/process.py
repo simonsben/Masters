@@ -29,7 +29,7 @@ def process_documents(source_filename, dest_filename, processes, get_content, sa
     csv_writer, dest_fl = prepare_csv_writer(dest_filename, save_header)
 
     for ind, doc in enumerate(csv_reader):  # For each document in source file
-        values = []
+        values = [ind]
         content = get_content(doc)
 
         for process in processes:   # For each pre-processing step to be applied

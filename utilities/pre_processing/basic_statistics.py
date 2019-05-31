@@ -7,6 +7,7 @@ partial_clean = compile(r'[^a-zA-Z,.!?\'";:]+')
 digit_regex = compile(r'[0-9]+')
 space_regex = compile(r'\s+(?=\s)|^\s|'
                       r'(?<=\w)\s+(?=[^a-zA-Z0-9])')
+image_regex = compile(r'Image:\w[\w\s]+.\w{3}')
 
 
 def count_upper(document, get_header=False):
@@ -57,6 +58,14 @@ def count_digits(document, get_header=False):
     if get_header: return 'digit_count'
 
     document, count = subn(digit_regex, ' ', document)
+    return count, document
+
+
+def count_images(document, get_header=False):
+    """ Counts embedded images of the form "Image:image name.png" then removes them """
+    if get_header: return 'image_count'
+
+    document, count = subn(image_regex, ' image ', document)
     return count, document
 
 

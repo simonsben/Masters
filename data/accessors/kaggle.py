@@ -18,5 +18,5 @@ def kaggle_mutator(modified_content, values, document):
     """
     is_abusive = 1 if sum(array(document[3:]).astype(int)) > 0 else 0
 
-    modified_document = [is_abusive] + values + [modified_content]
+    modified_document = [values[0], is_abusive] + values[1:] + [modified_content]
     return modified_document

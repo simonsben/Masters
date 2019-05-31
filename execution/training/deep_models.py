@@ -29,7 +29,7 @@ else:
         print('Vectorizing data')
 
         fast_text_model = load_model(str(fast_text_filename))
-        print('Model loaded\n', fast_text_model)
+        print('Model loaded\n')
 
         vectorize_data(dataset, fast_text_model)
         fast_text_model = None
@@ -43,13 +43,11 @@ else:
 
     print('Vectors ready\n', dataset['vectorized_content'])
 
-
     # Split training and test sets
     (train, test), (train_label, test_label) \
         = split_sets(dataset['vectorized_content'], lambda doc: doc, labels=dataset['is_abusive'])
     train, test, train_label, test_label = to_numpy_array([train, test, train_label, test_label])
     print(train.shape, train_label.shape)
-
 
     # Generate and train model
     deep_model = generate_deep_model(True)

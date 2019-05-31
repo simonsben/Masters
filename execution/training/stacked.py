@@ -18,8 +18,8 @@ check_existence(test_path)
 check_writable(model_path)
 
 # Import data
-train_set = open_w_pandas(train_path, index_col=0)
-test_set = open_w_pandas(test_path, index_col=0)
+train_set = open_w_pandas(train_path)
+test_set = open_w_pandas(test_path)
 
 if 'stacked' in train_set:
     train_set.drop(columns='stacked', inplace=True)

@@ -25,5 +25,5 @@ def twitter_100k_mutator(modified_content, values, document):
     if is_abusive is None:
         raise ValueError(document[1], ' is not recognized')
 
-    modified_document = [is_abusive] + values + [modified_content]
+    modified_document = [values[0], is_abusive] + values[1:] + [modified_content]
     return modified_document

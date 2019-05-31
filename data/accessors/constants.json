@@ -49,5 +49,10 @@
     "hurtlex": "hurtlex.csv",
     "subjectivity": "mpqa_subjectivity_lexicon.csv",
     "emotion": "nrc_emotion_lexicon.csv"
-  }
+  },
+  "datasets": [
+    "24k-abusive-tweets",
+    "100k-abusive-tweets",
+    "kaggle"
+  ]
 }

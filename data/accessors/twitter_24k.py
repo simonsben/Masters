@@ -15,5 +15,5 @@ def twitter_24k_mutator(modified_content, values, document):
     """
     is_abusive = 0 if int(document[5]) == 2 else 1
 
-    modified_document = [is_abusive] + values + [modified_content]
+    modified_document = [values[0], is_abusive] + values[1:] + [modified_content]
     return modified_document
