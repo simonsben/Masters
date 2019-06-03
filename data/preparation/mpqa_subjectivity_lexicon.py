@@ -7,6 +7,7 @@ from re import compile, search
 filename = 'mpqa_subjectivity_lexicon'
 source_filename = '../lexicons/' + filename + '/' + filename + '.tff'
 dest_filename = '../prepared_lexicon/' + filename + '.csv'
+
 source_path = make_path(source_filename)
 dest_path = make_path(dest_filename)
 check_readable(source_path)
@@ -57,6 +58,7 @@ for ind, val in enumerate(duplicated):
 lexicon.drop_duplicates(subset='word', inplace=True)
 lexicon['score'] = where(lexicon['is_strong'], 2, 1)
 lexicon.drop(labels='is_strong', axis=1, inplace=True)
+lexicon.reset_index(drop=True, inplace=True)
 
 # Save lexicon
 lexicon.to_csv(dest_path)

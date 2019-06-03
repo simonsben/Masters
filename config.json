@@ -1,5 +1,5 @@
 {
   "execution": {
-    "dataset": "mixed_dataset"
+    "dataset": "24k-abusive-tweets_wo_bitch"
   }
 }

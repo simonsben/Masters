@@ -22,7 +22,7 @@ dataset = open_w_pandas(data_filename)
 print('Data loaded.')
 
 # Load lexicon and construct document-term matrix
-lexicon = open_w_pandas(lexicon_path)
+lexicon = open_w_pandas(lexicon_path, index_col=None)
 document_matrices, emotions = emotions(dataset, lexicon)
 
 

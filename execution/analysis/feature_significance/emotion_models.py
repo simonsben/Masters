@@ -10,7 +10,7 @@ from scipy.sparse import load_npz
 move_to_root(4)
 
 # Define file paths
-dataset_name = load_execution_params()
+dataset_name = load_execution_params()['dataset']
 model_dir = make_path('data/models/') / dataset_name
 figure_base = make_path('figures/') / dataset_name / 'emotion'
 fig_dir = figure_base / 'feature_significance/'

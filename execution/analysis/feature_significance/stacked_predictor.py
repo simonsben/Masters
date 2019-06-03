@@ -51,4 +51,4 @@ feature_significance(layer_t_gains, 'Total Gains', is_weight=False, x_log=True, 
 shap_feature_significance(model, dataset, 'Stacked Predictor SHAP Weights',
                           filename=shap_dir / 'stacked.png')
 
-show()
+# show()

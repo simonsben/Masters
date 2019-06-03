@@ -10,3 +10,4 @@ List of datasets used with links to source
 * [17k hate speach tweets dataset](https://github.com/ZeerakW/hatespeech)
 * [Sarcasm on Reddit](https://www.kaggle.com/danofer/sarcasm/downloads/sarcasm.zip/4)
 * [Headline sarcasm](https://www.kaggle.com/rmisra/news-headlines-dataset-for-sarcasm-detection)
+* [Twitter personality prediction](https://www.kaggle.com/c/twitter-personality-prediction/overview/evaluation)
