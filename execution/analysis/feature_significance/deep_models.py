@@ -1,6 +1,6 @@
 from shap import DeepExplainer
-from utilities.data_management import move_to_root, make_path, get_path_maps, load_execution_params, \
-    match_feature_weights, split_sets, open_w_pandas, to_numpy_array
+from utilities.data_management import move_to_root, make_path, load_execution_params, split_sets, open_w_pandas, \
+    to_numpy_array
 from utilities.plotting import feature_significance
 from os import mkdir
 from pandas import read_pickle
@@ -47,5 +47,4 @@ feature_weights = sorted(
 feature_significance(feature_weights, 'FastText BiLSTM SHAP Weights',
                      filename=shap_dir / 'deep_weight.png')
 
-show()
-
+# show()

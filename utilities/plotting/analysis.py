@@ -1,8 +1,7 @@
 from matplotlib.pyplot import cm, subplots, title, savefig, tight_layout
 from sklearn.metrics import confusion_matrix as calc_cm
 from numpy import newaxis, sum, around, arange, array, linspace, abs
-from shap import TreeExplainer, summary_plot
-from utilities.data_management import match_feature_weights
+from shap import TreeExplainer
 
 
 classes = ['neutral', 'abusive']
@@ -78,3 +77,20 @@ def shap_feature_significance(model, dataset, figure_title, features=None, filen
         reverse=True
     )
     feature_significance(feature_shaps, figure_title, filename, x_log=True)
+
+
+def bar_plot(values, features, fig_title, filename=None):
+    """ Generates a bar plot """
+    fig, ax = subplots()
+
+    ax.bar(list(range(len(values))), values)
+
+    ax.set_xticks(arange(len(features)))
+    ax.set_xticklabels(features, rotation='vertical')
+    title(fig_title)
+    tight_layout()
+
+    if filename is not None:
+        savefig(filename)
+
+    return ax
