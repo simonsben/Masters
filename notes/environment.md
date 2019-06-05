@@ -28,7 +28,20 @@ SpaCy will be installed by executing the `pip install` listed above, however the
 By default the one used in the code is the `en_core_web_sm` model (small english model).
 It can be installed by opening the shell/command prompt, entering the virtual environment, then running `python -m spacy download en_core_web_sm`.
 
+### TensorFlow
+
+For some systems the pre-built binaries will not work, so you cannot simply use `pip install tensorflow`.
+In these cases you can use [these](https://github.com/fo40225/tensorflow-windows-wheel) pre-built ones. 
+Times to use them would be if your processor doesn't support AVX or if it does support AVX2 (the pre-built ones would 
+just be faster in this case).
+
 ## Data
+
+### Datasets and lexicons
+
+Much of the data used is too large to be included in the repo, however the links to the sources are listed in the 
+[dataset README](../data/datasets/README.md). Follow the links provided there. Similarly, there are lexicons that are 
+not provided, they are listed in the [lexicon README](../data/lexicons/README.md).
 
 ### Preparing and pre-processing
 

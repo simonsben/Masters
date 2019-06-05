@@ -1,6 +1,7 @@
 from spacy import load
 from pandas import DataFrame, SparseDataFrame
 from sklearn.feature_extraction.text import CountVectorizer
+from time import time
 
 othering_pos = {
     'NOUN',
@@ -70,11 +71,14 @@ def othering_matrix(dataset, token_filter=None):
         raise TypeError('Dataset must be a (Pandas) DataFrame')
 
     # Initialize SpaCy processor and tag documents
+    start = time()
     processor = load('en_core_web_sm')
     tokenized = DataFrame(
-        dataset['document_content'].apply(lambda row: processor(row))
+        dataset['document_content'].astype(str).apply(lambda row: processor(row))
     )
+    print('Spacy parse complete in', time() - start)
 
+    start = time()
     if token_filter is not None:
         vectorizer = othering_vectorizer(tokenized, token_filter=token_filter)
     else:
@@ -83,6 +87,7 @@ def othering_matrix(dataset, token_filter=None):
     vector_data = vectorizer.transform(
         tokenized['split_content']
     )
+    print('Vectorized in', time() - start)
 
     document_matrix = SparseDataFrame(vector_data, columns=vectorizer.get_feature_names())
     return document_matrix

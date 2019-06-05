@@ -15,7 +15,7 @@ def make_path(filename):
 def check_existence(path):
     """ Checks whether the file exists """
     if not path.exists():   # Check if file exists
-        raise FileExistsError(path, ' does not exist')
+        raise FileExistsError(path, 'does not exist')
 
 
 def check_writable(path):
@@ -25,7 +25,7 @@ def check_writable(path):
     directory = path.parents[0] if is_file else path
 
     if not access(directory, W_OK):
-        raise PermissionError(directory, ' cannot be written to.')
+        raise PermissionError(directory, 'cannot be written to.')
 
 
 def check_readable(path):
@@ -34,7 +34,7 @@ def check_readable(path):
     directory = path.parents[0] if path.is_file() else path
 
     if not access(directory, R_OK):
-        raise PermissionError(directory, ' cannot be read from.')
+        raise PermissionError(directory, 'cannot be read from.')
 
 
 def rename_file(path, new_path):

@@ -66,8 +66,11 @@ for layer in sub_layers:
 
     # Train model
     document_matrix = layer['executor'](layer['dataset'])
+    print('Finished generating document matrix, training xg boost model')
+
     model, (train, test) \
         = train_xg_boost(document_matrix, layer['dataset']['is_abusive'], return_data=True)
+    print('Model trained.')
 
     # Save model
     model.save_model(str(model_filename))
