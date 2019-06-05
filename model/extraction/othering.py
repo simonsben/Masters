@@ -24,7 +24,7 @@ adverb_pos = {
     'ADV'
 }
 adverb_dep = {
-    'advmod'
+    # 'advmod'
 }
 
 
@@ -37,9 +37,9 @@ def filter_tokens(tokens, pos=othering_pos, dep=othering_dep):
     """ Filters tokens and returns a string with remaining terms """
     terms = []
     for token in tokens:
-        if token.pos_ in othering_pos:
+        if token.pos_ in pos:
             terms.append(token.text)
-        if token.dep_ in othering_dep:
+        if token.dep_ in dep:
             terms.append(gen_dep(token))
 
     return ' '.join(terms)

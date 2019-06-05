@@ -2,8 +2,8 @@
 from data.accessors import twitter_24k_accessor, twitter_24k_mutator
 from utilities.pre_processing import count_upper, process_documents, original_length, generate_header, count_emojis, \
     pull_hyperlinks, split_hashtags, manage_special_characters, count_express, count_punctuation, count_digits, \
-    remove_spaces, run_partial_clean, count_images, count_bitch
-from utilities.data_management import make_path, check_existence, check_writable, open_w_pandas
+    remove_spaces, run_partial_clean, count_images, count_bitch, count_handles
+from utilities.data_management import make_path, check_existence, check_writable
 
 runs = [False, True]
 
@@ -17,7 +17,7 @@ data_set = {
 base_directory = make_path('../../data/')
 source_directory = base_directory / 'datasets'
 dest_directory = base_directory / 'prepared_data'
-mod_name = '_wo_bitch'
+mod_name = '_wo_handle'
 
 check_writable(dest_directory)
 set_name = data_set['data_set']
@@ -28,6 +28,9 @@ pre_processes = [
     original_length,
     count_images,
     count_emojis,
+
+    count_handles,
+
     split_hashtags,
     pull_hyperlinks,
     manage_special_characters,
@@ -35,29 +38,26 @@ pre_processes = [
     count_express,
     count_punctuation,
     count_digits,
-
-    count_bitch,    # Alternate filter
-
     remove_spaces
 ]
 partial_processes = [
     original_length,
     count_emojis,
+
+    count_handles,
+
     split_hashtags,
     pull_hyperlinks,
     manage_special_characters,
     count_upper,
     run_partial_clean,
-
-    count_bitch,    # Alternate filter
-
     remove_spaces
 ]
 
 # Pre process datasets
 for run_partial_process in runs:
     run_name = 'partial' if run_partial_process else 'pre'
-    print('\nRunning', run_name, 'process.')
+    print('Running', run_name, 'process.')
 
     processes = partial_processes if run_partial_process else pre_processes
 

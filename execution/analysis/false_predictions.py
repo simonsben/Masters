@@ -67,4 +67,4 @@ bar_plot(fn_mean - pred_mean, pred_mean.index.values, 'False negative prediction
 bar_plot(fp_mean - pred_mean, pred_mean.index.values, 'False positive prediction residuals',
          filename=fig_dir / 'false_positive.png')
 
-show()
+# show()
