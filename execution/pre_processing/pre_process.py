@@ -1,9 +1,9 @@
 # Some code to give a quick look at some of the data
 from data.accessors import twitter_24k_accessor, twitter_24k_mutator, twitter_100k_accessor, twitter_100k_mutator, \
-    kaggle_accessor, kaggle_mutator
+    kaggle_accessor, kaggle_mutator, insults_accessor, insults_mutator
 from utilities.pre_processing import count_upper, process_documents, original_length, generate_header, count_emojis, \
     pull_hyperlinks, split_hashtags, manage_special_characters, count_express, count_punctuation, count_digits, \
-    remove_spaces, run_partial_clean, count_images
+    remove_spaces, run_partial_clean, count_images, count_handles
 from utilities.data_management import make_path, check_existence, check_writable, open_w_pandas
 from pandas import concat
 
@@ -25,6 +25,11 @@ data_sets = [
         'data_set': 'kaggle',
         'accessor': kaggle_accessor,
         'mutator': kaggle_mutator
+    },
+    {
+        'data_set': 'insults',
+        'accessor': insults_accessor,
+        'mutator': insults_mutator
     }
 ]
 base_directory = make_path('../../data/')
@@ -41,6 +46,7 @@ pre_processes = [
     original_length,
     count_images,
     count_emojis,
+    count_handles,
     split_hashtags,
     pull_hyperlinks,
     manage_special_characters,
@@ -53,6 +59,7 @@ pre_processes = [
 partial_processes = [
     original_length,
     count_emojis,
+    count_handles,
     split_hashtags,
     pull_hyperlinks,
     manage_special_characters,
@@ -89,7 +96,7 @@ for run_partial_process in runs:
 # Generate mixed dataset
 print('\nGenerating mixed dataset')
 
-datasets = ['24k-abusive-tweets', '100k-abusive-tweets']
+datasets = ['24k-abusive-tweets', 'kaggle', 'insults']
 
 variants = ['', '_partial']
 for variant in variants:
