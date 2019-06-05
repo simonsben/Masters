@@ -12,3 +12,8 @@ with (folder_base / 'confusion_matrices.py').open() as fl:
 print('Generating feature significance figures')
 with (folder_base / 'feature_significance' / 'feature_significance.py').open() as fl:
     exec(fl.read())
+
+# Generating false prediction summaries
+print('Generating false prediction summaries')
+with (folder_base / 'false_predictions.py').open() as fl:
+    exec(fl.read())
