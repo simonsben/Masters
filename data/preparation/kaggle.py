@@ -18,8 +18,10 @@ test_labels = None  # Make memory available for trash collection
 label_sums = sum(test_dataset.iloc[:, 2:], axis=1)
 test_dataset.drop(test_dataset.index[label_sums < 0], inplace=True)
 
+
 # Combine training and testing datasets
 dataset = concat([train_dataset, test_dataset])
+dataset = dataset.sample(n=95851).reset_index(drop=True)
 dataset['comment_text'] = remove_unicode_values(dataset['comment_text'])
 
 # Save all data
