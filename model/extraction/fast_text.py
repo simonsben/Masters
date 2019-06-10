@@ -5,7 +5,7 @@ def vectorize_content(content, model):
     """ Translates document content to word vectors """
     prepared_content = content.split(' ')
     vector_dim = model.get_dimension()
-    vector_content = zeros((50, vector_dim))
+    vector_content = zeros((len(prepared_content), vector_dim))
 
     for ind, token in enumerate(prepared_content):
         vector = model.get_word_vector(token)

@@ -5,7 +5,8 @@ from utilities.pre_processing import count_upper, process_documents, original_le
     pull_hyperlinks, split_hashtags, manage_special_characters, count_express, count_punctuation, count_digits, \
     remove_spaces, run_partial_clean, count_images, count_handles
 from utilities.data_management import make_path, check_existence, check_writable, open_w_pandas
-from pandas import concat
+from pandas import concat, isna
+from numpy import sum
 
 runs = [False, True]
 
@@ -87,6 +88,10 @@ for run_partial_process in runs:
         source_path = source_directory / set_name / (set_name + '.csv')
         dest_path = dest_directory / (set_name + mod + '.csv')
 
+        if dest_path.exists():
+            print('Skipping', set_name, mod)
+            continue
+
         process_documents(source_path, dest_path, processes, data_set['accessor'],
                           data_set['mutator'], modified_header, options)
 
@@ -102,4 +107,8 @@ variants = ['', '_partial']
 for variant in variants:
     loaded_datasets = [open_w_pandas(dest_directory / (dataset + variant + '.csv')) for dataset in datasets]
     mixed_dataset = concat(loaded_datasets).sample(frac=1).reset_index(drop=True)
+
+    bad_indexes = mixed_dataset.index[isna(mixed_dataset['document_content'])]
+    mixed_dataset.drop(bad_indexes, inplace=True)
+
     mixed_dataset.to_csv(dest_directory / ('mixed_dataset' + variant + '.csv'))
