@@ -22,6 +22,6 @@ def n_gram_matrix(dataset, num_features=10000, use_words=True):
 
     # Vectorize corpus and convert to a sparse dataframe
     vector_data = vectorizer.fit_transform(dataset['document_content'])
-    document_matrix = SparseDataFrame(vector_data, columns=vectorizer.get_feature_names())
+    # document_matrix = SparseDataFrame(vector_data, columns=vectorizer.get_feature_names())
 
-    return document_matrix
+    return vector_data, vectorizer.get_feature_names()

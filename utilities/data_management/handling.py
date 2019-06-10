@@ -1,10 +1,10 @@
 from pandas import DataFrame, SparseDataFrame, Series
 from scipy.special import digamma
 from scipy.sparse import csr_matrix
-from numpy import float64, array
+from numpy import float64, array, ndarray
 from xgboost import XGBClassifier
 from sklearn.preprocessing import LabelEncoder
-
+from time import time
 
 
 def parse_data(data, data_formats):
@@ -37,7 +37,7 @@ def split_sets(dataset, splitter, test_frac=.3, labels=None):
         raise TypeError('Dataset must be a (Pandas) DataFrame')
     if test_frac < 0 or test_frac > 1:
         raise ValueError('test_frac is out of range, must be in [0, 1]')
-    if labels is not None and type(labels) is not Series:
+    if labels is not None and type(labels) not in [Series, ndarray]:
         raise TypeError('Labels must be a (Pandas) Series')
 
     num_rows = len(dataset.index)
@@ -45,6 +45,14 @@ def split_sets(dataset, splitter, test_frac=.3, labels=None):
 
     if type(dataset) is Series:
         train_set, test_set = dataset.iloc[:pivot_index], dataset.iloc[pivot_index:]
+    elif type(dataset) is SparseDataFrame:
+        start = time()
+        dataset = csr_matrix(dataset.values)
+        print('convert in', time() - start)
+
+        start = time()
+        train_set, test_set = dataset[:pivot_index], dataset[:pivot_index]
+        print('slice in', time() - start)
     else:
         train_set, test_set = dataset.iloc[:pivot_index, :], dataset.iloc[pivot_index:, :]
 

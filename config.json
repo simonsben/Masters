@@ -1,5 +1,6 @@
 {
   "execution": {
-    "dataset": "mixed_dataset"
+    "dataset": "mixed_dataset",
+    "n_threads": 40
   }
 }

@@ -5,7 +5,8 @@ from model.training import train_xg_boost
 move_to_root()
 
 # Define file paths
-dataset_name = load_execution_params()['dataset']
+# dataset_name = load_execution_params()['dataset']
+dataset_name = '24k-abusive-tweets'
 dataset_path = make_path('data/prepared_data/') / (dataset_name + '.csv')
 predictions_dir = make_path('data/predictions') / dataset_name
 train_path, test_path = predictions_dir / 'train.csv', predictions_dir / 'test.csv'
@@ -31,7 +32,7 @@ train_labels, test_labels = labels[:len(train_set)], labels[len(train_set):]
 print('Data loaded')
 
 # Train predictor
-classifier = train_xg_boost(train_set, train_labels, prepared=True, quiet=False)
+classifier = train_xg_boost(train_set, train_labels, prepared=True, verb=1)
 print('Model trained')
 
 # Save model

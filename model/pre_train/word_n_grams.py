@@ -59,8 +59,12 @@ def generate_doc_matrix(documents):
     p_mat = content \
         .map_partitions(lambda documents: documents.apply(get_term_vector, vocabulary=voc)) \
         .map_partitions(list) \
-        .map_partitions(DataFrame)
+        .map_partitions(DataFrame) \
+        .persist()
 
     mat = p_mat.values \
         .map_blocks(COO) \
-        .persist()
+        .compute()
+
+    print(mat, 'in', time() - start)
+    return mat

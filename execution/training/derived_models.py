@@ -3,6 +3,7 @@ from utilities.data_management import open_w_pandas, make_path, check_existence,
 from model.extraction import n_gram_matrix, othering_matrix, adverb_matrix, document_statistics
 from model.training import train_xg_boost
 from numpy import save, array
+from time import time
 
 move_to_root()
 
@@ -65,15 +66,17 @@ for layer in sub_layers:
     print('Starting', model_name)
 
     # Train model
-    document_matrix = layer['executor'](layer['dataset'])
-    print('Finished generating document matrix, training xg boost model')
+    start = time()
+    document_matrix, features = layer['executor'](layer['dataset'])
+    print('Finished generating document matrix, training xg boost model', time() - start)
+    print(document_matrix.shape)
 
     model, (train, test) \
-        = train_xg_boost(document_matrix, layer['dataset']['is_abusive'], return_data=True)
+        = train_xg_boost(document_matrix, layer['dataset']['is_abusive'].to_numpy(), return_data=True, verb=1)
     print('Model trained.')
 
     # Save model
     model.save_model(str(model_filename))
     save_prepared(processed_base, model_name, train[0], test[0])
-    save(processed_base / (model_name + '_terms.npy'), array(document_matrix.columns))
+    save(processed_base / (model_name + '_terms.npy'), array(features))
     print(layer['model_name'], 'completed.')
