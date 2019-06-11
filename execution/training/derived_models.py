@@ -72,7 +72,7 @@ for layer in sub_layers:
     print(document_matrix.shape)
 
     model, (train, test) \
-        = train_xg_boost(document_matrix, layer['dataset']['is_abusive'].to_numpy(), return_data=True, verb=1)
+        = train_xg_boost(document_matrix, layer['dataset']['is_abusive'].to_numpy(), return_data=True)
     print('Model trained.')
 
     # Save model

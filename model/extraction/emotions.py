@@ -21,16 +21,16 @@ def emotions(dataset, lexicon):
     vectorizer = CountVectorizer(vocabulary=dictionary)
     vector_data = vectorizer.transform(dataset['document_content'])
 
-    document_matrix = SparseDataFrame(vector_data, columns=vectorizer.get_feature_names())
+    document_matrix = vector_data.tocsc()
 
     emotion_matrices, matrix_emotions,  = [], []
     for emotion in lexicon.columns[1:]:
-        emotion_dictionary = lexicon['word'][notnull(lexicon[emotion])]
+        emotion_dictionary = lexicon.index.values[notnull(lexicon[emotion])]
 
         emotion_matrices.append(
-            document_matrix[emotion_dictionary]
+            document_matrix[:, emotion_dictionary].tocsr()
         )
 
         matrix_emotions.append(emotion)
 
-    return emotion_matrices, matrix_emotions
+    return emotion_matrices, matrix_emotions, vectorizer.get_feature_names()

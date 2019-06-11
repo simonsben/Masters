@@ -1,0 +1,6 @@
+{
+  "execution": {
+    "dataset": "dataset_name",
+    "n_threads": 4
+  }
+}

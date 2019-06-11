@@ -1,7 +1,8 @@
 from spacy import load
-from pandas import DataFrame, SparseDataFrame
+from pandas import DataFrame
 from sklearn.feature_extraction.text import CountVectorizer
 from time import time
+from numpy import where
 
 othering_pos = {
     'NOUN',
@@ -60,7 +61,9 @@ def othering_vectorizer(tokenized, max_terms=10000, token_filter=filter_tokens):
     tokenized['multi_props'] = tokenized['document_content'].apply(count_pronouns)
     tokenized['split_content'] = tokenized['document_content'].apply(token_filter)
 
-    vectorizer.fit(tokenized['split_content'] * tokenized['multi_props'])
+    vectorizer.fit(
+        where(tokenized['multi_props'].values, tokenized['split_content'].values, '')
+    )
 
     return vectorizer
 
@@ -74,7 +77,7 @@ def othering_matrix(dataset, token_filter=None):
     start = time()
     processor = load('en_core_web_sm')
     tokenized = DataFrame(
-        dataset['document_content'].astype(str).apply(lambda row: processor(row))
+        dataset['document_content'].astype(str).apply(processor)
     )
     print('Spacy parse complete in', time() - start)
 
@@ -89,8 +92,7 @@ def othering_matrix(dataset, token_filter=None):
     )
     print('Vectorized in', time() - start)
 
-    document_matrix = SparseDataFrame(vector_data, columns=vectorizer.get_feature_names())
-    return document_matrix
+    return vector_data, vectorizer.get_feature_names()
 
 
 def adverb_matrix(dataset):

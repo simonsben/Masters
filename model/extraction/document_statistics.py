@@ -22,4 +22,4 @@ def document_statistics(dataset):
     stat_matrix['processed_length'] = dataset['document_content'].apply(len)
     stat_matrix['num_links'] = dataset['hyperlinks'].apply(hyper_len)
 
-    return SparseDataFrame(csr_matrix(stat_matrix), columns=stat_matrix.columns)
+    return csr_matrix(stat_matrix), stat_matrix.columns

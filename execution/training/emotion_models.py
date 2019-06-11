@@ -23,7 +23,7 @@ print('Data loaded.')
 
 # Load lexicon and construct document-term matrix
 lexicon = open_w_pandas(lexicon_path, index_col=None)
-document_matrices, emotions = emotions(dataset, lexicon)
+document_matrices, emotions, features = emotions(dataset, lexicon)
 
 
 for document_matrix, emotion in zip(document_matrices, emotions):
@@ -35,8 +35,7 @@ for document_matrix, emotion in zip(document_matrices, emotions):
     print('Starting ', emotion)
 
     # Train model
-    model, (train, test) \
-        = train_xg_boost(document_matrix, dataset['is_abusive'], return_data=True)
+    model, (train, test) = train_xg_boost(document_matrix, dataset['is_abusive'].to_numpy(), return_data=True)
 
     # Save model
     model.save_model(str(model_filename))
