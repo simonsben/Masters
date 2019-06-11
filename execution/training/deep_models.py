@@ -45,14 +45,13 @@ else:
 
     # Split training and test sets
     (train, test), (train_label, test_label) \
-        = split_sets(dataset['vectorized_content'], lambda doc: doc, labels=dataset['is_abusive'])
+        = split_sets(dataset['vectorized_content'], labels=dataset['is_abusive'])
     train, test, train_label, test_label = to_numpy_array([train, test, train_label, test_label])
     print(train.shape, train_label.shape)
 
     # Generate and train model
     deep_model = generate_deep_model(True)
     history = train_deep_model(deep_model, train, train_label)
-
     print('Deep model trained.')
 
     deep_model.save(str(model_filename))

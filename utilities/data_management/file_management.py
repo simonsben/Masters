@@ -2,6 +2,7 @@ from os import listdir, chdir
 from pathlib import Path
 from scipy.sparse import save_npz
 from json import load
+from numbers import Number
 
 prediction_filename = Path('data/processed_data/predictions.csv')
 target_file = '.gitignore'
@@ -43,5 +44,19 @@ def load_execution_params():
     path = Path('config.json')
     with path.open(mode='r') as fl:
         params = load(fl)['execution']
+
+    return params
+
+
+def load_dataset_params(dataset=None):
+    """ Loads the dataset specific parameters """
+    dataset = load_execution_params()['dataset'] if dataset is None else dataset
+
+    tmp = get_path_maps()['dataset_parameters']
+    params = {
+        param: (tmp[param]
+                if isinstance(tmp[param], Number)
+                else tmp[param][dataset])
+        for param in tmp}
 
     return params

@@ -1,6 +1,6 @@
 {
   "execution": {
-    "dataset": "mixed_dataset",
-    "n_threads": 40
+    "dataset": "24k-abusive-tweets",
+    "n_threads": 4
   }
 }

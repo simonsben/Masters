@@ -4,7 +4,6 @@ from scipy.sparse import csr_matrix
 from numpy import float64, array, ndarray
 from xgboost import XGBClassifier
 from sklearn.preprocessing import LabelEncoder
-from time import time
 
 
 def parse_data(data, data_formats):
@@ -23,46 +22,39 @@ def print_data(data):
         print(row)
 
 
-def split_sets(dataset, splitter, test_frac=.3, labels=None):
+def split_sets(dataset, test_frac=.3, labels=None):
     """
     Splits the dataset into a training and test set.
     :param dataset: Full dataset, dataframe
-    :param splitter: Accessor function, dataframe -> (feature_cols, label_cols)
     :param test_frac: Fraction of dataset to be used as the test set, (default 20%)
     :param labels: Data labels for dataset, (default None)
     :return: (train_feat, train_label), (test_feat, test_labels)
     """
 
-    if type(dataset) not in [DataFrame, SparseDataFrame, Series]:
+    if type(dataset) not in [DataFrame, SparseDataFrame, Series, csr_matrix]:
         raise TypeError('Dataset must be a (Pandas) DataFrame')
     if test_frac < 0 or test_frac > 1:
         raise ValueError('test_frac is out of range, must be in [0, 1]')
     if labels is not None and type(labels) not in [Series, ndarray]:
         raise TypeError('Labels must be a (Pandas) Series')
 
-    num_rows = len(dataset.index)
+    # Calculate pivot index
+    num_rows = len(dataset)
     pivot_index = int(num_rows * (1 - test_frac))
 
-    if type(dataset) is Series:
-        train_set, test_set = dataset.iloc[:pivot_index], dataset.iloc[pivot_index:]
-    elif type(dataset) is SparseDataFrame:
-        start = time()
-        dataset = csr_matrix(dataset.values)
-        print('convert in', time() - start)
+    # If pandas datatype expose iloc
+    if type(dataset) is not csr_matrix:
+        dataset = dataset.iloc
 
-        start = time()
-        train_set, test_set = dataset[:pivot_index], dataset[:pivot_index]
-        print('slice in', time() - start)
-    else:
-        train_set, test_set = dataset.iloc[:pivot_index, :], dataset.iloc[pivot_index:, :]
+    # Split sets
+    train_set, test_set = dataset[:pivot_index], dataset[pivot_index:]
 
+    # Split labels (if applicable)
     if labels is not None:
-        train_label = labels.iloc[:pivot_index]
-        test_label = labels.iloc[pivot_index:]
+        train_label, test_label = labels[:pivot_index],  labels[pivot_index:]
+        return (train_set, test_set), (train_label, test_label)
 
-        return (splitter(train_set), splitter(test_set)), (train_label, test_label)
-
-    return splitter(train_set), splitter(test_set)
+    return train_set, test_set
 
 
 # TODO double check function
