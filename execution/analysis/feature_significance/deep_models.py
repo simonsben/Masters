@@ -27,7 +27,7 @@ print('Model loaded')
 dataset = open_w_pandas(data_path)
 dataset['vectorized_content'] = read_pickle(vectorized_path)
 
-(train, test) = split_sets(dataset['vectorized_content'], lambda doc: doc)
+(train, test) = split_sets(dataset['vectorized_content'])
 [train_sample, test_sample] = to_numpy_array([train.sample(500), test.sample(100)])
 print('Loaded dataset')
 

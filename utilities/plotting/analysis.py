@@ -9,6 +9,9 @@ classes = ['neutral', 'abusive']
 
 def confusion_matrix(predicted, labels, plot_title, filename=None):
     # Calculate confusion matrix and normalize
+    if 'int' not in str(predicted.dtype):
+        predicted = around(predicted).astype(int)
+
     confusion = calc_cm(labels, predicted)
     confusion = around(confusion / sum(confusion, axis=1)[:, newaxis] * 100, decimals=1)
 

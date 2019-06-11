@@ -19,7 +19,7 @@ check_existence(dataset_path)
 check_existence(prediction_path)
 
 # Load data
-_, dataset = split_sets(open_w_pandas(dataset_path), lambda doc: doc)
+_, dataset = split_sets(open_w_pandas(dataset_path))
 predictions = open_w_pandas(prediction_path)
 
 # Check to make sure there are the same number of rows

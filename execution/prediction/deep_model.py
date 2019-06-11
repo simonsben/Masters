@@ -25,7 +25,7 @@ test_predictions = open_w_pandas(test_pred_path, index_col=0)
 
 # Open and split processed data
 processed_data = read_pickle(data_path)
-train_set, test_set = split_sets(processed_data, lambda docs: docs)
+train_set, test_set = split_sets(processed_data)
 train_set, test_set = to_numpy_array([train_set, test_set])
 print('Data loaded')
 

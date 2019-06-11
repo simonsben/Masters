@@ -40,8 +40,8 @@ for sub_dir in sub_dirs:
             train_set = load_npz(data_base / (file_path.stem + '_train.npz'))
             test_set = load_npz(data_base / (file_path.stem + '_test.npz'))
 
-            train_predictions[file_path.stem] = model.predict(train_set)
-            test_predictions[file_path.stem] = model.predict(test_set)
+            train_predictions[file_path.stem] = model.predict_proba(train_set)[:, 1]
+            test_predictions[file_path.stem] = model.predict_proba(test_set)[:, 1]
 
 print(test_predictions.describe())
 print(train_predictions.describe())

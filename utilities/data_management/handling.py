@@ -100,7 +100,7 @@ def prepare_doc_matrix(document_matrix, is_abusive):
     """ Takes a document term matrix, normalizes the rows, and converts it to a CSR matrix """
     # Split dataset into training and testing portions
     (train_matrix, test_matrix), (train_label, test_label) \
-        = split_sets(document_matrix, lambda docs: docs, labels=is_abusive)
+        = split_sets(document_matrix, labels=is_abusive)
 
     # Convert dataset to sparse matrices
     sparse_train, sparse_test = to_csr_matrix(train_matrix), to_csr_matrix(test_matrix)

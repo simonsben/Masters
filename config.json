@@ -1,6 +1,6 @@
 {
   "execution": {
-    "dataset": "24k-abusive-tweets",
+    "dataset": "24k-abusive-tweets_prob",
     "n_threads": 4
   }
 }
