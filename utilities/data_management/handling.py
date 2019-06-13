@@ -39,7 +39,7 @@ def split_sets(dataset, test_frac=.3, labels=None):
         raise TypeError('Labels must be a (Pandas) Series')
 
     # Calculate pivot index
-    num_rows = len(dataset)
+    num_rows = dataset.shape[0]
     pivot_index = int(num_rows * (1 - test_frac))
 
     # If pandas datatype expose iloc
