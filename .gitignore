@@ -9,5 +9,5 @@ figures/*
 .idea/
 venv/
 *__pycache__/
-test/
+misc/
 config.json
