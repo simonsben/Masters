@@ -99,14 +99,14 @@ def to_numpy_array(dataset):
 def prepare_doc_matrix(document_matrix, is_abusive):
     """ Takes a document term matrix, normalizes the rows, and converts it to a CSR matrix """
     # Split dataset into training and testing portions
-    (train_matrix, test_matrix), (train_label, test_label) \
-        = split_sets(document_matrix, labels=is_abusive)
+    (train_matrix, test_matrix), (train_label, test_label) = split_sets(document_matrix, labels=is_abusive)
 
     # Convert dataset to sparse matrices
-    sparse_train, sparse_test = to_csr_matrix(train_matrix), to_csr_matrix(test_matrix)
-    normalize_doc_term([sparse_train, sparse_test])
+    if type(train_matrix) is not csr_matrix:
+        train_matrix, test_matrix = to_csr_matrix(train_matrix), to_csr_matrix(test_matrix)
+    normalize_doc_term([train_matrix, test_matrix])
 
-    return (sparse_train, train_label), (sparse_test, test_label)
+    return (train_matrix, train_label), (test_matrix, test_label)
 
 
 def load_xgboost_model(filename):
