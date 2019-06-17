@@ -3,7 +3,6 @@ from utilities.data_management import open_w_pandas, check_existence,  make_path
 from model.extraction import vectorize_data
 from model.training import generate_deep_model, train_deep_model
 from fastText import load_model
-from pandas import read_pickle
 
 move_to_root()
 
@@ -23,25 +22,14 @@ if model_filename.exists():
 
 else:
     dataset = open_w_pandas(filename)
-    print('Dataset loaded\n', dataset)
+    print('Dataset loaded')
 
-    if not vectorized_path.exists():
-        print('Vectorizing data')
+    fast_text_model = load_model(str(fast_text_filename))
+    print('Model loaded')
 
-        fast_text_model = load_model(str(fast_text_filename))
-        print('Model loaded\n')
-
-        vectorize_data(dataset, fast_text_model)
-        fast_text_model = None
-        print(dataset['vectorized_content'])
-
-        dataset['vectorized_content'].to_pickle(vectorized_path)
-        print('Saved vectorized data.')
-    else:
-        print('Loading vectorized data')
-        dataset['vectorized_content'] = read_pickle(vectorized_path)
-
-    print('Vectors ready\n', dataset['vectorized_content'])
+    vectorize_data(dataset, fast_text_model)
+    fast_text_model = None
+    print('Vectors ready', dataset['vectorized_content'])
 
     # Split training and test sets
     (train, test), (train_label, test_label) \

@@ -6,7 +6,7 @@ from scipy.sparse import csr_matrix
 # TODO run optimization over hyper-parameters
 def train_xg_boost(document_matrix, is_abusive, return_data=False, prepared=False, verb=0):
     if not prepared and type(document_matrix) is not csr_matrix:
-        raise TypeError('Document matrix must be a (Pandas) SparseDataFrame.')
+        raise TypeError('Document matrix must be a CSR matrix.')
 
     # If not pre-split, split dataset into training and test data
     if not prepared:

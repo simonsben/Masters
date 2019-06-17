@@ -52,8 +52,7 @@ for layer in sub_layers:
     document_matrix = layer['executor'](dataset, lexicon)
 
     # Train model
-    model, (train, test) \
-        = train_xg_boost(document_matrix, dataset['is_abusive'], return_data=True)
+    model, (train, test) = train_xg_boost(document_matrix, dataset['is_abusive'], return_data=True)
 
     # Save model
     model.save_model(str(model_filename))

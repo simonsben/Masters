@@ -1,4 +1,4 @@
-from pandas import DataFrame, SparseDataFrame
+from pandas import DataFrame
 from sklearn.feature_extraction.text import CountVectorizer
 
 
@@ -13,6 +13,4 @@ def hurtlex(dataset, lexicon):
     vectorizer = CountVectorizer(vocabulary=dictionary)
     vector_data = vectorizer.transform(dataset['document_content'])
 
-    document_matrix = SparseDataFrame(vector_data, columns=vectorizer.get_feature_names())
-
-    return document_matrix
+    return vector_data

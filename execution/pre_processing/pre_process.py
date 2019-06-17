@@ -6,7 +6,7 @@ from utilities.pre_processing import count_upper, process_documents, original_le
     remove_spaces, run_partial_clean, count_images, count_handles
 from utilities.data_management import make_path, check_existence, check_writable, open_w_pandas
 from pandas import concat, isna
-from numpy import where
+from numpy import nan
 
 runs = [False, True]
 
@@ -109,8 +109,9 @@ for variant in variants:
     loaded_datasets = [open_w_pandas(dest_directory / (dataset + variant + '.csv')) for dataset in datasets]
     mixed_dataset = concat(loaded_datasets).sample(frac=1).reset_index(drop=True)
 
-    bad_indexes = isna(mixed_dataset['document_content'])
+    bad_indexes = mixed_dataset.index[isna(mixed_dataset['document_content'])]
     content = mixed_dataset['document_content']
-    content = where(bad_indexes, '', content)
+    for index in bad_indexes:
+        mixed_dataset.at[index, 'document_content'] = ' '
 
     mixed_dataset.to_csv(dest_directory / ('mixed_dataset' + variant + '.csv'))
