@@ -106,7 +106,7 @@ def prepare_doc_matrix(document_matrix, is_abusive):
         train_matrix, test_matrix = to_csr_matrix(train_matrix), to_csr_matrix(test_matrix)
     normalize_doc_term([train_matrix, test_matrix])
 
-    return (train_matrix, train_label), (test_matrix, test_label)
+    return (train_matrix, test_matrix), (train_label, test_label)
 
 
 def load_xgboost_model(filename):

@@ -6,7 +6,7 @@ from utilities.pre_processing import count_upper, process_documents, original_le
     remove_spaces, run_partial_clean, count_images, count_handles
 from utilities.data_management import make_path, check_existence, check_writable, open_w_pandas
 from pandas import concat, isna
-from numpy import sum
+from numpy import where
 
 runs = [False, True]
 
@@ -59,6 +59,7 @@ pre_processes = [
 ]
 partial_processes = [
     original_length,
+    count_images,
     count_emojis,
     count_handles,
     split_hashtags,
@@ -108,7 +109,8 @@ for variant in variants:
     loaded_datasets = [open_w_pandas(dest_directory / (dataset + variant + '.csv')) for dataset in datasets]
     mixed_dataset = concat(loaded_datasets).sample(frac=1).reset_index(drop=True)
 
-    bad_indexes = mixed_dataset.index[isna(mixed_dataset['document_content'])]
-    mixed_dataset.drop(bad_indexes, inplace=True)
+    bad_indexes = isna(mixed_dataset['document_content'])
+    content = mixed_dataset['document_content']
+    content = where(bad_indexes, '', content)
 
     mixed_dataset.to_csv(dest_directory / ('mixed_dataset' + variant + '.csv'))

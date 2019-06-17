@@ -1,6 +1,6 @@
 def insults_accessor(document):
     """ Accessor for the insults dataset """
-    return document[1]
+    return document[2]
 
 
 def insults_mutator(modified_content, values, document):
@@ -13,7 +13,7 @@ def insults_mutator(modified_content, values, document):
 
     :return: Modified document, list
     """
-    is_abusive = document[0]
+    is_abusive = document[1]
 
     modified_document = [values[0], is_abusive] + values[1:] + [modified_content]
     return modified_document
