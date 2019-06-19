@@ -1,6 +1,6 @@
 from matplotlib.pyplot import cm, subplots, title, savefig, tight_layout
 from sklearn.metrics import confusion_matrix as calc_cm
-from numpy import newaxis, sum, around, arange, array, linspace, abs
+from numpy import newaxis, sum, around, arange, array, linspace, abs, size
 from shap import TreeExplainer
 
 
@@ -8,6 +8,17 @@ classes = ['neutral', 'abusive']
 
 
 def confusion_matrix(predicted, labels, plot_title, filename=None):
+    """
+    Generates confusion matrix for a given set of predicted and labelled data
+    :param predicted: List of predictions
+    :param labels: Labels corresponding to predicted data
+    :param plot_title:
+    :param filename:
+    :return:
+    """
+    if size(predicted) != size(labels):
+        raise ValueError('Predicted values and labels must be of the same length')
+
     # Calculate confusion matrix and normalize
     if 'int' not in str(predicted.dtype):
         predicted = around(predicted).astype(int)
@@ -42,6 +53,15 @@ def confusion_matrix(predicted, labels, plot_title, filename=None):
 
 
 def feature_significance(feature_weights, figure_title, filename=None, max_features=20, is_weight=True, x_log=False):
+    """
+    Generates a bar plot of feature significance values
+    :param feature_weights: List of tuples in the form (feature name, feature weight)
+    :param figure_title: Figure title
+    :param filename: File path to save figure to, (default doesn't save)
+    :param max_features: Maximum number of features to include in plot (default 20)
+    :param is_weight: Whether value is considered a weight vs. gain, (default True)
+    :param x_log: Whether the values should be plotted on a log scale, (default False)
+    """
     feature_weights = array(feature_weights[:max_features])
 
     y_ticks = arange(len(feature_weights))
@@ -68,7 +88,14 @@ def feature_significance(feature_weights, figure_title, filename=None, max_featu
 
 
 def shap_feature_significance(model, dataset, figure_title, features=None, filename=None):
-    """ Generates a bar plot of the SHAP feature weights """
+    """
+    Generates a bar plot of the SHAP feature weights
+    :param model: Trained XGBoost model
+    :param dataset: Pandas dataframe with predicted values -> (documents x features)
+    :param figure_title: Figure title
+    :param features: Feature names, (default dataset column names)
+    :param filename: File path to save figure to, (default doesn't save)
+    """
     shap_values = abs(
         TreeExplainer(model).shap_values(dataset)
     ).mean(0)
@@ -82,11 +109,19 @@ def shap_feature_significance(model, dataset, figure_title, features=None, filen
     feature_significance(feature_shaps, figure_title, filename, x_log=True)
 
 
-def bar_plot(values, features, fig_title, filename=None):
-    """ Generates a bar plot """
+def bar_plot(values, features, fig_title, filename=None, horizontal=False):
+    """
+    Generates a bar plot
+    :param values: List of values
+    :param features: List of features
+    :param fig_title: Figure title
+    :param filename: File path to save figure to, (default doesn't save)
+    :return: (figure, axis) to allow further modification of plot
+    """
     fig, ax = subplots()
 
-    ax.bar(list(range(len(values))), values)
+    plot_type = ax.bar if not horizontal else ax.barh
+    plot_type(list(range(len(values))), values)
 
     ax.set_xticks(arange(len(features)))
     ax.set_xticklabels(features, rotation='vertical')
@@ -96,4 +131,4 @@ def bar_plot(values, features, fig_title, filename=None):
     if filename is not None:
         savefig(filename)
 
-    return ax
+    return fig, ax
