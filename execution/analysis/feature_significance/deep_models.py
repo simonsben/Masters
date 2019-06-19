@@ -4,8 +4,8 @@ from utilities.data_management import move_to_root, make_path, load_execution_pa
 from utilities.plotting import feature_significance
 from os import mkdir
 from pandas import read_pickle
-from keras.models import load_model
 from matplotlib.pyplot import show
+from model.training import load_attention
 
 move_to_root(4)
 
@@ -21,7 +21,7 @@ model_path = make_path('data/models/') / dataset_name / 'derived/' / 'fast_text.
 if not shap_dir.exists(): mkdir(shap_dir)
 
 # Get model and feature values
-model = load_model(str(model_path))
+model = load_attention(model_path)
 print('Model loaded')
 
 dataset = open_w_pandas(data_path)

@@ -22,4 +22,4 @@ def vectorize_content(content, model):
 def vectorize_data(dataset, model):
     """ Converts a dataset's content to word vectors """
 
-    dataset['vectorized_content'] = dataset['document_content'].apply(vectorize_content, model=model)
+    return dataset['document_content'].apply(vectorize_content, model=model)

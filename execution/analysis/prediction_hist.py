@@ -27,4 +27,4 @@ tight_layout()
 
 savefig(fig_path)
 
-show()
+# show()

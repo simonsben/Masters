@@ -1,7 +1,8 @@
-from keras.models import Sequential
-from keras.layers import Dense, LSTM, Bidirectional
+from keras.models import Sequential, load_model
+from keras.layers import Dense, LSTM, Bidirectional, Conv2D, MaxPooling2D, Flatten, Dropout, TimeDistributed
 from keras.callbacks import EarlyStopping
 from utilities.data_management import load_dataset_params
+from model.layers.attention import AttentionWithContext
 
 
 def generate_deep_model(summary=False):
@@ -24,6 +25,36 @@ def generate_deep_model(summary=False):
     deep_model.compile('adam', 'binary_crossentropy', metrics=['accuracy'])
 
     return deep_model
+
+
+def generate_attention_model(summary=False):
+    params = load_dataset_params()
+    max_tokens = params['max_document_tokens']
+    fast_text_dim = params['fast_text_dim']
+
+    deep_model = Sequential([
+        Bidirectional(
+            LSTM(100, dropout=.3, recurrent_dropout=.3, return_sequences=True),
+            input_shape=(max_tokens, fast_text_dim)
+        ),
+        TimeDistributed(
+            Dense(200)
+        ),
+        AttentionWithContext(),
+        Dense(1, activation='sigmoid')
+    ])
+
+    if summary:
+        print('Model\n', deep_model.summary())
+
+    deep_model.compile('adam', 'binary_crossentropy', metrics=['accuracy'])
+
+    return deep_model
+
+
+def load_attention(source_path):
+    path = str(source_path)
+    return load_model(path, custom_objects={'AttentionWithContext': AttentionWithContext})
 
 
 def train_deep_model(model, train, train_label):
