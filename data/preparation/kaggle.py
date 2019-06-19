@@ -21,7 +21,7 @@ test_dataset.drop(test_dataset.index[label_sums < 0], inplace=True)
 
 # Combine training and testing datasets
 dataset = concat([train_dataset, test_dataset])
-dataset = dataset.sample(n=95851).reset_index(drop=True)
+# dataset = dataset.sample(n=95851).reset_index(drop=True)
 dataset['comment_text'] = remove_unicode_values(dataset['comment_text'])
 
 # Save all data
