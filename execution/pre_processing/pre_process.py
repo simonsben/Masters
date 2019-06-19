@@ -3,7 +3,7 @@ from data.accessors import twitter_24k_accessor, twitter_24k_mutator, twitter_10
     kaggle_accessor, kaggle_mutator, insults_accessor, insults_mutator
 from utilities.pre_processing import count_upper, process_documents, original_length, generate_header, count_emojis, \
     pull_hyperlinks, split_hashtags, manage_special_characters, count_express, count_punctuation, count_digits, \
-    remove_spaces, run_partial_clean, count_images, count_handles
+    remove_spaces, run_partial_clean, count_images, count_handles, count_repeat_instances
 from utilities.data_management import make_path, check_existence, check_writable, open_w_pandas
 from pandas import concat, isna
 from numpy import nan
@@ -55,6 +55,7 @@ pre_processes = [
     count_express,
     count_punctuation,
     count_digits,
+    count_repeat_instances,
     remove_spaces
 ]
 partial_processes = [

@@ -8,6 +8,7 @@ digit_regex = compile(r'[0-9]+')
 space_regex = compile(r'\s+(?=\s)|^\s|'
                       r'(?<=\w)\s+(?=[^a-zA-Z0-9])')
 image_regex = compile(r'Image:\w[\w\s]+.\w{3}')
+repeat_regex = compile(r'(\w)\1{2,}')
 
 
 def count_upper(document, get_header=False):
@@ -66,6 +67,14 @@ def count_images(document, get_header=False):
     if get_header: return 'image_count'
 
     document, count = subn(image_regex, ' image ', document)
+    return count, document
+
+
+def count_repeat_instances(document, get_header=False):
+    """ Counts the number of repeated characters (greater than 3) and removes all but one """
+    if get_header: return 'repeat_count'
+
+    document, count = subn(repeat_regex, lambda pattern: pattern[0], document)
     return count, document
 
 
