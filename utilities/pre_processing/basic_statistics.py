@@ -74,7 +74,7 @@ def count_repeat_instances(document, get_header=False):
     """ Counts the number of repeated characters (greater than 3) and removes all but one """
     if get_header: return 'repeat_count'
 
-    document, count = subn(repeat_regex, lambda pattern: pattern[0], document)
+    document, count = subn(repeat_regex, lambda pattern: pattern[0][0], document)
     return count, document
 
 

@@ -1,7 +1,6 @@
 from utilities.data_management import load_execution_params, check_existence, move_to_root, make_path, open_w_pandas, \
     open_fast_embed, check_writable
 from fastText import load_model
-from numpy import zeros, column_stack
 from pandas import DataFrame
 
 move_to_root()
@@ -28,37 +27,34 @@ lex.drop(columns=301, inplace=True)
 print('Data imported')
 
 words = {}
-index = 0
-for word in lex[0]:
-    words[str(word)] = index
-    index += 1
+for ind, word in enumerate(lex[0]):
+    words[str(word)] = lex.iloc[ind, 1:].values
 
-oov_count = 0
-oov_index = index
+
+fast_model = load_model(str(mod_path))
+print('Model loaded, generating oov vectors')
+
+oov_embed = {}
 for doc in data['document_content']:
     for word in doc.split(' '):
         if str(word) not in words:
-            oov_count += 1
+            oov_embed[str(word)] = fast_model.get_word_vector(str(word))
 
-            words[str(word)] = index
-            index += 1
+print(round(len(oov_embed) / len(words) * 10000) / 100, '% of words out of lexicon')
 
-print(round(oov_count / index * 10000) / 100, '% of words out of lexicon')
 
 # Define data structure for embedding vectors
-embeddings = DataFrame(columns=(['words'] + list(range(0, 300))))
-embeddings['words'] = sorted(words.keys())
+full_set = {**words, **oov_embed}
+print('Merged dictionaries, generating list')
 
-fast_model = load_model(str(mod_path))
-print('Model loaded, completing embeddings')
+full_set = [[word] + list(full_set[word]) for word in full_set]
+print('Generated list, converting to dataframe')
 
-for ind, word in enumerate(embeddings['words'].values):
-    tmp = words[word]
-    if tmp < oov_index:
-        embeddings.iloc[ind, 1:] = lex.iloc[tmp, 1:].values
-    else:
-        embeddings.iloc[ind, 1:] = fast_model.get_word_vector(word)
+embeddings = DataFrame(full_set)
+embeddings.sort_values(0, inplace=True)
+embeddings.rename({0: 'words'}, inplace=True)
+print(embeddings)
 
-print('All embeddings generated, saving')
+print('Dataframe complete, saving')
 
 embeddings.to_csv(dest_path)

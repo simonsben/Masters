@@ -28,19 +28,21 @@ def generate_deep_model(summary=False):
 
 
 def generate_attention_model(summary=False):
+    """ Generate BiLSTM with additional Attention layer """
     params = load_dataset_params()
     max_tokens = params['max_document_tokens']
     fast_text_dim = params['fast_text_dim']
 
     deep_model = Sequential([
         Bidirectional(
-            LSTM(100, dropout=.3, recurrent_dropout=.3, return_sequences=True),
+            LSTM(150, dropout=.3, recurrent_dropout=.3, return_sequences=True),
             input_shape=(max_tokens, fast_text_dim)
         ),
         TimeDistributed(
             Dense(200)
         ),
         AttentionWithContext(),
+        Dense(100),
         Dense(1, activation='sigmoid')
     ])
 
