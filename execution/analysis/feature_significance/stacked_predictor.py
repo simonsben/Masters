@@ -24,7 +24,7 @@ if not feat_dir.exists(): mkdir(feat_dir)
 if not shap_dir.exists(): mkdir(shap_dir)
 
 # Import data
-dataset = open_w_pandas(test_path, index_col=0)
+dataset = open_w_pandas(test_path)
 dataset.drop(columns='stacked', inplace=True)
 layers = dataset.columns.values
 

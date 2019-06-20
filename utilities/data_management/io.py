@@ -1,5 +1,5 @@
 from os import access, W_OK, R_OK, rename
-from csv import reader, writer
+from csv import reader, writer, QUOTE_NONE
 from pathlib import Path
 from pandas import read_csv
 from re import search, compile
@@ -47,7 +47,7 @@ def rename_file(path, new_path):
 
 def prepare_csv_reader(file, delimiter=',', has_header=True):
     """ Creates a CSV reader for the specified file """
-    path = make_path(file) if type(file) is str else file
+    path = make_path(file)
     check_existence(path)
 
     fl = path.open(mode='r')
@@ -59,7 +59,7 @@ def prepare_csv_reader(file, delimiter=',', has_header=True):
 
 def prepare_csv_writer(file, header):
     """ Creates a CSV writer for the specified file """
-    path = make_path(file) if type(file) is str else file
+    path = make_path(file)
     check_writable(path)
 
     fl = path.open(mode='w', newline='')
@@ -71,7 +71,15 @@ def prepare_csv_writer(file, header):
 
 def open_w_pandas(path, columns=None, index_col=0):
     """ Opens file as a Panda dataframe """
-    path = make_path(path) if type(path) is str else path
+    path = make_path(path)
     data_frame = read_csv(path, usecols=columns, index_col=index_col)
 
     return data_frame
+
+
+def open_fast_embed(path):
+    """ Opens a FastText embedding file (.vec) """
+    path = make_path(path)
+    embedding = read_csv(path, quoting=QUOTE_NONE, delimiter=' ', skiprows=1, header=None)
+
+    return embedding

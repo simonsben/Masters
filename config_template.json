@@ -1,6 +1,7 @@
 {
   "execution": {
     "dataset": "dataset_name",
-    "n_threads": 4
+    "n_threads": 4,
+    "fast_text_model": "fast_text"
   }
 }
