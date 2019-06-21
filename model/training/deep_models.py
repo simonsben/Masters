@@ -35,11 +35,11 @@ def generate_attention_model(summary=False):
 
     deep_model = Sequential([
         Bidirectional(
-            LSTM(150, dropout=.3, recurrent_dropout=.3, return_sequences=True),
+            LSTM(int(fast_text_dim / 2), dropout=.3, recurrent_dropout=.3, return_sequences=True),
             input_shape=(max_tokens, fast_text_dim)
         ),
         TimeDistributed(
-            Dense(200)
+            Dense(int(fast_text_dim * 2 / 3))
         ),
         AttentionWithContext(),
         Dense(100),

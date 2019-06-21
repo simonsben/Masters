@@ -44,13 +44,13 @@ print(round(len(oov_embed) / len(words) * 10000) / 100, '% of words out of lexic
 
 
 # Define data structure for embedding vectors
-full_set = {**words, **oov_embed}
+embeddings = {**words, **oov_embed}
 print('Merged dictionaries, generating list')
 
-full_set = [[word] + list(full_set[word]) for word in full_set]
+embeddings = [[word] + list(embeddings[word]) for word in embeddings]
 print('Generated list, converting to dataframe')
 
-embeddings = DataFrame(full_set)
+embeddings = DataFrame(embeddings)
 embeddings.sort_values(0, inplace=True)
 embeddings.rename({0: 'words'}, inplace=True)
 print(embeddings)

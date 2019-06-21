@@ -8,7 +8,7 @@ digit_regex = compile(r'[0-9]+')
 space_regex = compile(r'\s+(?=\s)|^\s|'
                       r'(?<=\w)\s+(?=[^a-zA-Z0-9])')
 image_regex = compile(r'Image:\w[\w\s]+.\w{3}')
-repeat_regex = compile(r'(\w)\1{2,}')
+repeat_regex = compile(r'(\w{1,2})\1{2,}')
 
 
 def count_upper(document, get_header=False):
