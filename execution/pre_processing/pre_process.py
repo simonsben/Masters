@@ -1,4 +1,3 @@
-# Some code to give a quick look at some of the data
 from data.accessors import twitter_24k_accessor, twitter_24k_mutator, twitter_100k_accessor, twitter_100k_mutator, \
     kaggle_accessor, kaggle_mutator, insults_accessor, insults_mutator
 from utilities.pre_processing import count_upper, process_documents, original_length, generate_header, count_emojis, \

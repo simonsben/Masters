@@ -48,11 +48,19 @@ def filter_tokens(tokens, pos=othering_pos, dep=othering_dep):
     return ' '.join(terms)
 
 
-def filter_to_save(parsed_documents):
-    """ Filters tokens and returns a string with remaining terms """
+def generate_parse_index():
+    """ Generates a dict with tag-to-index mappings """
     inds = {
         tag: str(ind) for ind, tag in enumerate(list(othering_pos) + list(othering_dep))
     }
+
+    return inds
+
+
+def filter_to_save(parsed_documents):
+    """ Filters tokens and returns a string with remaining terms and tags """
+    inds = generate_parse_index()
+
     filtered_documents = []
     for tokens in parsed_documents:
         terms = []
