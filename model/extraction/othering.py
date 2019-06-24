@@ -16,6 +16,7 @@ othering_dep = {
     'nsubjpass',
     'dobj',
     'nmod',
+    'nounmod',
     'npmod',
     'advmod',
     'det',

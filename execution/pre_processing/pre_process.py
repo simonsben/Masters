@@ -102,7 +102,7 @@ for run_partial_process in runs:
 # Generate mixed dataset
 print('\nGenerating mixed dataset')
 
-datasets = ['24k-abusive-tweets', 'kaggle', 'insults']
+datasets = ['24k-abusive-tweets', 'kaggle', '100k-abusive-tweets']
 
 variants = ['', '_partial']
 for variant in variants:
