@@ -1,7 +1,7 @@
 from utilities.data_management import move_to_root, load_execution_params, make_path, check_existence, \
     get_path_maps, load_xgboost_model, match_feature_weights
 from utilities.analysis import get_feature_values
-from matplotlib.pyplot import show
+from matplotlib.pyplot import show, close
 from utilities.plotting import feature_significance, shap_feature_significance
 from os import mkdir
 from numpy import load
@@ -61,3 +61,4 @@ for layer in layers:
                               filename=shap_dir / (layer + '.png'))
 
 # show()
+close('all')

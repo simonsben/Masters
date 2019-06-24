@@ -3,6 +3,7 @@ from utilities.data_management import open_w_pandas, make_path, move_to_root, ch
 from fastText import load_model as load_fast
 from model.extraction import vectorize_data
 from model.training import load_attention
+from pandas import read_csv
 
 move_to_root()
 
@@ -28,12 +29,14 @@ train_predictions = open_w_pandas(train_pred_path)
 test_predictions = open_w_pandas(test_pred_path)
 
 if fast_predictions.exists():
-    predictions = open_w_pandas()
+    print('Using pre-run predictions')
+    predictions = read_csv(fast_predictions,  header=None)
     train_set, test_set = split_sets(predictions)
 
-    train_predictions['fast_text'] = train_set
-    test_predictions['fast_text'] = test_set
+    train_predictions['fast_text'] = train_set.values
+    test_predictions['fast_text'] = test_set.values
 else:
+    print('Computing predictions')
     check_existence(model_path)
 
     # Open and split processed data
@@ -57,7 +60,3 @@ else:
 # Save predictions
 train_predictions.to_csv(train_pred_path)
 test_predictions.to_csv(test_pred_path)
-
-# Print data summary
-print(train_predictions.describe())
-print(test_predictions.describe())
