@@ -1,7 +1,7 @@
 from utilities.data_management import make_path, open_w_pandas, move_to_root, load_execution_params, check_writable, \
     check_existence
 from pandas import concat
-from matplotlib.pyplot import show, tight_layout, savefig, subplots, gcf
+from matplotlib.pyplot import show, tight_layout, savefig, gcf, close
 
 move_to_root()
 
@@ -31,3 +31,4 @@ tight_layout()
 savefig(fig_path)
 
 # show()
+close('all')

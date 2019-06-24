@@ -43,8 +43,5 @@ for sub_dir in sub_dirs:
             train_predictions[file_path.stem] = model.predict_proba(train_set)[:, 1]
             test_predictions[file_path.stem] = model.predict_proba(test_set)[:, 1]
 
-print(test_predictions.describe())
-print(train_predictions.describe())
-
 test_predictions.to_csv(predictions_path / 'test.csv')
 train_predictions.to_csv(predictions_path / 'train.csv')

@@ -1,5 +1,5 @@
 from dask.dataframe import read_csv
-from matplotlib.pyplot import subplots, title, show, tight_layout, savefig
+from matplotlib.pyplot import subplots, title, show, tight_layout, savefig, close
 from utilities.data_management import move_to_root, make_path, check_existence, check_writable, load_execution_params
 from pandas import read_csv as p_read, DataFrame
 from csv import QUOTE_NONE
@@ -49,4 +49,5 @@ tight_layout()
 
 savefig(fig_path)
 
-show()
+# show()
+close('all')

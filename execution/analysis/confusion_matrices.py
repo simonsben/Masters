@@ -1,7 +1,7 @@
 from utilities.data_management import move_to_root, open_w_pandas, make_path, check_existence, check_writable, \
     get_path_maps, load_execution_params
 from utilities.plotting import confusion_matrix
-from matplotlib.pyplot import show
+from matplotlib.pyplot import show, close
 from os import mkdir
 
 # TODO check data and plotting, values seem wrong..
@@ -48,3 +48,4 @@ for layer in layers:
                      base / (layer + '_test.png'))
 
 # show()
+close('all')
