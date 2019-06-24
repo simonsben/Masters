@@ -47,6 +47,24 @@ def filter_tokens(tokens, pos=othering_pos, dep=othering_dep):
     return ' '.join(terms)
 
 
+def filter_to_save(parsed_documents):
+    """ Filters tokens and returns a string with remaining terms """
+    inds = {
+        tag: str(ind) for ind, tag in enumerate(list(othering_pos) + list(othering_dep))
+    }
+    filtered_documents = []
+    for tokens in parsed_documents:
+        terms = []
+        for token in tokens:
+            if token.pos_ in othering_pos:
+                terms.append(token.text + '%' + inds[token.pos_])
+            if token.dep_ in othering_dep:
+                terms.append(gen_dep(token) + '%' + inds[token.dep_])
+        filtered_documents.append(' '.join(terms))
+
+    return DataFrame(filtered_documents)
+
+
 def count_pronouns(tokens):
     """ Returns a bool indicating whether the document has at least two pronouns """
     num_propositions = sum(1 for token in tokens if token.pos_ == 'PRON')
