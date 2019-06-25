@@ -116,6 +116,7 @@ def bar_plot(values, features, fig_title, filename=None, horizontal=False):
     :param features: List of features
     :param fig_title: Figure title
     :param filename: File path to save figure to, (default doesn't save)
+    :param horizontal: Whether to use a horizontal bar plot, (default False)
     :return: (figure, axis) to allow further modification of plot
     """
     fig, ax = subplots()

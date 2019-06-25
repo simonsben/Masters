@@ -1,4 +1,4 @@
-from utilities.data_management import move_to_root, make_path, load_execution_params, open_w_pandas, load_dataset_params
+from utilities.data_management import move_to_root, make_path, load_execution_params, open_w_pandas, load_dataset_params, check_writable
 from os import mkdir
 from matplotlib.pyplot import show
 from model.training import load_attention
@@ -21,6 +21,7 @@ ft_path = make_path('data/lexicons/fast_text/') / (ft_name + '.bin')
 
 # Check for files
 if not shap_dir.exists(): mkdir(shap_dir)
+check_writable(shap_dir)
 
 # Get model and feature values
 model = load_attention(model_path)
@@ -29,17 +30,14 @@ print('Deep model loaded')
 ft_model = load_model(str(ft_path))
 print('FastText model loaded')
 
-dataset = open_w_pandas(data_path).sample(100)['document_content']
+dataset = open_w_pandas(data_path).sample(500)['document_content']
 print('Dataset loaded, starting')
 
 vectorized = zeros((len(dataset), max_tokens, ft_model.get_dimension()))
 for ind, document in enumerate(dataset):
     for t_ind, token in enumerate(document.split(' ')):
         vectorized[ind, t_ind] = ft_model.get_word_vector(token)
-# vectorized = [
-#     [ft_model.get_word_vector(word) for word in document.split(' ')]
-#     for document in dataset.values
-# ]
+
 print('Sample vectorized')
 
 path_gen = lambda ind: shap_dir / ('word_shap_' + str(ind) + '.png')

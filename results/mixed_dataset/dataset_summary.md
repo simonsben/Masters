@@ -5,7 +5,7 @@
 The following datasets were pre-processed, combined, and shuffled to generate the dataset:
 
 | Dataset          | Number of Documents | Number of Abusive Documents | Abusive Percentage |
-| -------          | ------------------- | --------------------------- | ------------------ |
+| ---------------- | ------------------- | --------------------------- | ------------------ |
 | Davidson et. al  |  24,783             | 20,620                      | 83.2%              |
 | Conversation AI  | 223,549             | 22,468                      | 10.0%              |
 | Impermium        |   6,594             |  1,742                      | 26.4%              |
