@@ -1,6 +1,7 @@
 from spacy import load
 from utilities.data_management import open_w_pandas, move_to_root, make_path, check_existence, check_writable, load_execution_params
 from model.extraction import filter_to_save
+from time import time
 
 move_to_root()
 
@@ -22,7 +23,9 @@ model = load('en_core_web_sm')
 print('Data and model loaded, starting')
 
 # Parse
+start = time()
 parsed = filter_to_save(data['document_content'].apply(model).values)
+print('Parsed in', time() - start)
 
 # Save parsed
 parsed.to_hdf(dest_path, key='df', complib='blosc')

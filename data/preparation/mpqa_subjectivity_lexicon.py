@@ -55,15 +55,20 @@ for ind, val in enumerate(duplicated):
     if val is True:
         lexicon.loc[ind, 'is_strong'] = get_strong(lexicon, ind)
 
-lexicon.drop_duplicates(subset='word', inplace=True)
-lexicon['score'] = where(lexicon['is_strong'], 2, 1)
-lexicon.drop(labels='is_strong', axis=1, inplace=True)
-
+# Clean pronouns
 pronouns = read_csv(pron_path, skiprows=1, names=['word', 'definition']).head(42)
 pronouns.drop(columns='definition', inplace=True)
 pronouns['score'] = [2] * len(pronouns)
 
+# Remove duplicate entries
+lexicon['score'] = where(lexicon['is_strong'], 2, 1)
+lexicon.drop(labels='is_strong', axis=1, inplace=True)
+
+# Add pronouns to lexicon
 lexicon = concat([lexicon, pronouns])
+lexicon.drop_duplicates(subset='word', inplace=True)
+
+# Sort by word and fix index
 lexicon.sort_values('word')
 lexicon.reset_index(drop=True, inplace=True)
 
