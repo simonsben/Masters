@@ -11,7 +11,8 @@ move_to_root()
 
 exclusions = [
     'train.py',
-    'stacked.py'
+    'stacked.py',
+    'calculate_thresholds.py'
 ]
 
 # Train sub-layers
@@ -32,6 +33,9 @@ for file in predict_files:
 
 # Train stacked
 with open(layer_base / 'stacked.py') as fl:
+    exec(fl.read())
+
+with open(layer_base / 'calculate_thresholds.py'):
     exec(fl.read())
 
 print('\nAll models trained.')
