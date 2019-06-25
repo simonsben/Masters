@@ -23,6 +23,21 @@ The following steps were taken to install it:
 3. Download the English pre-trained [model](https://fasttext.cc/docs/en/crawl-vectors.html) (`.bin`)
     1. **NOTE:** The simple `.txt` model can be used if you don't have any out-of-vocabulary (OOV) words
 
+#### Custom FastText Embeddings
+
+To generate custom FastText embeddings for a given corpus simply do the following:
+
+1. Follow the steps above to install FastText
+2. Pre-process the desired dataset
+3. Copy **only the document content** to the fast text directory (optional, can also reference the file)
+    * This can be done by running [`fast_text_prep.py`](../execution/pre_train/fast_text_prep.py) 
+    (NOTE: ensure the FastText installation location is the same, assumed to be in the same directory as this project)
+4. Run `./fasttext skipgram -input "data/$1" -output "data/$2" -dim 300 -thread NUM_THREADS` in the FastText directory
+    * `$1` is the source filename (ex. `mixed_dataset.csv`)
+    * `$2` is the destination name (ex. `embeddings`) (NOTE: no file extension)
+    * `-dim 300` will give you embeddings with a dimension of 300 (same as pre-trained), can be changed
+4. Move the `.bin` file into `data/models/` and change the FastText model in [`config.json`](../config.json)
+    
 ### SpaCy
 
 SpaCy will be installed by executing the `pip install` listed above, however the chosen model will still have to be downloaded.

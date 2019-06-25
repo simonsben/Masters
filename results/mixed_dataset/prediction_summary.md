@@ -2,10 +2,10 @@
 
 # Model accuracies
 
-| Layer               | Accuracy  |
-| ------------------- | :---------: |
+| Layer               | Accuracy   |
+| ------------------- | :---------:|
 | Stacked             | 94.9%      |
-|                     |           |
+|                     |            |
 | Adverbs             | 82.3%      |
 | Character n-grams   | 94.4%      |
 | Document Statistics | 86.6%      |

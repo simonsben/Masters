@@ -1,27 +1,28 @@
 from matplotlib.pyplot import cm, subplots, title, savefig, tight_layout
 from sklearn.metrics import confusion_matrix as calc_cm
-from numpy import newaxis, sum, around, arange, array, linspace, abs, size
+from numpy import newaxis, sum, around, arange, array, linspace, abs, size, where
 from shap import TreeExplainer
 
 
 classes = ['neutral', 'abusive']
 
 
-def confusion_matrix(predicted, labels, plot_title, filename=None):
+def confusion_matrix(predicted, labels, plot_title, filename=None, threshold=.5):
     """
     Generates confusion matrix for a given set of predicted and labelled data
     :param predicted: List of predictions
     :param labels: Labels corresponding to predicted data
-    :param plot_title:
-    :param filename:
+    :param plot_title: Title of figure
+    :param filename: Filename to save figure to, (default doesn't save)
+    :param threshold: Threshold value for prediction rounding, (default .5)
     :return:
     """
     if size(predicted) != size(labels):
         raise ValueError('Predicted values and labels must be of the same length')
 
-    # Calculate confusion matrix and normalize
+    # Calculate confusion matrix and round
     if 'int' not in str(predicted.dtype):
-        predicted = around(predicted).astype(int)
+        predicted = where(predicted > threshold, 1, 0).astype(int)
 
     confusion = calc_cm(labels, predicted)
     confusion = around(confusion / sum(confusion, axis=1)[:, newaxis] * 100, decimals=1)
@@ -116,6 +117,7 @@ def bar_plot(values, features, fig_title, filename=None, horizontal=False):
     :param features: List of features
     :param fig_title: Figure title
     :param filename: File path to save figure to, (default doesn't save)
+    :param horizontal: Whether to use a horizontal bar plot, (default False)
     :return: (figure, axis) to allow further modification of plot
     """
     fig, ax = subplots()
