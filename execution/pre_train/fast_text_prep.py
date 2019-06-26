@@ -1,8 +1,9 @@
-from utilities.data_management import open_w_pandas, move_to_root, make_path, check_writable, check_existence
+from utilities.data_management import open_w_pandas, move_to_root, make_path, check_writable, check_existence, \
+    load_execution_params
 
 move_to_root()
 
-data_name = 'mixed_dataset'
+data_name = load_execution_params()['dataset']
 data_path = make_path('data/prepared_data/') / (data_name + '.csv')
 dest_path = make_path('../fastText/data/') / (data_name + '.csv')
 

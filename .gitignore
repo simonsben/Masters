@@ -13,3 +13,4 @@ venv/
 test/
 config.json
 misc/
+data/prepared_data/*.7z

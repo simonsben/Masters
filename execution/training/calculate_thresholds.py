@@ -4,6 +4,8 @@ from numpy import linspace, argmin
 from utilities.analysis import calculate_loss
 from pandas import DataFrame
 
+# TODO re-write using sklearn.metrics.roc_curve then taking the max of the tpr and fpr
+
 move_to_root()
 
 # Load execution parameters
