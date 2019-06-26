@@ -1,8 +1,8 @@
 from dask.dataframe import read_csv
-from dask import delayed
 from csv import QUOTE_NONE
 from utilities.data_management import load_execution_params, make_path, move_to_root, check_existence
-from scipy.spatial.distance import cosine, euclidean
+from matplotlib.pyplot import show, subplots
+from utilities.analysis import get_nearest_neighbours
 
 # Define paths
 move_to_root(4)
@@ -11,32 +11,26 @@ embed_path = make_path('data/lexicons/fast_text/') / (embed_name + '.vec')
 check_existence(embed_path)
 
 # Define parameters
-target_word = 'bitch'
-max_cos_dist = .7
+target_word = 'dumbass'
+max_cos_dist = 1
 
 # Import data
 embeddings = read_csv(embed_path, quoting=QUOTE_NONE, delimiter=' ', skiprows=1, header=None)
-embeddings = embeddings.iloc[:, :-1]    # Ignore extra column
+embeddings = embeddings.iloc[:, :-1]  # Ignore extra column
 
-# Define slices
-words = embeddings[[0]].rename(columns={0: 'words'})
-vectors = embeddings.iloc[:, 1:]
+words, norm = get_nearest_neighbours(embeddings, target_word, silent=False)
+print('Nearest Neighbours\n', words)
+print(target_word, 'norm:', norm)
 
-# Normalize
-mean = vectors.mean(axis=0)
-std = vectors.std(axis=0)
-vectors = (vectors - mean) / std
+print(words.columns, type(words))
+metrics = ['euclidean_distances', 'cosine_distances']
+[axes] = words.hist(column=metrics, bins=40)
 
-target = vectors[words['words'] == target_word].compute()
+print(axes)
 
-# Calculate cosine distances
-calc_cosine = lambda vector: cosine(vector, target)
-words['cosine_distances'] = vectors.map_partitions(lambda df: df.apply(calc_cosine, axis=1), meta=float)
-vectors = vectors[words['cosine_distances'] < max_cos_dist]
+for ax, metric in zip(axes, metrics):
+    ax.set_xlabel(metric.replace('_', ' '))
+    ax.set_ylabel('Number of vectors')
+    ax.set_title('Histogram of distances from ' + target_word)
 
-# Calculate euclidean distances
-calc_dist = lambda vector: euclidean(vector, target)
-words['euclidean_distances'] = vectors.map_partitions(lambda df: df.apply(calc_dist, axis=1), meta=float)
-
-close = words.nsmallest(n=50, columns='euclidean_distances').compute()
-print(close)
+show()

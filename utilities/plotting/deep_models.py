@@ -1,8 +1,9 @@
 from shap import DeepExplainer
-from numpy import min, max, arange, sum
-from matplotlib.pyplot import subplots, savefig
+from numpy import min, max, arange, sum, linspace, meshgrid, pi, outer, sin, cos, arctan, ones_like
+from matplotlib.pyplot import subplots, savefig, figure
 from matplotlib import cm
 from numpy.random import randint
+from mpl_toolkits.mplot3d import Axes3D
 
 
 def word_importance(documents, embedded_docs, model=None, path_gen=None, num_samples=10):
@@ -34,3 +35,39 @@ def word_importance(documents, embedded_docs, model=None, path_gen=None, num_sam
 
         if path_gen is not None:
             savefig(path_gen(ind))
+
+
+def plot_embedding_rep(target_norm, sphere_radius, cone_angle):
+    """
+    Plots a 3D representation of a higher dimensional set of vectors
+    :param target_norm: Norm of the target vector
+    :param sphere_radius: Radius of the sphere around the target vector
+    :param cone_angle: Angle of the cone centered around the target vector
+    :return: axis
+    """
+    # Define cone
+    radius = linspace(0, 35)
+    polar_angles = linspace(0, 2 * pi)
+    radius_points, polar_points = meshgrid(radius, polar_angles)
+
+    # Convert to cartesian
+    Z = radius_points / arctan(cone_angle)
+    X, Y = radius_points * cos(polar_points), radius_points * sin(polar_points)
+
+    # Plot cone
+    fig = figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.plot_surface(X, Y, Z, alpha=.7)
+
+    # Define sphere
+    u = linspace(0, pi)
+
+    # Convert to cartesian
+    X = sphere_radius * outer(sin(u), sin(polar_angles))
+    Y = sphere_radius * outer(sin(u), cos(polar_angles))
+    Z = (sphere_radius * outer(cos(u), ones_like(polar_angles))) + target_norm
+
+    # Plot sphere
+    ax.plot_surface(X, Y, Z, color='g', alpha=.7)
+
+    return ax
