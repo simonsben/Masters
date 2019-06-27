@@ -108,29 +108,3 @@ def shap_feature_significance(model, dataset, figure_title, features=None, filen
         reverse=True
     )
     feature_significance(feature_shaps, figure_title, filename, x_log=True)
-
-
-def bar_plot(values, features, fig_title, filename=None, horizontal=False):
-    """
-    Generates a bar plot
-    :param values: List of values
-    :param features: List of features
-    :param fig_title: Figure title
-    :param filename: File path to save figure to, (default doesn't save)
-    :param horizontal: Whether to use a horizontal bar plot, (default False)
-    :return: (figure, axis) to allow further modification of plot
-    """
-    fig, ax = subplots()
-
-    plot_type = ax.bar if not horizontal else ax.barh
-    plot_type(list(range(len(values))), values)
-
-    ax.set_xticks(arange(len(features)))
-    ax.set_xticklabels(features, rotation='vertical')
-    title(fig_title)
-    tight_layout()
-
-    if filename is not None:
-        savefig(filename)
-
-    return fig, ax

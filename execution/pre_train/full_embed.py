@@ -31,36 +31,33 @@ lex.drop(columns=301, inplace=True)
 print('Data imported')
 
 # Initialize dict of vectors
-words = {}
+embeddings = {}
 for ind, word in enumerate(lex[0]):
-    words[str(word)] = lex.iloc[ind, 1:].values
+    embeddings[str(word)] = lex.iloc[ind, 1:].values
 
 # Load fast text model
 fast_model = load_model(str(mod_path))
 print('Model loaded, generating oov vectors')
 
 # Generate missing embeddings
-oov_embed = {}
+in_vocab_words = len(embeddings)
 for doc in data['document_content']:
     for word in doc.split(' '):
-        if str(word) not in words:
-            oov_embed[str(word)] = fast_model.get_word_vector(str(word))
+        if str(word) not in embeddings:
+            embeddings[str(word)] = fast_model.get_word_vector(str(word))
 
-print(round(len(oov_embed) / (len(words) + len(oov_embed)) * 10000) / 100, '% of words out of lexicon')
+print(round((len(embeddings) - in_vocab_words) / len(embeddings) * 10000) / 100, '% of words out of lexicon')
 
-
-# Move embeddings into a DataFrame
-embeddings = {**words, **oov_embed}
-print('Merged dictionaries, generating list')
-
+# Convert to list
 embeddings = [[word] + list(embeddings[word]) for word in embeddings]
 print('Generated list, converting to dataframe')
 
+headings = ['words'] + [str(int) for ind in range(1, fast_model.get_dimension() + 1)]
 embeddings = DataFrame(embeddings)
 embeddings.sort_values(0, inplace=True)
-embeddings.rename({0: 'words'}, inplace=True)
+embeddings.rename(mapper={0: 'words'}, inplace=True)
 print(embeddings)
 
-print('Dataframe complete, saving', embeddings.memory_usage())
+print('Dataframe complete, saving')
 
-embeddings.to_csv(dest_path)
+embeddings.to_csv(dest_path, index=False)

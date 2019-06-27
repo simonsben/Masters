@@ -30,19 +30,19 @@ def word_importance(documents, embedded_docs, model=None, path_gen=None, num_sam
         ax.set_xticks(arange(len(words)))
         ax.set_xticklabels(words, rotation=80)
 
-        ax.figure.colorbar(img, ax=ax)
+        fig.colorbar(img, ax=ax)
         ax.get_yaxis().set_visible(False)
 
         if path_gen is not None:
             savefig(path_gen(ind))
 
 
-def plot_embedding_rep(target_norm, sphere_radius, cone_angle):
+def plot_embedding_rep(target_norm, sphere_radius, cos_dist):
     """
     Plots a 3D representation of a higher dimensional set of vectors
     :param target_norm: Norm of the target vector
     :param sphere_radius: Radius of the sphere around the target vector
-    :param cone_angle: Angle of the cone centered around the target vector
+    :param cos_dist: Angle of the cone centered around the target vector
     :return: axis
     """
     # Define cone
@@ -51,7 +51,7 @@ def plot_embedding_rep(target_norm, sphere_radius, cone_angle):
     radius_points, polar_points = meshgrid(radius, polar_angles)
 
     # Convert to cartesian
-    Z = radius_points / arctan(cone_angle)
+    Z = radius_points / arctan(cos_dist / 2 * pi)
     X, Y = radius_points * cos(polar_points), radius_points * sin(polar_points)
 
     # Plot cone
