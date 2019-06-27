@@ -22,10 +22,11 @@ reverse = False
 
 # Import data
 embeddings = read_csv(embed_path, dtype=dtypes)
-print('Data imported as', embeddings.shape)
+print('Data imported,', embeddings.shape[0].compute(), 'vectors')
 
-words, target = get_nearest_neighbours(embeddings, target_word, silent=False, reverse=reverse)
-print('Nearest neighbours', words)
+words, target = get_nearest_neighbours(embeddings, target_word, silent=False, reverse=reverse,
+                                       max_angle=max_cos_dist, n_words=250)
+print(words)
 
 metrics = ['euclidean_distances', 'cosine_distances']
 [axes] = words.hist(column=metrics, bins=40, figsize=(8, 5))
@@ -45,7 +46,7 @@ ax = scatter_plot((words[x_key], words[y_key]), 'Metric relationship for ' + tar
 ax.set_xlabel(x_key.replace('_', ' ').capitalize())
 ax.set_ylabel(y_key.replace('_', ' ').capitalize())
 
-ax.scatter(0, target_norm, c='g', s=50)
+ax.scatter(0, 0, c='g', s=50)
 ax.legend(['Similar words', 'Target word'])
 
 plot_embedding_rep(target_norm, words['euclidean_distances'].max(), max_cos_dist)

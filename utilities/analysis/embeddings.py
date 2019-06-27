@@ -30,24 +30,22 @@ def threshold_data(datasets, condition_data, threshold):
     return [dataset[selection] for dataset in datasets]
 
 
-def get_nearest_neighbours(embeddings, target_word, n_words=50, max_angle=.85, reverse=False, silent=True):
+def get_nearest_neighbours(embeddings, target_word, n_words=50, max_angle=.85, reverse=False, normal=False):
     """
     Calculates the nearest neighbours of a target vector within a vector space of word embeddings
     :param embeddings: Dask dataframe of the word embeddings
     :param target_word: Target word
     :param n_words: Number of words to return
     :param max_angle: Maximum cosine angle
-    :param reverse:
-    :param silent:
-    :return:
+    :param reverse: Whether to get the target word, or its inverse
+    :return: N cloasest vectors, target vector
     """
 
     # Define slices
     words = embeddings[['0']]
-    vectors = normalize_embeddings(embeddings.iloc[:, 1:])
+    vectors = embeddings.iloc[:, 1:] if normal else normalize_embeddings(embeddings.iloc[:, 1:])
 
     target = vectors[words['0'] == target_word].compute()
-    if not silent: print('Vectors normalized, filtering')
 
     # Calculate cosine distances and reduce dataset
     words['cosine_distances'] = calculate_cosine_distance(vectors, target)
