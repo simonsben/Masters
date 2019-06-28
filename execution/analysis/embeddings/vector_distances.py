@@ -16,9 +16,9 @@ dtypes = {str(ind): float for ind in range(1, 301)}
 dtypes[0] = str
 
 # Define parameters
-target_word = 'good'
+target_word = 'fuck'
+targets = ('good', 'bad', 'poor')
 max_cos_dist = .85
-reverse = False
 
 # Import data
 embeddings = read_csv(embed_path, dtype=dtypes)
@@ -27,11 +27,11 @@ print('Data imported')
 embeddings = embeddings_to_svd(embeddings)
 print('Embeddings ready, calculating nearest neighbours')
 
-targets = ('good', 'bad', 'poor')
 words, target = get_nearest_neighbours(embeddings, target_word, n_words=250)
 # words, target = get_relative_neighbours(embeddings, targets, max_angle=max_cos_dist, n_words=250)
 print(words)
 
+# Plot histogram of metrics
 metrics = ['euclidean_distances', 'cosine_distances']
 [axes] = words.hist(column=metrics, bins=40, figsize=(8, 5))
 
@@ -45,6 +45,7 @@ for ax, metric in zip(axes, metrics):
 x_key, y_key, weight_key = 'cosine_distances', 'euclidean_distances', 'vector_norms'
 target_norm = two_norm(target)
 
+# Plot scatter metrics
 ax = scatter_plot((words[x_key], words[y_key]), 'Metric relationship for ' + target_word, words[weight_key],
                   c_bar_title=weight_key.replace('_', ' ').capitalize())
 ax.set_xlabel(x_key.replace('_', ' ').capitalize())
@@ -53,6 +54,7 @@ ax.set_ylabel(y_key.replace('_', ' ').capitalize())
 ax.scatter(0, 0, c='g', s=50)
 ax.legend(['Similar words', 'Target word'], loc='lower right')
 
+# Plot representation of source vector space
 plot_embedding_rep(target_norm, words['euclidean_distances'].max(), max_cos_dist)
 
 show()

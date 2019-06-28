@@ -13,13 +13,12 @@ check_existence(embed_path)
 dtypes = {str(ind): float for ind in range(1, 301)}
 dtypes[0] = str
 
-
 # Import data
 embeddings = read_csv(embed_path, dtype=dtypes)
 print('Data imported,', embeddings.shape[0].compute(), 'vectors')
 
 vectors = embeddings.iloc[:, 1:]
-u, s, v = svd(vectors.values)
+_, s, _ = svd(vectors.values)
 
 s = s.compute()
 

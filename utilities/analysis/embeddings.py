@@ -49,56 +49,65 @@ def merge_vectors(vectors):
 
 def embeddings_to_svd(raw_embeddings, dimensions=50):
     """ Takes word embeddings and converts """
+    # Calculate Word-Topic matrix
     vectors, _, _ = svd(
         normalize_embeddings(raw_embeddings.iloc[:, 1:].values)
     )
     vectors = vectors.persist()[:, :dimensions]
 
+    # Form new word-vector Dask Dataframe
     embeddings = raw_embeddings[['words']]
     embeddings[[str(ind) for ind in range(1, vectors.shape[1] + 1)]] = from_array(vectors)
     return embeddings
 
 
-def get_nearest_neighbours(embeddings, target_word, n_words=50, max_angle=.7, reverse=False, normal=True):
+def get_nearest_neighbours(embeddings, target_word, n_words=50, max_angle=.7, normal=True):
     """
     Calculates the nearest neighbours of a target vector within a vector space of word embeddings
     :param embeddings: Dask dataframe of the word embeddings
     :param target_word: Target word
     :param n_words: Number of words to return
     :param max_angle: Maximum cosine angle
-    :param reverse: Whether to get the target word, or its inverse
     :param normal: Whether the embeddings passed are normalized
-    :return: N cloasest vectors, target vector
+    :return: N closest vectors, target vector
     """
     # Define data
     words = embeddings[['words']]
     vectors = embeddings.iloc[:, 1:] if normal else normalize_embeddings(embeddings.iloc[:, 1:])
     target = get_word_vector(vectors, words['words'], target_word) if type(target_word) is str else target_word
-    if reverse: target *= -1
 
     # Calculate cosine distances and reduce dataset
     words['cosine_distances'] = calculate_cosine_distance(vectors, target)
-    # threshold = (2 - max_angle) if reverse else max_angle
-    threshold = max_angle
-    (vectors, words) = threshold_data((vectors, words), words['cosine_distances'], threshold)
+    (vectors, words) = threshold_data((vectors, words), words['cosine_distances'], max_angle)
 
     # Calculate euclidean distances
     words['euclidean_distances'] = calculate_euclidean_distance(vectors, target)
     words['vector_norms'] = calculate_norms(vectors)
 
-    # operation = words.nlargest if reverse else words.nsmallest
-    operation = words.nsmallest
-    neighbours = operation(n=n_words, columns='euclidean_distances').compute().reset_index(drop=True)
+    # Select N closest vectors
+    neighbours = words.nsmallest(n=n_words, columns='euclidean_distances').compute().reset_index(drop=True)
     return neighbours, target
 
 
-def get_relative_neighbours(embeddings, ref_words, n_words=50, max_angle=.85, normal=True):
-    # Define slices
+def get_relative_neighbours(embeddings, ref_words, n_words=50, cos_distance=.5, normal=True):
+    """
+    Calculate equivalent vector (ex. Toronto is to Ontario what London is to England, or
+    (England, Toronto, Ontario) -> London)
+    :param embeddings: Dask dataframe of
+    :param ref_words: Reference words (target, desired_reference, target_reference)
+    :param n_words: Number of words to return
+    :param cos_distance: Maximum cosine distance from desired target
+    :param normal: Whether the provided embeddings are normalized (z-scored)
+    :return: N nearest neighbours
+    """
+    # Define data
     words = embeddings[['words']]
     vectors = embeddings.iloc[:, 1:] if normal else normalize_embeddings(embeddings.iloc[:, 1:])
 
+    # Calculate theoretical location of the desired target vector
     (target, ref_target, ref_related) = [get_word_vector(vectors, words['words'], word) for word in ref_words]
     related = merge_vectors((target, -ref_target, ref_related))
 
+    # Calculate nearest neighbours of the desired theoretical location
     embeddings[[str(ind) for ind in range(1, 301)]] = vectors
-    return get_nearest_neighbours(embeddings, related, n_words=n_words, max_angle=max_angle, normal=True)
+    return get_nearest_neighbours(embeddings, related, n_words=n_words, max_angle=cos_distance, normal=True)
