@@ -26,14 +26,12 @@ print('Paths defined, starting')
 
 # Load data
 data = open_w_pandas(data_path)
-lex = open_fast_embed(lex_path)
-lex.drop(columns=301, inplace=True)
+# lex = open_fast_embed(lex_path)
+# lex.drop(columns=301, inplace=True)
 print('Data imported')
 
 # Initialize dict of vectors
 embeddings = {}
-for ind, word in enumerate(lex[0]):
-    embeddings[str(word)] = lex.iloc[ind, 1:].values
 
 # Load fast text model
 fast_model = load_model(str(mod_path))
@@ -53,9 +51,8 @@ embeddings = [[word] + list(embeddings[word]) for word in embeddings]
 print('Generated list, converting to dataframe')
 
 headings = ['words'] + [str(int) for ind in range(1, fast_model.get_dimension() + 1)]
-embeddings = DataFrame(embeddings)
-embeddings.sort_values(0, inplace=True)
-embeddings.rename(mapper={0: 'words'}, inplace=True)
+embeddings = DataFrame(embeddings, columns=headings)
+embeddings.sort_values('words', inplace=True)
 print(embeddings)
 
 print('Dataframe complete, saving')

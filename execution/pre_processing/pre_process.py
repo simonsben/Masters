@@ -25,11 +25,11 @@ data_sets = [
         'accessor': kaggle_accessor,
         'mutator': kaggle_mutator
     },
-    {
-        'data_set': 'insults',
-        'accessor': insults_accessor,
-        'mutator': insults_mutator
-    }
+    # {
+    #     'data_set': 'insults',
+    #     'accessor': insults_accessor,
+    #     'mutator': insults_mutator
+    # }
 ]
 base_directory = make_path('../../data/')
 source_directory = base_directory / 'datasets'
@@ -105,12 +105,13 @@ datasets = ['24k-abusive-tweets', 'kaggle', '100k-abusive-tweets']
 
 variants = ['', '_partial']
 for variant in variants:
-    loaded_datasets = [open_w_pandas(dest_directory / (dataset + variant + '.csv')) for dataset in datasets]
-    mixed_dataset = concat(loaded_datasets).sample(frac=1).reset_index(drop=True)
+    mixed_dataset = concat(
+        [open_w_pandas(dest_directory / (dataset + variant + '.csv')) for dataset in datasets]
+    ).sample(frac=1).reset_index(drop=True)
 
     bad_indexes = mixed_dataset.index[isna(mixed_dataset['document_content'])]
     content = mixed_dataset['document_content']
     for index in bad_indexes:
         mixed_dataset.at[index, 'document_content'] = ' '
 
-    mixed_dataset.to_csv(dest_directory / ('mixed_dataset' + variant + '.csv'))
+    mixed_dataset.to_csv(dest_directory / ('mixed_redef' + variant + '.csv'))
