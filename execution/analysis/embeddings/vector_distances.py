@@ -1,7 +1,7 @@
 from dask.dataframe import read_csv
 from utilities.data_management import load_execution_params, make_path, move_to_root, check_existence
 from matplotlib.pyplot import show
-from utilities.analysis import get_nearest_neighbours
+from utilities.analysis import get_nearest_neighbours, get_relative_neighbours, embeddings_to_svd
 from utilities.plotting import scatter_plot, plot_embedding_rep
 from scipy.linalg import norm as two_norm
 
@@ -16,16 +16,20 @@ dtypes = {str(ind): float for ind in range(1, 301)}
 dtypes[0] = str
 
 # Define parameters
-target_word = 'bitch'
-max_cos_dist = 1
+target_word = 'good'
+max_cos_dist = .85
 reverse = False
 
 # Import data
 embeddings = read_csv(embed_path, dtype=dtypes)
-print('Data imported,', embeddings.shape[0].compute(), 'vectors')
+print('Data imported')
 
-words, target = get_nearest_neighbours(embeddings, target_word, silent=False, reverse=reverse,
-                                       max_angle=max_cos_dist, n_words=250)
+embeddings = embeddings_to_svd(embeddings)
+print('Embeddings ready, calculating nearest neighbours')
+
+targets = ('good', 'bad', 'poor')
+words, target = get_nearest_neighbours(embeddings, target_word, n_words=250)
+# words, target = get_relative_neighbours(embeddings, targets, max_angle=max_cos_dist, n_words=250)
 print(words)
 
 metrics = ['euclidean_distances', 'cosine_distances']
@@ -47,7 +51,7 @@ ax.set_xlabel(x_key.replace('_', ' ').capitalize())
 ax.set_ylabel(y_key.replace('_', ' ').capitalize())
 
 ax.scatter(0, 0, c='g', s=50)
-ax.legend(['Similar words', 'Target word'])
+ax.legend(['Similar words', 'Target word'], loc='lower right')
 
 plot_embedding_rep(target_norm, words['euclidean_distances'].max(), max_cos_dist)
 

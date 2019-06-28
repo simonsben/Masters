@@ -38,12 +38,12 @@ def scatter_plot(values, fig_title, weights=None, filename=None, pre_split=True,
         [x, y] = values
 
     img = ax.scatter(x, y, c=weights, cmap=cmap, edgecolors='k')
-    c_bar = fig.colorbar(img, ax=ax)
 
     ax.set_title(fig_title)
-
-    if c_bar_title is not None:
-        c_bar.ax.set_ylabel(c_bar_title)
+    if weights is not None:
+        c_bar = fig.colorbar(img, ax=ax)
+        if c_bar_title is not None:
+            c_bar.ax.set_ylabel(c_bar_title)
     if filename is not None:
         savefig(filename)
 

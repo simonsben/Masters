@@ -1,7 +1,8 @@
 from utilities.data_management import load_execution_params, check_existence, move_to_root, make_path, open_w_pandas, \
-    open_fast_embed, check_writable
+    check_writable
 from fastText import load_model
 from pandas import DataFrame
+from numpy import percentile
 
 move_to_root()
 
@@ -26,33 +27,38 @@ print('Paths defined, starting')
 
 # Load data
 data = open_w_pandas(data_path)
-# lex = open_fast_embed(lex_path)
-# lex.drop(columns=301, inplace=True)
 print('Data imported')
-
-# Initialize dict of vectors
-embeddings = {}
 
 # Load fast text model
 fast_model = load_model(str(mod_path))
 print('Model loaded, generating oov vectors')
 
 # Generate missing embeddings
-in_vocab_words = len(embeddings)
+embeddings = {}
+usage_counts = {}
 for doc in data['document_content']:
     for word in doc.split(' '):
         if str(word) not in embeddings:
             embeddings[str(word)] = fast_model.get_word_vector(str(word))
+            usage_counts[str(word)] = 1
+        else:
+            usage_counts[str(word)] += 1
 
-print(round((len(embeddings) - in_vocab_words) / len(embeddings) * 10000) / 100, '% of words out of lexicon')
+print(len(embeddings), 'word embeddings calculated')
 
 # Convert to list
-embeddings = [[word] + list(embeddings[word]) for word in embeddings]
+embeddings = [[word, usage_counts[word]] + list(embeddings[word]) for word in embeddings]
 print('Generated list, converting to dataframe')
 
-headings = ['words'] + [str(int) for ind in range(1, fast_model.get_dimension() + 1)]
+headings = ['words', 'usages'] + [str(ind) for ind in range(1, fast_model.get_dimension() + 1)]
 embeddings = DataFrame(embeddings, columns=headings)
-embeddings.sort_values('words', inplace=True)
+
+threshold = percentile(embeddings['usages'].values, 5)
+embeddings = embeddings.loc[embeddings['usages'] > threshold]
+print('Removed embeddings for less than', threshold, 'occurrences')
+
+embeddings.sort_values(['usages', 'words'], inplace=True, ascending=[False, True])
+embeddings.drop(columns='usages', inplace=True)
 print(embeddings)
 
 print('Dataframe complete, saving')
