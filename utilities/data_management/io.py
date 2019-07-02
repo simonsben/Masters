@@ -45,12 +45,12 @@ def rename_file(path, new_path):
     rename(path, new_path)
 
 
-def prepare_csv_reader(file, delimiter=',', has_header=True):
+def prepare_csv_reader(file, delimiter=',', has_header=True, encoding=None):
     """ Creates a CSV reader for the specified file """
     path = make_path(file)
     check_existence(path)
 
-    fl = path.open(mode='r')
+    fl = path.open(mode='r', encoding=encoding)
     csv_reader = reader(fl, delimiter=delimiter)
 
     header = next(csv_reader) if has_header else None

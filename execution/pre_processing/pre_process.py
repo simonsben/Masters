@@ -1,12 +1,23 @@
 from data.accessors import twitter_24k_accessor, twitter_24k_mutator, twitter_100k_accessor, twitter_100k_mutator, \
-    kaggle_accessor, kaggle_mutator, insults_accessor, insults_mutator
+    kaggle_accessor, kaggle_mutator, insults_accessor, insults_mutator, stormfront_accessor, stormfront_mutator
 from utilities.pre_processing import count_upper, process_documents, original_length, generate_header, count_emojis, \
     pull_hyperlinks, split_hashtags, manage_special_characters, count_express, count_punctuation, count_digits, \
-    remove_spaces, run_partial_clean, count_images, count_handles, count_repeat_instances
+    remove_spaces, run_partial_clean, count_images, count_handles, count_repeat_instances, count_tags
 from utilities.data_management import make_path, check_existence, check_writable, open_w_pandas
 from pandas import concat, isna
+from csv import field_size_limit
+from sys import maxsize
 
 runs = [False, True]
+
+# Enable larger field sizes
+max_size = maxsize
+while True:
+    try:
+        field_size_limit(max_size)
+        break
+    except OverflowError:
+        max_size = int(max_size/10)
 
 # Generate path
 data_sets = [
@@ -24,6 +35,11 @@ data_sets = [
         'data_set': 'kaggle',
         'accessor': kaggle_accessor,
         'mutator': kaggle_mutator
+    },
+    {
+        'data_set': 'storm-front',
+        'accessor': stormfront_accessor,
+        'mutator': stormfront_mutator
     },
     # {
     #     'data_set': 'insults',
@@ -43,6 +59,7 @@ for data_set in data_sets:
 # Defined pre-processing to be applied
 pre_processes = [
     original_length,
+    count_tags,
     count_images,
     count_emojis,
     count_handles,
@@ -58,6 +75,7 @@ pre_processes = [
 ]
 partial_processes = [
     original_length,
+    count_tags,
     count_images,
     count_emojis,
     count_handles,
@@ -79,7 +97,8 @@ for run_partial_process in runs:
     modified_header = generate_header(processes)
 
     options = {
-        # 'max_documents': 1000
+        # 'max_documents': 10000,
+        'encoding': 'utf8'
     }
 
     for data_set in data_sets:
@@ -105,6 +124,11 @@ datasets = ['24k-abusive-tweets', 'kaggle', '100k-abusive-tweets']
 
 variants = ['', '_partial']
 for variant in variants:
+    filename = dest_directory / ('mixed_redef' + variant + '.csv')
+    if filename.exists():
+        print('Skipping mixed', variant)
+        continue
+
     mixed_dataset = concat(
         [open_w_pandas(dest_directory / (dataset + variant + '.csv')) for dataset in datasets]
     ).sample(frac=1).reset_index(drop=True)
@@ -114,4 +138,4 @@ for variant in variants:
     for index in bad_indexes:
         mixed_dataset.at[index, 'document_content'] = ' '
 
-    mixed_dataset.to_csv(dest_directory / ('mixed_redef' + variant + '.csv'))
+    mixed_dataset.to_csv(filename)

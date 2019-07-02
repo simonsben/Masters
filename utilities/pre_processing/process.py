@@ -19,13 +19,14 @@ def process_documents(source_filename, dest_filename, processes, get_content, sa
     # Get options
     delimiter = options['delimiter'] if 'delimiter' in options else ','
     max_documents = options['max_documents'] if 'max_documents' in options else -1
+    encoding = options['encoding'] if 'encoding' in options else None
 
     # check options
     if type(max_documents) is not int or max_documents < -1:
         raise ValueError('max_documents provided is invalid, give int in range [0, inf]')
 
     # Opens files
-    csv_reader, source_fl, header = prepare_csv_reader(source_filename, delimiter=delimiter)
+    csv_reader, source_fl, header = prepare_csv_reader(source_filename, delimiter=delimiter, encoding=encoding)
     csv_writer, dest_fl = prepare_csv_writer(dest_filename, save_header)
 
     for ind, doc in enumerate(csv_reader):  # For each document in source file

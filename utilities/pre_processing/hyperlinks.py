@@ -14,12 +14,12 @@ def pull_hyperlinks(document, get_header=False):
         if _match.group(3) != 't.co':
             url = _match.group(3)
             if url is not None:
-                urls.append(url)
+                urls.add(url)
 
         return ' url '
 
-    urls = []
+    urls = set()
     document = sub(url_regex, replace, document)
-    urls = ('[' + ','.join(urls) + ']') if len(urls) > 0 else ''
+    urls = ('[' + ','.join(list(urls)) + ']') if len(urls) > 0 else ''
 
     return urls, document

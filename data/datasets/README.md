@@ -4,6 +4,8 @@ List of datasets used with links to source
 
 ## Abusive language datasets
 
+### Labeled data
+
 * [hate speech dataset 1.0](https://github.com/aitor-garcia-p/hate-speech-dataset)
 * [Kaggle toxic comment classification challenge](https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge/overview)
 * [24k abusive tweets dataset](https://data.world/thomasrdavidson/hate-speech-and-offensive-language)
@@ -12,6 +14,10 @@ List of datasets used with links to source
 * [17k hate speach tweets dataset](https://github.com/ZeerakW/hatespeech)
 * [Insults dataset](https://www.kaggle.com/c/detecting-insults-in-social-commentary/overview)
 
+
+### Unlabeled data
+
+* stormfront
 
 ## Sarcasm datasets
 

@@ -9,6 +9,7 @@ space_regex = compile(r'\s+(?=\s)|^\s|'
                       r'(?<=\w)\s+(?=[^a-zA-Z0-9])')
 image_regex = compile(r'Image:\w[\w\s]+.\w{3}')
 repeat_regex = compile(r'(\w+)\1{2,}')
+tag_regex = compile(r'<[\w\d/\'"=;:,.&#%?+()\[\]{}\-\n ]+>')
 
 
 def count_upper(document, get_header=False):
@@ -75,6 +76,14 @@ def count_repeat_instances(document, get_header=False):
     if get_header: return 'repeat_count'
 
     document, count = subn(repeat_regex, lambda pattern: pattern[0][0], document)
+    return count, document
+
+
+def count_tags(document, get_header=False):
+    """ Counts the number of HTML tags and removes them """
+    if get_header: return 'tag_count'
+
+    document, count = subn(tag_regex, '', document)
     return count, document
 
 
