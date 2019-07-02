@@ -60,3 +60,20 @@ def load_dataset_params(dataset=None):
         for param in tmp}
 
     return params
+
+
+def make_dir(directory, max_levels=2):
+    """ Moves up directory levels until it exists, then moves back down creating child directories """
+    if type(directory) is str: directory = Path(directory)
+    if directory.is_file(): directory = directory.parent
+    if directory.exists(): return
+
+    levels = [directory] + list(directory.parents)
+    for ind, level in enumerate(levels):
+        if ind > max_levels: break
+        if level.exists():
+            for l_ind in range(ind-1, -1, -1):
+                levels[l_ind].mkdir()
+            return
+
+    raise LookupError('Cannot make dir within', max_levels, 'levels of the specified directory')

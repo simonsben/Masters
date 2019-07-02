@@ -47,7 +47,7 @@ def merge_vectors(vectors):
     return sum([vector / norm(vector) for vector in vectors], axis=0) * scale
 
 
-def embeddings_to_svd(raw_embeddings, dimensions=50):
+def svd_embeddings(raw_embeddings, dimensions=50):
     """ Takes word embeddings and converts """
     # Calculate Word-Topic matrix
     vectors, _, _ = svd(
