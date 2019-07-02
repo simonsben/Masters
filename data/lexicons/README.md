@@ -6,3 +6,4 @@
   * With pronouns from [here](https://www.wordexample.com/list/pronouns-in-english)
 * [FastText Word Vectors](https://fasttext.cc/)
   * Specifically, [this](https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.en.300.bin.gz) model
+* Intent

@@ -61,7 +61,7 @@ def svd_embeddings(raw_embeddings, dimensions=50):
     return embeddings
 
 
-def get_nearest_neighbours(embeddings, target_word, n_words=50, max_angle=.7, normal=True):
+def get_nearest_neighbours(embeddings, target_word, n_words=250, max_angle=.7, normal=True):
     """
     Calculates the nearest neighbours of a target vector within a vector space of word embeddings
     :param embeddings: Dask dataframe of the word embeddings

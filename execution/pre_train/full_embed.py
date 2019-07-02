@@ -13,13 +13,11 @@ data_name = params['dataset']
 
 # Define paths
 lex_base = make_path('data/lexicons') / 'fast_text'
-lex_path = lex_base / (lex_name + '.vec')
 mod_path = lex_base / (lex_name + '.bin')
 data_path = make_path('data/prepared_data') / (data_name + '.csv')
 dest_path = make_path('data/prepared_lexicon/') / (lex_name + '.csv')
 
 # Ensure paths are valid
-check_existence(lex_path)
 check_existence(mod_path)
 check_existence(data_path)
 check_writable(dest_path)
@@ -44,6 +42,7 @@ for doc in data['document_content']:
         else:
             usage_counts[str(word)] += 1
 
+fast_model = None
 print(len(embeddings), 'word embeddings calculated')
 
 # Convert to list

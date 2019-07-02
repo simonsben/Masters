@@ -6,7 +6,7 @@ from utilities.plotting import scatter_plot, plot_embedding_rep
 from scipy.linalg import norm as two_norm
 
 # Define parameters
-target_word = 'them'
+target_word = 'want'
 targets = ('good', 'bad', 'poor')
 max_cos_dist = .85
 
@@ -64,7 +64,7 @@ ax.legend(['Similar words', 'Target word'], loc='lower right')
 savefig(dest_dir / 'metrics.png')
 
 # Plot representation of source vector space
-plot_embedding_rep(target_norm, words['euclidean_distances'].max(), max_cos_dist)
+plot_embedding_rep(target_norm, words['euclidean_distances'].max(), words['cosine_distances'].max())
 savefig(dest_dir / 'embedding_rep.png')
 
 show()

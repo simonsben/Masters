@@ -1,9 +1,49 @@
-from utilities.analysis import svd_embeddings
+from utilities.analysis import svd_embeddings, get_nearest_neighbours
 from scipy.cluster.vq import whiten, kmeans
+from scipy.spatial.distance import euclidean
+from scipy.linalg import norm
+from numpy import percentile, logical_not
+
+x_key, y_key = 'euclidean_distances', 'cosine_distances'
 
 
-# TODO complete using clustering technique in Colab notebook
+def cluster_neighbours(neighbours):
+    """ Calculate the cluster of embeddings around a given word """
+    # Normalize data
+    neighbours = neighbours.iloc[1:]
+    normed_data = whiten(neighbours[[x_key, y_key]].values)
 
-def expand_lexicon(lexicon_embeddings, embeddings):
-    embeddings = svd_embeddings(embeddings.append(lexicon_embeddings))
+    # Threshold data
+    e_distances = normed_data[:, 0]
+    threshold = percentile(e_distances, 20)
+    normed_data = normed_data[e_distances < threshold]
 
+    # Cluster
+    centroids, distortion = kmeans(normed_data, 2)
+
+    # Split data by centroid
+    (a, b) = centroids
+    lengths = [(euclidean(point, a), euclidean(point, b)) for point in normed_data]
+    is_set_one = [length[0] < length[1] for length in lengths]
+
+    close_set = is_set_one if norm(a) < norm(b) else logical_not(is_set_one)
+    print('Adding', neighbours['words'].iloc[1:].loc[close_set].values)
+
+    return list(neighbours['words'].loc[close_set].values)
+
+
+def expand_lexicon(lexicon, embeddings):
+    """
+    Expand lexicon using trained word embeddings
+    :param lexicon: List of word embeddings
+    :param embeddings: Pandas DataFrame of words and their embeddings
+    :return: List of words in the expanded lexicon
+    """
+    # Normalize embeddings and get neighbours
+    embeddings = svd_embeddings(embeddings)
+    word_neighbours = [get_nearest_neighbours(embeddings, word)[0] for word in lexicon]
+
+    # Cluster nearby words
+    expanded_lexicon = [cluster_neighbours(neighbours) for neighbours in word_neighbours]
+
+    return expanded_lexicon

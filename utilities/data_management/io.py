@@ -57,14 +57,16 @@ def prepare_csv_reader(file, delimiter=',', has_header=True):
     return csv_reader, fl, header
 
 
-def prepare_csv_writer(file, header):
+def prepare_csv_writer(file, header=None):
     """ Creates a CSV writer for the specified file """
     path = make_path(file)
     check_writable(path)
 
     fl = path.open(mode='w', newline='')
     csv_writer = writer(fl, delimiter=',')
-    csv_writer.writerow(header)
+
+    if header is not None:
+        csv_writer.writerow(header)
 
     return csv_writer, fl
 

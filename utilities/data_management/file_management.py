@@ -65,7 +65,7 @@ def load_dataset_params(dataset=None):
 def make_dir(directory, max_levels=2):
     """ Moves up directory levels until it exists, then moves back down creating child directories """
     if type(directory) is str: directory = Path(directory)
-    if directory.is_file(): directory = directory.parent
+    if directory.suffix != '': directory = directory.parent
     if directory.exists(): return
 
     levels = [directory] + list(directory.parents)
