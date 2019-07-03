@@ -42,7 +42,6 @@ for doc in data['document_content']:
         else:
             usage_counts[str(word)] += 1
 
-fast_model = None
 print(len(embeddings), 'word embeddings calculated')
 
 # Convert to list

@@ -9,7 +9,7 @@ space_regex = compile(r'\s+(?=\s)|^\s|'
                       r'(?<=\w)\s+(?=[^a-zA-Z0-9])')
 image_regex = compile(r'Image:\w[\w\s]+.\w{3}')
 repeat_regex = compile(r'(\w+)\1{2,}')
-tag_regex = compile(r'<[\w\d/\'"=;:,.&#%?+()\[\]{}\-\n ]+>')
+tag_regex = compile(r'<[\w\d/\'"=;:,.&#%?+()\[\]{}\-\n ]+>(n(?= ))?')
 
 
 def count_upper(document, get_header=False):

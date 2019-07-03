@@ -20,6 +20,6 @@ def pull_hyperlinks(document, get_header=False):
 
     urls = set()
     document = sub(url_regex, replace, document)
-    urls = ('[' + ','.join(list(urls)) + ']') if len(urls) > 0 else ''
+    # urls = ('[' + ','.join(list(urls)) + ']') if len(urls) > 0 else '[]'
 
-    return urls, document
+    return len(urls), document
