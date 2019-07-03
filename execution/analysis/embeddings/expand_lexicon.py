@@ -14,11 +14,12 @@ move_to_root(4)
 params = load_execution_params()
 embed_name = params['fast_text_model']
 data_name = params['dataset']
-lexicon_name = 'desire'
+lexicon_name = 'wish'
 
 lexicon_path = make_path('data/lexicons/intent/') / (lexicon_name + '.csv')
 embed_path = make_path('data/prepared_lexicon/') / (embed_name + '.csv')
-dest_path = make_path('data/processed_data/') / data_name / 'analysis' / 'lexicon_expansion' / (lexicon_name + '.csv')
+dest_path = make_path('data/processed_data/') / data_name / 'analysis' / 'lexicon_expansion' / \
+            (lexicon_name + '_' + embed_name + '.csv')
 
 check_existence(embed_path)
 check_existence(lexicon_path)
@@ -37,7 +38,6 @@ print('Data imported')
 print(lexicon)
 
 # Expand lexicon
-# lexicon = ['bitch', 'fuck', 'idiot']
 expanded = expand_lexicon(lexicon, embeddings)
 
 num_terms = sum([len(w_expanded) for w_expanded in expanded])

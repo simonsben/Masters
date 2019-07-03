@@ -6,7 +6,7 @@ from utilities.plotting import scatter_plot, plot_embedding_rep
 from scipy.linalg import norm as two_norm
 
 # Define parameters
-target_word = 'want'
+target_word = 'bitchh'
 targets = ('good', 'bad', 'poor')
 max_cos_dist = .85
 

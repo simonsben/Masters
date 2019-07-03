@@ -39,11 +39,13 @@ def expand_lexicon(lexicon, embeddings):
     :param embeddings: Pandas DataFrame of words and their embeddings
     :return: List of words in the expanded lexicon
     """
-    # Normalize embeddings and get neighbours
+    # Normalize embeddings and expand lexicon
     embeddings = svd_embeddings(embeddings)
-    word_neighbours = [get_nearest_neighbours(embeddings, word)[0] for word in lexicon]
-
-    # Cluster nearby words
-    expanded_lexicon = [cluster_neighbours(neighbours) for neighbours in word_neighbours]
+    expanded_lexicon = [
+        cluster_neighbours(
+            get_nearest_neighbours(embeddings, word)[0]
+        )
+        for word in lexicon
+    ]
 
     return expanded_lexicon
