@@ -4,8 +4,8 @@ from matplotlib.pyplot import show, savefig, tight_layout
 from utilities.analysis import get_nearest_neighbours, get_relative_neighbours, svd_embeddings
 from utilities.plotting import scatter_plot, plot_embedding_rep, scatter_3_plot
 from scipy.linalg import norm as two_norm
-from scipy.stats import pearsonr
-from numpy import abs, argsort
+# from scipy.stats import pearsonr
+# from numpy import abs, argsort
 
 
 # Define parameters

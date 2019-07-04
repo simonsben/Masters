@@ -32,20 +32,27 @@ def cluster_neighbours(neighbours):
     return list(neighbours['words'].loc[close_set].values)
 
 
-def expand_lexicon(lexicon, embeddings):
+def expand_lexicon(lexicon, embeddings, simple_expand=None):
     """
     Expand lexicon using trained word embeddings
     :param lexicon: List of word embeddings
     :param embeddings: Pandas DataFrame of words and their embeddings
+    :param simple_expand: Specify number of terms to take 'blindly' from around the target word, (default, don't use)
     :return: List of words in the expanded lexicon
     """
     # Normalize embeddings and expand lexicon
     embeddings = svd_embeddings(embeddings)
-    expanded_lexicon = [
-        cluster_neighbours(
-            get_nearest_neighbours(embeddings, word)[0]
-        )
-        for word in lexicon
-    ]
+    if not simple_expand:
+        expanded_lexicon = [
+            cluster_neighbours(
+                get_nearest_neighbours(embeddings, word)[0]
+            )
+            for word in lexicon
+        ]
+    else:
+        expanded_lexicon = [
+            get_nearest_neighbours(embeddings, word, n_words=simple_expand)[0]
+            for word in lexicon
+        ]
 
     return expanded_lexicon

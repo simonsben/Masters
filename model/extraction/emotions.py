@@ -2,6 +2,13 @@ from pandas import DataFrame, SparseDataFrame, notnull
 from sklearn.feature_extraction.text import CountVectorizer
 
 
+def get_emotion_indexes(lexicon, emotion):
+    """ Gets the indexes associated with a given emotion """
+    return lexicon.index.values[
+        notnull(lexicon[emotion])
+    ]
+
+
 def emotions(dataset, lexicon):
     """
     Takes the emotion lexicon then constructs a full document-term matrix for all terms.
@@ -25,7 +32,7 @@ def emotions(dataset, lexicon):
 
     emotion_matrices, matrix_emotions,  = [], []
     for emotion in lexicon.columns[1:]:
-        emotion_dictionary = lexicon.index.values[notnull(lexicon[emotion])]
+        emotion_dictionary = get_emotion_indexes(lexicon, emotion)
 
         emotion_matrices.append(
             document_matrix[:, emotion_dictionary].tocsr()
