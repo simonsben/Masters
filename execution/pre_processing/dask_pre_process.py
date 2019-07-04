@@ -22,18 +22,18 @@ while True:
 
 # Generate path
 data_sets = [
-    {
-        'data_set': '24k-abusive-tweets',
-        'constants': None
-    },
-    {
-        'data_set': '100k-abusive-tweets',
-        'constants': None
-    },
-    {
-        'data_set': 'kaggle',
-        'constants': None
-    },
+    # {
+    #     'data_set': '24k-abusive-tweets',
+    #     'constants': None
+    # },
+    # {
+    #     'data_set': '100k-abusive-tweets',
+    #     'constants': None
+    # },
+    # {
+    #     'data_set': 'kaggle',
+    #     'constants': None
+    # },
     {
         'data_set': 'storm-front',
         'constants': stormfront
@@ -105,9 +105,9 @@ for run_partial_process in runs:
         source_path = source_directory / set_name / (set_name + '.csv')
         dest_path = dest_directory / (set_name + mod + '.csv')
 
-        if dest_path.exists():
-            print('Skipping', set_name, mod)
-            continue
+        # if dest_path.exists():
+        #     print('Skipping', set_name, mod)
+        #     continue
 
         dest_path = tmp_directory / (set_name + mod + '.*.csv')
         dask_process_documents(source_path, dest_path, processes, data_set['constants'], options)

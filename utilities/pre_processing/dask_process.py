@@ -31,7 +31,7 @@ def dask_process_documents(source_filename, dest_filename, processes, constants,
         raise ValueError('max_documents provided is invalid, give int in range [0, inf]')
 
     # Opens files
-    dataset = read_csv(source_filename, delimiter=delimiter, encoding=encoding, header=header, blocksize=100e6)
+    dataset = read_csv(source_filename, delimiter=delimiter, encoding=encoding, header=header, blocksize=5e8)
     content_label = dataset.columns.values[constants['content']]
     dataset = dataset[[content_label]].rename(columns={content_label: 'content'})
 
@@ -51,7 +51,7 @@ def dask_process_documents(source_filename, dest_filename, processes, constants,
 
                 df['content'] = [value[1] for value in tmp]
                 return df
-            dataset = dataset.map_partitions(processor).persist()
+            dataset = dataset.map_partitions(processor) #.persist()
         else:
             def processor(df):
                 tmp = df['content'].apply(lambda doc: safe_process(doc))
@@ -60,7 +60,7 @@ def dask_process_documents(source_filename, dest_filename, processes, constants,
                 df['content'] = [value[1] for value in tmp]
                 df[header] = [value[0] for value in tmp]
                 return df
-            dataset = dataset.map_partitions(processor).persist()
+            dataset = dataset.map_partitions(processor) #.persist()
 
     print('Execution tree built, executing and saving')
     print(dataset)
