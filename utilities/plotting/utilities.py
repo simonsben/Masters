@@ -3,10 +3,17 @@ from matplotlib.pyplot import figure
 from mpl_toolkits.mplot3d import Axes3D
 
 
+def generate_3d_figure():
+    """ Generates a figure with a 3D plot """
+    fig = figure()
+    axis = fig.add_subplot(111, projection='3d')
+
+    return fig, axis
+
+
 def plot_sphere(center, radius, axis=None, color='g', alpha=.6):
-    if axis is None:
-        fig = figure()
-        axis = fig.add_subplot(111, projection='3d')
+    """ Plots the outer surface of a sphere """
+    axis = generate_3d_figure()[1] if axis is None else axis
 
     # Define sphere
     u = linspace(0, pi)
@@ -23,9 +30,8 @@ def plot_sphere(center, radius, axis=None, color='g', alpha=.6):
 
 
 def plot_cone(base, angle, distance, axis=None, color='b', alpha=.6):
-    if axis is None:
-        fig = figure()
-        axis = fig.add_subplot(111, projection='3d')
+    """ Plots the outer surface of a cone """
+    axis = generate_3d_figure()[1] if axis is None else axis
 
     distances = linspace(0, distance)
     polar_angles = linspace(0, 2 * pi)

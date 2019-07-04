@@ -1,12 +1,15 @@
 from dask.dataframe import read_csv
 from utilities.data_management import load_execution_params, make_path, move_to_root, check_existence, make_dir
-from matplotlib.pyplot import show, savefig
+from matplotlib.pyplot import show, savefig, tight_layout
 from utilities.analysis import get_nearest_neighbours, get_relative_neighbours, svd_embeddings
-from utilities.plotting import scatter_plot, plot_embedding_rep
+from utilities.plotting import scatter_plot, plot_embedding_rep, scatter_3_plot
 from scipy.linalg import norm as two_norm
+# from scipy.stats import pearsonr
+# from numpy import abs, argsort
+
 
 # Define parameters
-target_word = 'bitchh'
+target_word = 'bitch'
 targets = ('good', 'bad', 'poor')
 max_cos_dist = .85
 
@@ -66,5 +69,29 @@ savefig(dest_dir / 'metrics.png')
 # Plot representation of source vector space
 plot_embedding_rep(target_norm, words['euclidean_distances'].max(), words['cosine_distances'].max())
 savefig(dest_dir / 'embedding_rep.png')
+
+# Plot columns correlations
+# columns = [str(ind) for ind in range(1, 51)]
+# vectors = words[columns]
+# correlations = abs([pearsonr(words['euclidean_distances'], vector)[0] for vector in vectors.values.transpose()])
+# scatter_plot((list(range(len(correlations))), correlations), 'Dimension correlations for ' + target_word)
+#
+# # Calculate top columns for neighbours plot
+# top_columns = list(argsort(correlations)[-3:].astype(str))
+# print('Top columns', top_columns)
+top_columns = ['1', '2', '3']
+
+# Plot neighbours using the first 3 singular value dimensions
+vectors = words[top_columns].values[1:].transpose()
+axis_titles = ['Dimension ' + str(ind) for ind in range(1, 4)]
+ax = scatter_3_plot(vectors, 'Neighbour embeddings for ' + target_word, words['euclidean_distances'].values[1:], ax_titles=axis_titles,
+                    c_bar_title='Euclidean distance', cmap='Blues_r')
+
+# Plot target point
+x, y, z = words.iloc[:1][top_columns].values.transpose()
+ax.scatter(x, y, z, c='r', s=50, edgecolors='k')
+
+tight_layout()
+savefig(dest_dir / 'word_cloud.png')
 
 show()
