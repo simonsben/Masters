@@ -37,17 +37,19 @@ name_maps = maps['layer_names']
 layers = train_set.columns
 
 for ind, layer in enumerate(layers):
-    base = figure_dir / dir_maps[layer] / 'confusion_matrix'
+    dir_map = dir_maps[layer] if layer in dir_maps else 'lexicon'
+    base = figure_dir / dir_map / 'confusion_matrix'
     if not base.exists():
         mkdir(base)
 
     threshold = thresholds['threshold'][ind]
 
+    name_map = name_maps[layer] if layer in name_maps else str(layer).replace('_', ' ').capitalize()
     confusion_matrix(train_set[layer].values, train_labels,
-                     name_maps[layer] + ' Predictor, training data',
+                     name_map + ' Predictor, training data',
                      base / (layer + '_train.png'))
     confusion_matrix(train_set[layer].values, train_labels,
-                     name_maps[layer] + ' Predictor, test data',
+                     name_map + ' Predictor, test data',
                      base / (layer + '_test.png'), threshold=threshold)
 
 # show()

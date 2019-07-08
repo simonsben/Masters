@@ -20,6 +20,11 @@ sub_layers = [
         'lexicon_name': 'mpqa_subjectivity_lexicon',
         'executor': subjectivity,
         'model_name': 'subjectivity'
+    },
+    {
+        'lexicon_name': 'anger_fast_text',
+        'executor': hurtlex,
+        'model_name': 'anger_fast_text'
     }
 ]
 
