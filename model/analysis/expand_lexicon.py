@@ -50,9 +50,16 @@ def expand_lexicon(lexicon, embeddings, simple_expand=None):
             for word in lexicon
         ]
     else:
-        expanded_lexicon = [
-            get_nearest_neighbours(embeddings, word, n_words=simple_expand)[0]
-            for word in lexicon
-        ]
+        expanded_lexicon = []
+        for ind, word in enumerate(lexicon):
+            new_terms = get_nearest_neighbours(embeddings, word, n_words=(simple_expand + 1))[0]
+
+            if len(new_terms) < 1:
+                continue
+
+            new_terms = new_terms['words'].values[1:]
+            expanded_lexicon.append(new_terms)
+
+            print('Adding', new_terms, ' - ', round((ind + 1) / len(lexicon) * 10000) / 100, '% complete')
 
     return expanded_lexicon

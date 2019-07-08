@@ -38,7 +38,12 @@ def threshold_data(datasets, condition_data, threshold):
 
 def get_word_vector(vectors, words, target_word):
     """ Compute the word embedding for a given target word """
-    return vectors[words == target_word].compute().values[0]
+    target = vectors[words == target_word].compute().values
+
+    # If word isn't in the set of embeddings, return None
+    if len(target) < 1:
+        return None
+    return target[0]
 
 
 def merge_vectors(vectors):
@@ -81,6 +86,9 @@ def get_nearest_neighbours(embeddings, target_word, n_words=250, max_angle=.7, n
     cols = [str(ind) for ind in range(1, 51)]
     words = embeddings[['words'] + cols]
     target = get_word_vector(vectors, words['words'], target_word) if type(target_word) is str else target_word
+
+    if target is None:
+        return [], None
 
     # Calculate cosine distances and reduce dataset
     words['cosine_distances'] = calculate_cosine_distance(vectors, target)

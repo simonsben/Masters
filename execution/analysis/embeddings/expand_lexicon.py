@@ -2,7 +2,6 @@ from model.analysis.expand_lexicon import expand_lexicon
 from utilities.data_management import move_to_root, make_path, check_existence, load_execution_params, \
     prepare_csv_writer, make_dir, open_w_pandas
 from dask.dataframe import read_csv
-from pandas import read_csv as pandas_read
 from model.extraction import get_emotion_indexes
 
 # Lexicon expansion
@@ -24,7 +23,7 @@ dest_path = make_path('data/processed_data/') / data_name / 'analysis' / 'lexico
 
 check_existence(embed_path)
 check_existence(lexicon_path)
-make_dir(dest_path)
+make_dir(dest_path, 3)
 
 
 # Define dataset-specific constants
@@ -41,7 +40,7 @@ print('Data imported')
 print(lexicon)
 
 # Expand lexicon
-expanded = expand_lexicon(lexicon, embeddings)
+expanded = expand_lexicon(lexicon, embeddings, simple_expand=3)
 
 num_terms = sum([len(w_expanded) for w_expanded in expanded])
 print('Lexicon expanded from', len(lexicon), 'to', num_terms, 'terms')
