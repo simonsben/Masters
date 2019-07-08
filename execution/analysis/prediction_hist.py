@@ -19,7 +19,8 @@ check_writable(fig_path)
 data = concat([
     open_w_pandas(data_base / (file + '.csv')) for file in files
 ])
-data.drop(columns='stacked', inplace=True)
+if 'stacked' in data.columns:
+    data.drop(columns='stacked', inplace=True)
 print('Data loaded')
 
 data.hist(bins=25, grid=False, sharex=True, figsize=(20, 15))

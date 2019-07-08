@@ -94,4 +94,4 @@ def open_exp_lexicon(path):
     for new_terms in csv_reader:
         terms = terms.union(new_terms)
 
-    return DataFrame(terms, columns=['words'])
+    return DataFrame(terms, columns=['word'])
