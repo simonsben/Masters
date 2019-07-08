@@ -1,7 +1,7 @@
 from os import access, W_OK, R_OK, rename
 from csv import reader, writer, QUOTE_NONE
 from pathlib import Path
-from pandas import read_csv
+from pandas import read_csv, DataFrame
 from re import search, compile
 
 file_regex = compile(r'\w+\.\w+$')
@@ -85,3 +85,13 @@ def open_fast_embed(path):
     embedding = read_csv(path, quoting=QUOTE_NONE, delimiter=' ', skiprows=1, header=None)
 
     return embedding
+
+
+def open_exp_lexicon(path):
+    """ Opens an expanded lexicon """
+    csv_reader, fl, header = prepare_csv_reader(path)
+    terms = set(header)
+    for new_terms in csv_reader:
+        terms = terms.union(new_terms)
+
+    return DataFrame(terms, columns=['words'])
