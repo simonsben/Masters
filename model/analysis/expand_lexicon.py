@@ -3,8 +3,12 @@ from scipy.cluster.vq import whiten, kmeans
 from scipy.spatial.distance import euclidean
 from scipy.linalg import norm
 from numpy import percentile, logical_not
+from re import match, compile
+from nltk.corpus import wordnet
+
 
 x_key, y_key = 'euclidean_distances', 'cosine_distances'
+wordnet_regex = compile(r'\w+\.')
 
 
 def cluster_neighbours(neighbours):
@@ -32,7 +36,20 @@ def cluster_neighbours(neighbours):
     return list(neighbours['words'].loc[close_set].values)
 
 
-def expand_lexicon(lexicon, embeddings, simple_expand=None):
+def wordnet_expansion(lexicon, n_words=None):
+    if n_words is None:
+        n_words = 5
+
+    looker = wordnet.synsets
+    expanded_lexicon = [
+        [synonym.lemmas()[0].name() for synonym in looker(word)[:n_words]]
+        for word in lexicon
+    ]
+
+    return expanded_lexicon
+
+
+def embedding_expansion(lexicon, embeddings, simple_expand=None):
     """
     Expand lexicon using trained word embeddings
     :param lexicon: List of word embeddings
@@ -63,3 +80,12 @@ def expand_lexicon(lexicon, embeddings, simple_expand=None):
             print('Adding', new_terms, ' - ', round((ind + 1) / len(lexicon) * 10000) / 100, '% complete')
 
     return expanded_lexicon
+
+
+def expand_lexicon(lexicon, embeddings=None, simple_expand=None):
+    # If no embeddings assume wordnet expansion
+    if embeddings is None:
+        return wordnet_expansion(lexicon, simple_expand)
+    # If embeddings supplied assume embedding expansion
+    else:
+        return embedding_expansion(lexicon, embeddings, simple_expand)
