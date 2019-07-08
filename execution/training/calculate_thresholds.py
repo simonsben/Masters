@@ -1,11 +1,8 @@
 from utilities.data_management import open_w_pandas, move_to_root, split_sets, make_path, check_existence, \
     check_writable, load_execution_params
 from numpy import linspace, argmin, abs, argmax
-from utilities.analysis import calculate_loss
 from pandas import DataFrame
 from sklearn.metrics import roc_curve
-
-# TODO re-write using sklearn.metrics.roc_curve then taking the max of the tpr and fpr
 
 move_to_root()
 
