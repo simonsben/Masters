@@ -13,7 +13,8 @@ move_to_root(4)
 params = load_execution_params()
 embed_name = params['fast_text_model']
 data_name = params['dataset']
-lexicon_name = 'nrc_emotion_lexicon'
+lexicon_name = 'mpqa_subjectivity_lexicon'
+# emotion = 'sadness'
 
 lexicon_path = make_path('data/prepared_lexicon/') / (lexicon_name + '.csv')
 dest_path = make_path('data/processed_data/') / data_name / 'analysis' / 'lexicon_expansion' / \
@@ -28,9 +29,9 @@ dtypes = {str(ind): float for ind in range(1, 301)}
 dtypes[0] = str
 
 # Import data
-lexicon = open_w_pandas(lexicon_path, index_col=None)
-lex_indexes = get_emotion_indexes(lexicon, 'anger')
-lexicon = lexicon['word'].iloc[lex_indexes].values
+lexicon = open_w_pandas(lexicon_path)['word'].values.astype(str)
+# lex_indexes = get_emotion_indexes(lexicon, emotion)
+# lexicon = lexicon['word'].iloc[lex_indexes].values
 print('Data imported')
 
 print(lexicon)

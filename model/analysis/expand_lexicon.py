@@ -42,7 +42,7 @@ def wordnet_expansion(lexicon, n_words=None):
 
     looker = wordnet.synsets
     expanded_lexicon = [
-        [synonym.lemmas()[0].name() for synonym in looker(word)[:n_words]]
+        [str(synonym.lemmas()[0].name()) for synonym in looker(word)[:n_words]]
         for word in lexicon
     ]
 
@@ -79,7 +79,7 @@ def embedding_expansion(lexicon, embeddings, simple_expand=None):
 
             print('Adding', new_terms, ' - ', round((ind + 1) / len(lexicon) * 10000) / 100, '% complete')
 
-    return expanded_lexicon
+    return lexicon
 
 
 def expand_lexicon(lexicon, embeddings=None, simple_expand=None):
