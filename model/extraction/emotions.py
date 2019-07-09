@@ -4,9 +4,16 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 def get_emotion_indexes(lexicon, emotion):
     """ Gets the indexes associated with a given emotion """
-    return lexicon.index.values[
-        notnull(lexicon[emotion])
-    ]
+    if type(emotion) is not list:
+        return lexicon.index.values[
+            notnull(lexicon[emotion])
+        ]
+    indexes = set()
+    for em in emotion:
+        indexes.update(lexicon.index.values[
+            notnull(lexicon[em])
+        ])
+    return sorted(list(indexes))
 
 
 def emotions(dataset, lexicon):

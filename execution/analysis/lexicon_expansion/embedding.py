@@ -15,11 +15,12 @@ params = load_execution_params()
 embed_name = params['fast_text_model']
 data_name = params['dataset']
 lexicon_name = 'nrc_emotion_lexicon'
+emotions = ['anger', 'disgust', 'fear', 'negative', 'positive', 'sadness']
 
 lexicon_path = make_path('data/prepared_lexicon/') / (lexicon_name + '.csv')
 embed_path = make_path('data/prepared_lexicon/') / (embed_name + '.csv')
 dest_path = make_path('data/processed_data/') / data_name / 'analysis' / 'lexicon_expansion' / \
-            (lexicon_name + '_' + embed_name + '.csv')
+            ('emotions' + '_' + embed_name + '.csv')
 
 check_existence(embed_path)
 check_existence(lexicon_path)
@@ -33,14 +34,14 @@ dtypes[0] = str
 # Import data
 embeddings = read_csv(embed_path, dtype=dtypes)
 lexicon = open_w_pandas(lexicon_path, index_col=None)
-lex_indexes = get_emotion_indexes(lexicon, 'anger')
+lex_indexes = get_emotion_indexes(lexicon, emotions)
 lexicon = lexicon['word'].iloc[lex_indexes].values
 print('Data imported')
 
 print(lexicon)
 
 # Expand lexicon
-expanded = expand_lexicon(lexicon, embeddings, simple_expand=3)
+expanded = expand_lexicon(lexicon, embeddings, simple_expand=5)
 
 num_terms = sum([len(w_expanded) for w_expanded in expanded])
 print('Lexicon expanded from', len(lexicon), 'to', num_terms, 'terms')
