@@ -12,60 +12,68 @@ name_regex = compile(r'[\w\-]+')
 
 move_to_root(4)
 
+# Load execution parameters
 params = load_execution_params()
 dataset_name = params['dataset']
 
+# Define file paths
 expanded_dir = make_path('data/processed_data') / dataset_name / 'analysis' / 'lexicon_expansion'
 dataset_path = make_path('data/prepared_data/') / (dataset_name + '.csv')
 fig_path = make_path('figures/') / dataset_name / 'analysis' / 'lexicon_expansion'
 
+# Check for files/readable/writeable
 check_readable(expanded_dir)
 check_existence(dataset_path)
 make_dir(fig_path)
 
+# Load dataset
 dataset = open_w_pandas(dataset_path)
 documents = dataset['document_content'].values
 is_abusive = dataset['is_abusive'].values
 
 expansion_accuracies = []
 
+# For each expanded lexicon
 for file_name in listdir(expanded_dir):
     lexicon_name = match(name_regex, file_name)[0].replace('_', ' ').capitalize()
     print('Starting', lexicon_name)
 
+    # Load lexicon
     expanded = open_exp_lexicon(expanded_dir / file_name, True)
     lexicon_accuracies = []
 
+    # Slice into original and added terms
     original_terms = expanded[0]
     new_terms = expanded[1:]
 
-    expanded_lexicons = [set(original_terms)]
-    index = len(expanded_lexicons[0])
-
+    # Initialize list of level sets and calculate number of levels
+    expanded_lexicon = set(original_terms)
     num_syms = max([len(syms) for syms in new_terms])
 
-    for ind in range(num_syms):
-        level_set = expanded_lexicons[ind].copy()
-        expanded_lexicons.append(level_set)
-
-        for syms in new_terms:
-            if len(syms) > ind:
-                level_set.add(syms[ind])
-
-    print('Level sets generated, benchmarking')
-
-    for level, level_set in enumerate(expanded_lexicons):
+    # For each level
+    for level in range(num_syms):
         print('Starting level set', level)
-        vectorizer = CountVectorizer(vocabulary=list(level_set))
+
+        # Add level terms to lexicon
+        for syms in new_terms:
+            if len(syms) > level:
+                expanded_lexicon.add(syms[level])
+
+        # Initialize vectorizer and generate document_matrix
+        vectorizer = CountVectorizer(vocabulary=list(expanded_lexicon))
         document_matrix = vectorizer.transform(documents)
 
+        # Train classifier and make predictions on test set
         classifier, (_, (te_docs, te_abus)) = train_xg_boost(document_matrix, is_abusive, return_data=True)
         preds = classifier.predict(te_docs)
+
+        # Calculate level accuracy
         accuracy = sum(preds == te_abus) / te_docs.shape[0]
 
         lexicon_accuracies.append(accuracy)
     expansion_accuracies.append(lexicon_accuracies)
 
+    # Plot level accuracies and save
     ax = scatter_plot(
         (list(range(len(lexicon_accuracies))), lexicon_accuracies),
         lexicon_name + ' expansion accuracy',
@@ -74,6 +82,6 @@ for file_name in listdir(expanded_dir):
     ax.set_ylabel('Accuracy on test set')
     savefig(fig_path / (match(name_regex, file_name)[0] + '.png'))
 
-print('Accuracies computed')
 
+print('Accuracies computed')
 show()
