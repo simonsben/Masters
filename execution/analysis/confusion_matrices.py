@@ -25,7 +25,7 @@ check_writable(figure_dir)
 # Import data
 train_set = open_w_pandas(train_path)
 test_set = open_w_pandas(test_path)
-thresholds = open_w_pandas(threshold_path)
+# thresholds = open_w_pandas(threshold_path)
 labels = open_w_pandas(dataset_path)['is_abusive'].to_numpy().astype(bool)
 train_labels, test_labels = labels[:len(train_set)], labels[len(train_set):]
 print('Data loaded, generating figures')
@@ -42,15 +42,15 @@ for ind, layer in enumerate(layers):
     if not base.exists():
         mkdir(base)
 
-    threshold = thresholds['threshold'][ind]
+    # threshold = thresholds['threshold'][ind]
 
     name_map = name_maps[layer] if layer in name_maps else str(layer).replace('_', ' ').capitalize()
     confusion_matrix(train_set[layer].values, train_labels,
                      name_map + ' Predictor, training data',
                      base / (layer + '_train.png'))
-    confusion_matrix(train_set[layer].values, train_labels,
+    confusion_matrix(test_set[layer].values, test_labels,
                      name_map + ' Predictor, test data',
-                     base / (layer + '_test.png'), threshold=threshold)
+                     base / (layer + '_test.png'))
 
 # show()
 close('all')

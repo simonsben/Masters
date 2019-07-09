@@ -7,6 +7,8 @@ from utilities.data_management import make_path, check_existence, check_writable
 from pandas import concat, isna
 from csv import field_size_limit
 from sys import maxsize
+from numpy.random import permutation
+from numpy import arange
 
 runs = [False, True]
 
@@ -123,15 +125,20 @@ print('\nGenerating mixed dataset')
 datasets = ['24k-abusive-tweets', 'kaggle', '100k-abusive-tweets']
 
 variants = ['', '_partial']
+index_map = None
 for variant in variants:
     filename = dest_directory / ('mixed_redef' + variant + '.csv')
     if filename.exists():
-        print('Skipping mixed', variant)
-        continue
+        print('Skipping mixed')
+        break
 
     mixed_dataset = concat(
         [open_w_pandas(dest_directory / (dataset + variant + '.csv')) for dataset in datasets]
-    ).sample(frac=1).reset_index(drop=True)
+    )
+
+    if index_map is None:
+        index_map = permutation(arange(mixed_dataset.shape[0]))
+    mixed_dataset = mixed_dataset.reset_index(drop=True).reindex(index_map).sort_index()
 
     bad_indexes = mixed_dataset.index[isna(mixed_dataset['document_content'])]
     content = mixed_dataset['document_content']

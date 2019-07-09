@@ -3,12 +3,9 @@ from scipy.cluster.vq import whiten, kmeans
 from scipy.spatial.distance import euclidean
 from scipy.linalg import norm
 from numpy import percentile, logical_not
-from re import match, compile
 from nltk.corpus import wordnet
 
-
 x_key, y_key = 'euclidean_distances', 'cosine_distances'
-wordnet_regex = compile(r'\w+\.')
 
 
 def cluster_neighbours(neighbours):
@@ -37,6 +34,7 @@ def cluster_neighbours(neighbours):
 
 
 def wordnet_expansion(lexicon, n_words=None):
+    """ Expand lexicon using wordnet """
     if n_words is None:
         n_words = 5
 
@@ -79,7 +77,7 @@ def embedding_expansion(lexicon, embeddings, simple_expand=None):
 
             print('Adding', new_terms, ' - ', round((ind + 1) / len(lexicon) * 10000) / 100, '% complete')
 
-    return lexicon
+    return expanded_lexicon
 
 
 def expand_lexicon(lexicon, embeddings=None, simple_expand=None):

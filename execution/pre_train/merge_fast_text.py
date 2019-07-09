@@ -1,4 +1,5 @@
 from utilities.data_management import make_path, check_existence, open_w_pandas, load_execution_params, move_to_root, split_sets
+from pandas import read_csv
 
 move_to_root()
 
@@ -14,7 +15,7 @@ check_existence(test_path)
 check_existence(fast_text_path)
 
 train, test = [open_w_pandas(pth) for pth in [train_path, test_path]]
-fast_text = open_w_pandas(fast_text_path, index_col=None).iloc[0].values
+fast_text = read_csv(fast_text_path, index_col=None, header=None).iloc[:, 0].values
 
 tr_length = train.shape[0]
 f_train, f_test = fast_text[:tr_length], fast_text[tr_length:]
