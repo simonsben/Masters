@@ -1,8 +1,9 @@
 from spacy import load
 from pandas import DataFrame
-from sklearn.feature_extraction.text import CountVectorizer
 from time import time
 from numpy import where
+from multiprocessing import Pool
+from itertools import chain
 
 othering_pos = {
     'NOUN',
@@ -57,30 +58,23 @@ def generate_parse_index():
     return inds
 
 
-def filter_to_save(parsed_documents):
-    """ Filters tokens and returns a string with remaining terms and tags """
-    inds = generate_parse_index()
-
-    filtered_documents = []
-    for tokens in parsed_documents:
-        terms = []
-        for token in tokens:
-            if token.pos_ in othering_pos:
-                terms.append(token.text + '%' + inds[token.pos_])
-            if token.dep_ in othering_dep:
-                terms.append(gen_dep(token) + '%' + inds[token.dep_])
-        filtered_documents.append(' '.join(terms))
-
-    return DataFrame(filtered_documents)
-
-
 def count_pronouns(tokens):
     """ Returns a bool indicating whether the document has at least two pronouns """
     num_propositions = sum(1 for token in tokens if token.pos_ == 'PRON')
     return num_propositions >= 2
 
 
+def processor(frame):
+    model = load('en_core_web_sm')
+
+    parsed_documents = [model(document) for document in frame]
+    # print(parsed_documents)
+    return parsed_documents
+
+
 def othering_vectorizer(tokenized, max_terms=10000, token_filter=filter_tokens):
+    from sklearn.feature_extraction.text import CountVectorizer
+
     """ Generates the othering vectorizer from the filtered document tokens """
     vectorizer = CountVectorizer(max_features=max_terms, token_pattern=r'\b\w{2,}[a-zA-Z\-]+\b',
                                  lowercase=False)
@@ -95,6 +89,33 @@ def othering_vectorizer(tokenized, max_terms=10000, token_filter=filter_tokens):
     return vectorizer
 
 
+def parse_documents(documents):
+    from utilities.data_management.file_management import load_execution_params
+
+    # Load execution parameters and data
+    num_threads = load_execution_params()['n_threads']
+    num_frames = num_threads * 10   # Define extra frames (not all docs are the same length)
+    num_docs = documents.shape[0]
+    frame_size = num_docs / num_frames
+
+    # Initialize processing pool and content
+    pool = Pool(num_threads)
+    frames = [
+        documents['document_content'].iloc[int(ind * frame_size):int((ind + 1) * frame_size)]
+        for ind in range(num_frames)
+    ]
+
+    # Parse content and close pool
+    parsed = pool.map(processor, frames)
+    pool.close()
+    pool.join()
+
+    # Generate dataframe with content
+    parsed = DataFrame({'document_content': list(chain.from_iterable(parsed))})
+
+    return parsed
+
+
 def othering_matrix(dataset, token_filter=None):
     """ Takes dataset and tags it with othering features """
     if type(dataset) is not DataFrame:
@@ -102,10 +123,7 @@ def othering_matrix(dataset, token_filter=None):
 
     # Initialize SpaCy processor and tag documents
     start = time()
-    processor = load('en_core_web_sm')
-    tokenized = DataFrame(
-        dataset['document_content'].astype(str).apply(processor)
-    )
+    tokenized = parse_documents(dataset)
     print('Spacy parse complete in', time() - start)
 
     start = time()
