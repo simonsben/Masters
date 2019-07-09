@@ -32,17 +32,18 @@ def bar_plot(values, features, fig_title, filename=None, horizontal=False):
 def scatter_plot(values, fig_title, weights=None, filename=None, pre_split=True, c_bar_title=None, cmap='Blues'):
     """
     Makes a 2D scatter plot
-    :param values:
-    :param fig_title:
-    :param weights:
-    :param filename:
-    :param pre_split:
-    :param c_bar_title:
-    :param cmap:
-    :return:
+    :param values: List of values to be plotted
+    :param fig_title: Title of figure
+    :param weights: Weight of each point, (default uniform)
+    :param filename: Filename for the figure, (default, doesn't save)
+    :param pre_split: Whether the data is given in the shape 2,N or N,2, (default 2,N)
+    :param c_bar_title: Title for the colourbar
+    :param cmap: Colourmap color to use
+    :return: Axis
     """
     fig, ax = subplots()
 
+    # If not given as shape 2,N, split data, otherwise unpack
     if not pre_split:
         values = values if type(values) is ndarray else array(values)
         x, y = values[:, 0], values[:, 1]
@@ -51,6 +52,7 @@ def scatter_plot(values, fig_title, weights=None, filename=None, pre_split=True,
 
     img = ax.scatter(x, y, c=weights, cmap=cmap, edgecolors='k')
 
+    # Add titles and colourbar (optional)
     ax.set_title(fig_title)
     if weights is not None:
         c_bar = fig.colorbar(img, ax=ax)
@@ -63,6 +65,17 @@ def scatter_plot(values, fig_title, weights=None, filename=None, pre_split=True,
 
 
 def scatter_3_plot(values, fig_title, weights=None, filename=None, ax_titles=None, cmap='Blues', c_bar_title=None):
+    """
+    Generates a 3D scatter plot
+    :param values: Values to be plotted
+    :param fig_title: Figure title
+    :param weights: Weights of the data points, (default, uniform)
+    :param filename: Filename for the figure
+    :param ax_titles: Axis title
+    :param cmap: Colourmap/colour scheme to use for weights
+    :param c_bar_title: Colourbar title
+    :return: Axis
+    """
     fig, ax = generate_3d_figure()
 
     values = array(values) if type(values) is not ndarray else values
