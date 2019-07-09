@@ -87,9 +87,13 @@ def open_fast_embed(path):
     return embedding
 
 
-def open_exp_lexicon(path):
+def open_exp_lexicon(path, raw=False):
     """ Opens an expanded lexicon """
     csv_reader, fl, header = prepare_csv_reader(path)
+
+    if raw:
+        return [header] + [expanded_terms for expanded_terms in csv_reader]
+
     terms = set(header)
     for new_terms in csv_reader:
         terms = terms.union(new_terms)
