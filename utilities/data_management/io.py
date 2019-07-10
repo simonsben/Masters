@@ -80,9 +80,9 @@ def open_w_pandas(path, columns=None, index_col=0):
     return data_frame
 
 
-def open_w_dask(path, index_col=0):
+def open_w_dask(path, index_col=0, dtypes=None):
     path = make_path(path)
-    data_frame = dask_read(path)
+    data_frame = dask_read(path, dtype=dtypes)
 
     if index_col is None:
         return data_frame
