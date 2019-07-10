@@ -8,7 +8,7 @@ from pandas import concat, isna
 from csv import field_size_limit
 from sys import maxsize
 from numpy.random import permutation
-from numpy import arange
+from numpy import arange, savetxt
 
 runs = [False, True]
 
@@ -138,6 +138,7 @@ for variant in variants:
 
     if index_map is None:
         index_map = permutation(arange(mixed_dataset.shape[0]))
+        savetxt(dest_directory / 'mixed_redef_map.csv', index_map, delimiter=',')
     mixed_dataset = mixed_dataset.reset_index(drop=True).reindex(index_map).sort_index()
 
     bad_indexes = mixed_dataset.index[isna(mixed_dataset['document_content'])]
