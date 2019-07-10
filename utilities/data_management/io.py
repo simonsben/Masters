@@ -3,6 +3,7 @@ from csv import reader, writer, QUOTE_NONE
 from pathlib import Path
 from pandas import read_csv, DataFrame
 from re import search, compile
+from dask.dataframe import read_csv as dask_read
 
 file_regex = compile(r'\w+\.\w+$')
 
@@ -77,6 +78,17 @@ def open_w_pandas(path, columns=None, index_col=0):
     data_frame = read_csv(path, usecols=columns, index_col=index_col)
 
     return data_frame
+
+
+def open_w_dask(path, index_col=0):
+    path = make_path(path)
+    data_frame = dask_read(path)
+
+    if index_col is None:
+        return data_frame
+    indexes = list(range(data_frame.shape[1]))
+    indexes.remove(index_col)
+    return data_frame.iloc[:, indexes]
 
 
 def open_fast_embed(path):
