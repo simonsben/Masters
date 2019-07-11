@@ -17,7 +17,9 @@ document_lengths = content.map_partitions(
     lambda df: df.apply(lambda document: len(document.split(' '))),
     meta=int
 ).compute()
-v_min, v_max = document_lengths.min(), document_lengths.max()
+
+print('word length desc')
+print(document_lengths.describe())
 
 figure()
 ax = document_lengths.hist(bins=25, log=True)
@@ -25,9 +27,6 @@ ax = document_lengths.hist(bins=25, log=True)
 ax.set_title('Document word counts')
 ax.set_xlabel('Number of words')
 ax.set_ylabel('Number of documents')
-
-metrics = [min, max, mean, std]
-metric_names = ['min', 'max', 'mean', 'std']
 
 
 def lengths(document, metric):
@@ -53,13 +52,12 @@ def apply_metric(documents, metric):
 
 
 vals = apply_metric(content, max)
-v_min, v_max = vals.min(), vals.max()
 
 figure()
-vals.hist(bins=25, log=True)
+ax = vals.hist(bins=25, log=True)
 
 ax.set_title('Max word lengths')
-ax.set_xlabel('Number of words')
-ax.set_ylabel('Number of documents')
+ax.set_xlabel('Word length')
+ax.set_ylabel('Number of words')
 
 show()
