@@ -64,7 +64,7 @@ def scatter_plot(values, fig_title, weights=None, filename=None, pre_split=True,
     return ax
 
 
-def scatter_3_plot(values, fig_title, weights=None, filename=None, ax_titles=None, cmap='Blues', c_bar_title=None):
+def scatter_3_plot(values, fig_title, weights=None, filename=None, ax_titles=None, cmap='Blues', c_bar_title=None, size=None):
     """
     Generates a 3D scatter plot
     :param values: Values to be plotted
@@ -88,7 +88,7 @@ def scatter_3_plot(values, fig_title, weights=None, filename=None, ax_titles=Non
     if weights is None:
         ax.scatter(x, y, z)
     else:
-        img = ax.scatter(x, y, z, c=weights, cmap=cmap, edgecolors='k')
+        img = ax.scatter(x, y, z, c=weights, cmap=cmap, edgecolors='k', s=size)
         c_bar = fig.colorbar(img, ax=ax)
         if c_bar_title is not None:
             c_bar.ax.set_ylabel(c_bar_title)
