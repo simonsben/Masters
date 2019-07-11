@@ -83,7 +83,7 @@ def get_nearest_neighbours(embeddings, target_word, n_words=250, max_angle=.7, n
     # Define data
     vectors = embeddings.iloc[:, 1:] if normal else normalize_embeddings(embeddings.iloc[:, 1:])
 
-    cols = [str(ind) for ind in range(1, 51)]
+    cols = [str(ind) for ind in range(1, vectors.shape[1] + 1)]
     words = embeddings[['words'] + cols]
     target = get_word_vector(vectors, words['words'], target_word) if type(target_word) is str else target_word
 

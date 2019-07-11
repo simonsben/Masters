@@ -3,23 +3,13 @@ from data.accessors import twitter_24k_accessor, twitter_24k_mutator, twitter_10
 from utilities.pre_processing import count_upper, process_documents, original_length, generate_header, count_emojis, \
     pull_hyperlinks, split_hashtags, manage_special_characters, count_express, count_punctuation, count_digits, \
     remove_spaces, run_partial_clean, count_images, count_handles, count_repeat_instances, count_tags
-from utilities.data_management import make_path, check_existence, check_writable, open_w_pandas
+from utilities.data_management import make_path, check_existence, check_writable, open_w_pandas, expand_csv_row_size
 from pandas import concat, isna
-from csv import field_size_limit
-from sys import maxsize
 from numpy.random import permutation
 from numpy import arange, savetxt
 
 runs = [False, True]
-
-# Enable larger field sizes
-max_size = maxsize
-while True:
-    try:
-        field_size_limit(max_size)
-        break
-    except OverflowError:
-        max_size = int(max_size/10)
+expand_csv_row_size()
 
 # Generate path
 data_sets = [

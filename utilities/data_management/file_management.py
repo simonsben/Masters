@@ -3,6 +3,8 @@ from pathlib import Path
 from scipy.sparse import save_npz
 from json import load
 from numbers import Number
+from csv import field_size_limit
+from sys import maxsize
 
 prediction_filename = Path('data/processed_data/predictions.csv')
 target_file = '.gitignore'
@@ -77,3 +79,14 @@ def make_dir(directory, max_levels=2):
             return
 
     raise LookupError('Cannot make dir within', max_levels, 'levels of the specified directory')
+
+
+def expand_csv_row_size():
+    """ Enables the csv reader to accept longer document rows """
+    max_size = maxsize
+    while True:
+        try:
+            field_size_limit(max_size)
+            break
+        except OverflowError:
+            max_size = int(max_size / 10)

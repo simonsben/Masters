@@ -51,9 +51,9 @@ print('Generated list, converting to dataframe')
 headings = ['words', 'usages'] + [str(ind) for ind in range(1, fast_model.get_dimension() + 1)]
 embeddings = DataFrame(embeddings, columns=headings)
 
-threshold = percentile(embeddings['usages'].values, 5)
-embeddings = embeddings.loc[embeddings['usages'] > threshold]
-print('Removed embeddings for less than', threshold, 'occurrences')
+# threshold = percentile(embeddings['usages'].values, 5)
+# embeddings = embeddings.loc[embeddings['usages'] > threshold]
+# print('Removed embeddings for less than', threshold, 'occurrences')
 
 embeddings.sort_values(['usages', 'words'], inplace=True, ascending=[False, True])
 embeddings.drop(columns='usages', inplace=True)

@@ -1,13 +1,16 @@
-from utilities.data_management import make_path, check_existence, move_to_root, open_w_dask
+from utilities.data_management import make_path, check_existence, move_to_root, open_w_dask, check_writable
 from numpy import min, max, mean, std
-from matplotlib.pyplot import show, figure
+from matplotlib.pyplot import show, figure, savefig
 
 move_to_root(4)
 
-dataset_name = 'storm-front'
+dataset_name = 'mixed_redef'
 dataset_path = make_path('data/prepared_data/') / (dataset_name + '.csv')
+fig_dir = make_path('figures/') / dataset_name / 'analysis'
 
 check_existence(dataset_path)
+check_writable(fig_dir)
+
 
 dataset = open_w_dask(dataset_path, dtypes={'hyperlinks': 'object'})
 content = dataset['document_content'].astype(str)
@@ -27,6 +30,8 @@ ax = document_lengths.hist(bins=25, log=True)
 ax.set_title('Document word counts')
 ax.set_xlabel('Number of words')
 ax.set_ylabel('Number of documents')
+
+savefig(fig_dir / 'word_count.png')
 
 
 def lengths(document, metric):
@@ -59,5 +64,7 @@ ax = vals.hist(bins=25, log=True)
 ax.set_title('Max word lengths')
 ax.set_xlabel('Word length')
 ax.set_ylabel('Number of words')
+
+savefig(fig_dir / 'word_length.png')
 
 show()
