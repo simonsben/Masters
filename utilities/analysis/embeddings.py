@@ -80,6 +80,7 @@ def get_nearest_neighbours(embeddings, target_word, n_words=250, max_angle=.7, n
     :param weights: Weights for use in the euclidean distance calculation, (default, not used)
     :return: N closest vectors, target vector
     """
+
     # Define data
     vectors = embeddings.iloc[:, 1:] if normal else normalize_embeddings(embeddings.iloc[:, 1:])
 

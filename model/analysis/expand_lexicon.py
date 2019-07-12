@@ -2,7 +2,7 @@ from utilities.analysis import svd_embeddings, get_nearest_neighbours
 from scipy.cluster.vq import whiten, kmeans
 from scipy.spatial.distance import euclidean
 from scipy.linalg import norm
-from numpy import percentile, logical_not, argmin
+from numpy import percentile, argmin
 from nltk.corpus import wordnet
 
 x_key, y_key = 'euclidean_distances', 'cosine_distances'
@@ -33,11 +33,6 @@ def cluster_neighbours(neighbours, refined=False):
         ind + 1 for ind, point in enumerate(normed_data)
         if argmin([euclidean(centroid, point) for centroid in centroids]) == target_ind
     ]
-    # for ind, point in enumerate(normed_data):
-    #     if argmin([euclidean(centroid, point) for centroid in centroids]) == target_ind:
-    #         target_inds.append(ind + 1)
-
-    # print('Adding', neighbours['words'].iloc[target_inds].values)
 
     return list(neighbours['words'].iloc[target_inds].values)
 
