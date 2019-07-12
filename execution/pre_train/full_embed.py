@@ -10,12 +10,13 @@ move_to_root()
 params = load_execution_params()
 lex_name = params['fast_text_model']
 data_name = params['dataset']
+partial = True
 
 # Define paths
 lex_base = make_path('data/lexicons') / 'fast_text'
 mod_path = lex_base / (lex_name + '.bin')
 data_path = make_path('data/prepared_data') / (data_name + '.csv')
-dest_path = make_path('data/prepared_lexicon/') / (lex_name + '.csv')
+dest_path = make_path('data/prepared_lexicon/') / (lex_name + ('_min' if partial else '') + '.csv')
 
 # Ensure paths are valid
 check_existence(mod_path)
@@ -51,9 +52,10 @@ print('Generated list, converting to dataframe')
 headings = ['words', 'usages'] + [str(ind) for ind in range(1, fast_model.get_dimension() + 1)]
 embeddings = DataFrame(embeddings, columns=headings)
 
-# threshold = percentile(embeddings['usages'].values, 5)
-# embeddings = embeddings.loc[embeddings['usages'] > threshold]
-# print('Removed embeddings for less than', threshold, 'occurrences')
+if partial:
+    threshold = percentile(embeddings['usages'].values, 5)
+    embeddings = embeddings.loc[embeddings['usages'] > threshold]
+    print('Removed embeddings for less than', threshold, 'occurrences')
 
 embeddings.sort_values(['usages', 'words'], inplace=True, ascending=[False, True])
 embeddings.drop(columns='usages', inplace=True)

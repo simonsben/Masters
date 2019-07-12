@@ -2,13 +2,13 @@ from utilities.analysis import svd_embeddings, get_nearest_neighbours
 from scipy.cluster.vq import whiten, kmeans
 from scipy.spatial.distance import euclidean
 from scipy.linalg import norm
-from numpy import percentile, logical_not
+from numpy import percentile, logical_not, argmin
 from nltk.corpus import wordnet
 
 x_key, y_key = 'euclidean_distances', 'cosine_distances'
 
 
-def cluster_neighbours(neighbours):
+def cluster_neighbours(neighbours, refined=False):
     """ Calculate the cluster of embeddings around a given word """
     # Normalize data
     neighbours = neighbours.iloc[1:]
@@ -20,17 +20,26 @@ def cluster_neighbours(neighbours):
     normed_data = normed_data[e_distances < threshold]
 
     # Cluster
-    centroids, distortion = kmeans(normed_data, 2)
+    distortion = 2
+    num_centroids = 1
+    while distortion > (.25 if refined else 1):
+        num_centroids += 1
+        centroids, distortion = kmeans(normed_data, num_centroids)
 
     # Split data by centroid
-    (a, b) = centroids
-    lengths = [(euclidean(point, a), euclidean(point, b)) for point in normed_data]
-    is_set_one = [length[0] < length[1] for length in lengths]
+    target_ind = argmin([norm(centroid) for centroid in centroids])
 
-    close_set = is_set_one if norm(a) < norm(b) else logical_not(is_set_one)
-    print('Adding', neighbours['words'].iloc[1:].loc[close_set].values)
+    target_inds = [
+        ind + 1 for ind, point in enumerate(normed_data)
+        if argmin([euclidean(centroid, point) for centroid in centroids]) == target_ind
+    ]
+    # for ind, point in enumerate(normed_data):
+    #     if argmin([euclidean(centroid, point) for centroid in centroids]) == target_ind:
+    #         target_inds.append(ind + 1)
 
-    return list(neighbours['words'].loc[close_set].values)
+    # print('Adding', neighbours['words'].iloc[target_inds].values)
+
+    return list(neighbours['words'].iloc[target_inds].values)
 
 
 def wordnet_expansion(lexicon, n_words=None):

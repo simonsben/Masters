@@ -9,7 +9,7 @@ from scipy.linalg import norm as two_norm
 
 
 # Define parameters
-target_word = 'good'
+target_word = 'ass'
 targets = ('good', 'bad', 'poor')
 max_cos_dist = .85
 
