@@ -25,10 +25,12 @@ class Term:
         return hash(self.term)
 
     def __eq__(self, other):
+        if isinstance(other, Term):
+            return self.term == other.term
         return hash(self) == hash(other)
 
     def __str__(self):
-        return str(self.term)
+        return str(self.term)  # (str(self.parent) + '->' if self.parent is not None else '')
 
 
 class Terms:
@@ -43,27 +45,6 @@ class Terms:
         for term in terms:
             self.add_term(term, _parent)
 
-    # def build_levels(self):
-    #     level_map = {}
-    #     remaining = list(self.terms)
-    #
-    #     while len(remaining) > 0:
-    #         to_remove = []
-    #         for ind, term in enumerate(remaining):
-    #             if term.parent is None or term.parent in level_map:
-    #                 if term.parent is None:
-    #                     level_map[str(term)] = []
-    #                 else:
-    #                     level_map[term.parent].append(str(term))
-    #
-    #                 to_remove.append(ind)
-    #
-    #         to_remove.reverse()
-    #         for ind in to_remove:
-    #             remaining.pop(ind)
-    #
-    #     return level_map, get_depth(list(level_map))
-
     def visualize(self, term_map, blocking=False):
         fig, ax = generate_3d_figure()
 
@@ -73,19 +54,27 @@ class Terms:
         level_map = {}
         remaining = list(self.terms)
 
+        last = 0
         while len(remaining) > 0:
+            if len(remaining) == last:
+                print('Never found', [str(rem) for rem in remaining])
+                break
+            last = len(remaining)
+
             to_remove = []
-            for ind, term in enumerate(remaining):
-                if term.parent is not None and term.parent in level_map:
+            for ind, r_term in enumerate(remaining):
+                term = str(r_term)
+                parent = str(r_term.parent) if r_term.parent is not None else None
+                if parent is not None and parent not in level_map:
                     continue
 
-                level_map[term] = level_map[term.parent] + 1 if term.parent in level_map else 0
+                level_map[term] = level_map[parent] + 1 if parent in level_map else 0
                 to_remove.append(ind)
 
                 term_point = term_map[term]
-                if term.parent is not None:
-                    line_x, line_y, line_z = array([term_point, term_map[term.parent]]).transpose()
-                    ax.plot(line_x, line_y, line_z, c='k')
+                if parent is not None:
+                    line_x, line_y, line_z = array([term_point, term_map[parent]]).transpose()
+                    ax.plot(line_x, line_y, line_z)
 
                 points.append(term_point)
                 weights.append(level_map[term])
@@ -94,14 +83,19 @@ class Terms:
             for ind in to_remove:
                 remaining.pop(ind)
 
-        x, y, z = array(points).transpose()
-        img = ax.scatter(x, y, z, c=weights, cmap='Blues', edgecolors='k')
-        cbar = fig.colorbar(img, ax=ax)
+        points = array(points).transpose()
+        weights = array(weights)
+        print(points.shape, weights.shape)
+        print(weights)
 
-        ax.set_xlabel('Dimension 1')
-        ax.set_ylabel('Dimension 2')
-        ax.set_zlabel('Dimension 3')
-        cbar.ax.set_ylabel('Term depth')
+        x, y, z = points
+        img = ax.scatter(x, y, z)
+        # cbar = fig.colorbar(img, ax=ax)
+
+        # ax.set_xlabel('Dimension 1')
+        # ax.set_ylabel('Dimension 2')
+        # ax.set_zlabel('Dimension 3')
+        # cbar.ax.set_ylabel('Term depth')
 
         if blocking:
             show()
