@@ -27,19 +27,15 @@ def cluster_neighbours(neighbours, refined=False):
         centroids, distortion = kmeans(normed_data, num_centroids)
 
     # Split data by centroid
-    target_ind = argmin([norm(centroid) for centroid in centroids])
-
-    target_inds = [
+    target_index = argmin([norm(centroid) for centroid in centroids])
+    term_indexes = [
         ind + 1 for ind, point in enumerate(normed_data)
-        if argmin([euclidean(centroid, point) for centroid in centroids]) == target_ind
+        if argmin([euclidean(centroid, point) for centroid in centroids]) == target_index
     ]
-    # for ind, point in enumerate(normed_data):
-    #     if argmin([euclidean(centroid, point) for centroid in centroids]) == target_ind:
-    #         target_inds.append(ind + 1)
 
     # print('Adding', neighbours['words'].iloc[target_inds].values)
 
-    return list(neighbours['words'].iloc[target_inds].values)
+    return list(neighbours['words'].iloc[term_indexes].values)
 
 
 def wordnet_expansion(lexicon, n_words=None):
