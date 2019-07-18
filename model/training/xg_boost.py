@@ -18,7 +18,7 @@ def train_xg_boost(document_matrix, is_abusive, return_data=False, prepared=Fals
     # Initialize and train XGBoost model
     n_threads = load_execution_params()['n_threads']
     classifier = XGBClassifier(objective='binary:logistic', n_estimators=600, verbosity=verb, n_jobs=n_threads)
-    classifier.fit(sparse_train, train_label, verbose=verb > 0)
+    classifier.fit(sparse_train, train_label, verbose=(verb > 0))
 
     if return_data:
         return classifier, ((sparse_train, train_label), (sparse_test, test_label))

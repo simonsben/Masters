@@ -2,13 +2,14 @@ from utilities.analysis import svd_embeddings, get_nearest_neighbours
 from scipy.cluster.vq import whiten, kmeans
 from scipy.spatial.distance import euclidean
 from scipy.linalg import norm
-from numpy import percentile, logical_not, argmin
+from scipy.spatial.distance import euclidean
+from numpy import percentile, argmin
 from nltk.corpus import wordnet
 
 x_key, y_key = 'euclidean_distances', 'cosine_distances'
 
 
-def cluster_neighbours(neighbours, refined=False):
+def cluster_neighbours(neighbours, refined=False, target=None):
     """ Calculate the cluster of embeddings around a given word """
     # Normalize data
     neighbours = neighbours.iloc[1:]
@@ -33,9 +34,11 @@ def cluster_neighbours(neighbours, refined=False):
         if argmin([euclidean(centroid, point) for centroid in centroids]) == target_index
     ]
 
-    # print('Adding', neighbours['words'].iloc[target_inds].values)
+    close_bois = neighbours.iloc[term_indexes]
+    if target is not None:
+        close_bois['dist'] = close_bois.iloc[:, 1:-3].apply(lambda doc: euclidean(target, doc), axis=1)
 
-    return list(neighbours['words'].iloc[term_indexes].values)
+    return list(neighbours['words'].iloc[term_indexes].values), close_bois[['words', 'euclidean_distances', 'cosine_distances', 'dist']]
 
 
 def wordnet_expansion(lexicon, n_words=None):

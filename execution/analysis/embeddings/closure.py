@@ -36,22 +36,27 @@ embeddings = svd_embeddings(embeddings)
 print('Embeddings ready, running closure')
 
 added_terms = []
-while len(to_be_closed) > 0:
-    round_target = to_be_closed.pop(0)
-    print('Closing', round_target)
+root_target = None
 
-    terms, target = get_nearest_neighbours(embeddings, round_target, n_words=250)
+while len(to_be_closed) > 0:
+    target_word = to_be_closed.pop(0)
+    print('Closing', target_word)
+
+    terms, target = get_nearest_neighbours(embeddings, target_word, n_words=250)
 
     if len(terms) < 2:
         continue
 
-    close_terms = cluster_neighbours(terms, True)
-    added_terms.append(close_terms)
+    if root_target is None:
+        root_target = target
+
+    close_terms, distances = cluster_neighbours(terms, True, root_target)
 
     new_terms = [term for term in close_terms if term not in closure_set]
     closure_set.update(new_terms)
     to_be_closed = to_be_closed + new_terms
     print('Adding', new_terms)
+    print(distances)
 
 print('Set closed', closure_set)
 
