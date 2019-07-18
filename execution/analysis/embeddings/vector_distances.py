@@ -9,7 +9,7 @@ from scipy.linalg import norm as two_norm
 
 
 # Define parameters
-target_word = 'fucking'
+target_word = 'bitching'
 targets = ('good', 'bad', 'poor')
 max_cos_dist = .85
 
@@ -18,7 +18,7 @@ move_to_root(4)
 params = load_execution_params()
 embed_name = params['fast_text_model']
 data_name = params['dataset']
-embed_path = make_path('data/prepared_lexicon/') / (embed_name + '.csv')
+embed_path = make_path('data/prepared_lexicon/') / (embed_name + '_min.csv')
 dest_dir = make_path('data/processed_data/') / data_name / 'analysis' / 'embedding_neighbours' / target_word
 
 check_existence(embed_path)

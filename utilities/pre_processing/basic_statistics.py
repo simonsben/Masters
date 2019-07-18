@@ -3,7 +3,7 @@ from re import compile, subn, sub
 emoji_regex = compile(r'&#\d{4,7};')
 express_regex = compile(r'[!?]+')
 punctuation_regex = compile(r'[^a-zA-Z0-9]')
-partial_clean = compile(r'[^a-zA-Z,.!?\'";:\-]+')
+partial_clean = compile(r'[^a-zA-Z,.!?\'";:\- ]+')
 digit_regex = compile(r'[0-9]+')
 space_regex = compile(r'\s+(?=\s)|^\s|'
                       r'(?<=\w)\s+(?=[^a-zA-Z0-9])')
