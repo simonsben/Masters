@@ -1,14 +1,14 @@
 from dask.dataframe import read_csv
-from utilities.data_management import load_execution_params, make_path, move_to_root, check_existence, make_dir
+from utilities.data_management import load_execution_params, make_path, move_to_root, check_existence, make_dir, \
+    prepare_csv_writer
 from utilities.analysis import get_nearest_neighbours, svd_embeddings
 from model.analysis import cluster_neighbours
-from numpy import savetxt
 
 
 # Define parameters
 seed_terms = ['bitch']
-# seed_terms = ['fucking', 'bitch', 'fuck', 'bitches', 'ass', 'fucked',
-# 'shit', 'stupid', 'pussy', 'hoes', 'idiot', 'hoe']
+# seed_terms = ['fucking', 'bitch', 'fuck', 'bitches', 'ass',
+# 'fucked', 'shit', 'stupid', 'pussy', 'hoes', 'idiot', 'hoe']
 closure_set = set(seed_terms)
 to_be_closed = seed_terms.copy()
 
@@ -33,8 +33,9 @@ embeddings = read_csv(embed_path, dtype=dtypes)
 print('Data imported')
 
 embeddings = svd_embeddings(embeddings)
-print('Embeddings ready, calculating nearest neighbours')
+print('Embeddings ready, running closure')
 
+added_terms = []
 root_target = None
 
 while len(to_be_closed) > 0:
@@ -42,6 +43,10 @@ while len(to_be_closed) > 0:
     print('Closing', target_word)
 
     terms, target = get_nearest_neighbours(embeddings, target_word, n_words=250)
+
+    if len(terms) < 2:
+        continue
+
     if root_target is None:
         root_target = target
 
@@ -55,5 +60,10 @@ while len(to_be_closed) > 0:
 
 print('Set closed', closure_set)
 
-data = [seed_terms, list(closure_set)]
-savetxt((dest_dir / 'closure.csv'), data)
+# Save data
+writer, fl = prepare_csv_writer(dest_dir / 'closure_set_' + str(len(seed_terms)) + '.csv')
+writer.writerow(seed_terms)
+for w_expanded in added_terms:
+    writer.writerow(w_expanded)
+
+fl.close()

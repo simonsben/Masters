@@ -28,18 +28,17 @@ def cluster_neighbours(neighbours, refined=False, target=None):
         centroids, distortion = kmeans(normed_data, num_centroids)
 
     # Split data by centroid
-    target_ind = argmin([norm(centroid) for centroid in centroids])
-
-    target_inds = [
+    target_index = argmin([norm(centroid) for centroid in centroids])
+    term_indexes = [
         ind + 1 for ind, point in enumerate(normed_data)
-        if argmin([euclidean(centroid, point) for centroid in centroids]) == target_ind
+        if argmin([euclidean(centroid, point) for centroid in centroids]) == target_index
     ]
 
-    close_bois = neighbours.iloc[target_inds]
+    close_bois = neighbours.iloc[term_indexes]
     if target is not None:
         close_bois['dist'] = close_bois.iloc[:, 1:-3].apply(lambda doc: euclidean(target, doc), axis=1)
 
-    return list(neighbours['words'].iloc[target_inds].values), close_bois[['words', 'euclidean_distances', 'cosine_distances', 'dist']]
+    return list(neighbours['words'].iloc[term_indexes].values), close_bois[['words', 'euclidean_distances', 'cosine_distances', 'dist']]
 
 
 def wordnet_expansion(lexicon, n_words=None):
