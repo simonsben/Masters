@@ -1,9 +1,8 @@
 from spacy import load
-from re import compile
 from numpy import zeros, asarray, squeeze, logical_not, add, percentile
-from sklearn.feature_extraction.text import CountVectorizer
-from itertools import compress
-
+from itertools import compress, chain
+from multiprocessing import Pool
+from re import compile
 
 intent_lead_terms = {'going', 'want', 'need', 'love', 'try',  'tempted', 'like', 'have', 'wish', 'got', 'hope',
                      'hoping', 'trying', 'gon', 'intend', 'wanted', 'tried', 'decided', 'ought', 'meaning'}
@@ -19,41 +18,53 @@ def identify_basic_intent(parsed):
     return hits
 
 
-def break_and_tag(documents, parser=None, lead_terms=intent_lead_terms):
-    if parser is None:
-        parser = load('en_core_web_sm')
+def worker_init(*props):
+    global parser
+    parser = load('en_core_web_sm')
 
-    document_contexts = []
+
+def tag_document(props):
+    corpus_offset, document, lead_terms = props
+    # Get non-zero length contexts/sentences
+    contexts = list(filter(
+        lambda part: len(part) > 0,
+        context_breaks.split(document)
+    ))
     intention_indexes = set()
 
+    # For context in document
+    for context_offset, context in enumerate(contexts):
+        # Parse context
+        parsed = parser(context)
+
+        # Check for basic intent structure
+        target = identify_basic_intent(parsed)
+        if len(target) < 1:
+            continue
+
+        # For basic structure in context
+        for hit in target:
+            index = corpus_offset + context_offset
+
+            # If leading variable is in the basic intent terms set
+            if hit[0] in lead_terms:
+                intention_indexes.add(index)
+
+    return contexts, intention_indexes
+
+
+def break_and_tag(documents, parser=None, lead_terms=intent_lead_terms):
+    from utilities.data_management import load_execution_params
+
     # For document in corpus
-    for document in documents:
-        # Get non-zero length contexts/sentences
-        contexts = list(filter(
-            lambda part: len(part) > 0,
-            context_breaks.split(document)
-        ))
+    worker_pool = Pool(load_execution_params()['n_threads'], initializer=worker_init)
+    processed_documents = worker_pool.map(tag_document, ((ind, document, lead_terms) for ind, document in enumerate(documents)))
+    worker_pool.close()
+    worker_pool.join()
 
-        corpus_offset = len(document_contexts)
-        document_contexts += contexts
-
-        # For context in document
-        for context_offset, context in enumerate(contexts):
-            # Parse context
-            parsed = parser(context)
-
-            # Check for basic intent structure
-            target = identify_basic_intent(parsed)
-            if len(target) < 1:
-                continue
-
-            # For basic structure in context
-            for hit in target:
-                index = corpus_offset + context_offset
-
-                # If leading variable is in the basic intent terms set
-                if hit[0] in lead_terms:
-                    intention_indexes.add(index)
+    document_contexts, intention_indexes = zip(*processed_documents)
+    intention_indexes = list(set().union(*intention_indexes))
+    document_contexts = list(chain.from_iterable(document_contexts))
 
     # Convert intention index list to boolean array
     intent = zeros(len(document_contexts), dtype=bool)
@@ -65,11 +76,13 @@ def break_and_tag(documents, parser=None, lead_terms=intent_lead_terms):
 
 
 def get_intent_terms(documents):
+    from sklearn.feature_extraction.text import CountVectorizer
+
     # Get contexts with intent
     document_contexts, has_intent = break_and_tag(documents)
 
     # Initialize document vectorizer
-    vectorizer = CountVectorizer(ngram_range=(1, 2), max_features=15000)
+    vectorizer = CountVectorizer(ngram_range=(1, 2), max_features=5000)
 
     # Construct document matrix
     document_matrix = vectorizer.fit_transform(document_contexts)
