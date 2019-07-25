@@ -1,9 +1,8 @@
 if __name__ == '__main__':
-    from model.expansion.intent_seed import get_intent_terms
     from utilities.data_management import move_to_root, make_path, open_w_pandas, check_existence, load_execution_params, \
         make_dir
-    from pandas import DataFrame
-    from time import time
+    from execution.intent.prepare import pull_intent_terms
+    from model.extraction import pull_document_contexts
 
     move_to_root()
 
@@ -15,14 +14,13 @@ if __name__ == '__main__':
     check_existence(data_path)
     make_dir(dest_path)
 
-    content = open_w_pandas(data_path)['document_content']
+    documents = open_w_pandas(data_path)['document_content'].iloc[:100]
     print('Content loaded')
 
-    start = time()
-    intent_terms = get_intent_terms(content)
-    print('Run in', time() - start)
-    intent_terms = DataFrame(intent_terms, columns=['terms', 'significance'])
+    contexts, context_map = pull_document_contexts(documents)
+    print('Contexts extracted')
 
+    intent_terms, has_intent = pull_intent_terms(contexts, dest_path)
     print(intent_terms)
 
-    intent_terms.to_csv(dest_path)
+    # intent_terms.to_csv(dest_path)
