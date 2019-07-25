@@ -1,8 +1,8 @@
 from spacy import load
 from numpy import zeros, asarray, squeeze, logical_not, add, percentile, sum
-from itertools import compress, chain
+from itertools import compress
 from multiprocessing import Pool
-from re import compile
+from model.extraction import generate_content_matrix
 
 intent_lead_terms = {'going', 'want', 'need', 'love', 'try',  'tempted', 'like', 'have', 'wish', 'got', 'hope',
                      'hoping', 'trying', 'gon', 'intend', 'wanted', 'tried', 'decided', 'ought', 'meaning'}
@@ -62,19 +62,13 @@ def break_and_tag(contexts, lead_terms=intent_lead_terms):
     return intent_mask
 
 
-def get_intent_terms(contexts):
-    from sklearn.feature_extraction.text import CountVectorizer
+def get_intent_terms(contexts, intent_mask=None, content_data=None):
+    if intent_mask is None:
+        # Get contexts with intent
+        intent_mask = break_and_tag(contexts)
+        print('Mask computed, running doc matrix')
 
-    # Get contexts with intent
-    intent_mask = break_and_tag(contexts)
-    print('Computed, running doc matrix')
-
-    # Initialize document vectorizer
-    vectorizer = CountVectorizer(ngram_range=(1, 2), max_features=5000)
-
-    # Construct document matrix
-    document_matrix = vectorizer.fit_transform(contexts)
-    features = vectorizer.get_feature_names()
+    document_matrix, features = generate_content_matrix(contexts) if content_data is None else content_data
 
     # Get mask for contexts without intent
     no_intent_mask = logical_not(intent_mask)

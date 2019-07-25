@@ -28,3 +28,16 @@ def pull_document_contexts(documents):
         corpus_contexts += document_contexts
 
     return corpus_contexts, context_map
+
+
+def generate_content_matrix(contexts):
+    from sklearn.feature_extraction.text import CountVectorizer
+
+    # Initialize document vectorizer
+    vectorizer = CountVectorizer(ngram_range=(1, 2), max_features=5000)
+
+    # Construct document matrix
+    document_matrix = vectorizer.fit_transform(contexts)
+    features = vectorizer.get_feature_names()
+
+    return document_matrix, features
