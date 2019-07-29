@@ -2,7 +2,6 @@ from utilities.data_management import load_execution_params, check_existence, mo
     check_writable
 from fastText import load_model
 from pandas import DataFrame
-from numpy import percentile
 
 move_to_root()
 
@@ -10,13 +9,13 @@ move_to_root()
 params = load_execution_params()
 lex_name = params['fast_text_model']
 data_name = params['dataset']
-partial = True
+partial = False
 
 # Define paths
 lex_base = make_path('data/lexicons') / 'fast_text'
 mod_path = lex_base / (lex_name + '.bin')
 data_path = make_path('data/prepared_data') / (data_name + '.csv')
-dest_path = make_path('data/prepared_lexicon/') / (lex_name + ('_min' if partial else '') + '.csv')
+dest_path = make_path('data/prepared_lexicon/') / (data_name + '-' + lex_name + ('_min' if partial else '') + '.csv')
 
 # Ensure paths are valid
 check_existence(mod_path)
@@ -36,6 +35,8 @@ print('Model loaded, generating oov vectors')
 embeddings = {}
 usage_counts = {}
 for doc in data['document_content']:
+    if not isinstance(doc, str):
+        continue
     for word in doc.split(' '):
         if str(word) not in embeddings:
             embeddings[str(word)] = fast_model.get_word_vector(str(word))

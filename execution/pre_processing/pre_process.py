@@ -13,26 +13,26 @@ expand_csv_row_size()
 
 # Generate path
 data_sets = [
-    {
-        'data_set': '24k-abusive-tweets',
-        'accessor': twitter_24k_accessor,
-        'mutator': twitter_24k_mutator
-    },
-    {
-        'data_set': '100k-abusive-tweets',
-        'accessor': twitter_100k_accessor,
-        'mutator': twitter_100k_mutator
-    },
+    # {
+    #     'data_set': '24k-abusive-tweets',
+    #     'accessor': twitter_24k_accessor,
+    #     'mutator': twitter_24k_mutator
+    # },
+    # {
+    #     'data_set': '100k-abusive-tweets',
+    #     'accessor': twitter_100k_accessor,
+    #     'mutator': twitter_100k_mutator
+    # },
     {
         'data_set': 'kaggle',
         'accessor': kaggle_accessor,
         'mutator': kaggle_mutator
     },
-    {
-        'data_set': 'storm-front',
-        'accessor': stormfront_accessor,
-        'mutator': stormfront_mutator
-    },
+    # {
+    #     'data_set': 'storm-front',
+    #     'accessor': stormfront_accessor,
+    #     'mutator': stormfront_mutator
+    # },
     # {
     #     'data_set': 'insults',
     #     'accessor': insults_accessor,

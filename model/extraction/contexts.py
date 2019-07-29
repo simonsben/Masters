@@ -17,7 +17,7 @@ def pull_document_contexts(documents):
         # Split document into non-zero length contexts
         document_contexts = list(filter(
             lambda cont: len(cont) > 0,
-            context_breaks.split(document)
+            context_breaks.split(document) if isinstance(document, str) else []
         ))
 
         # Add set of contexts to the map
