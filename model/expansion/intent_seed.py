@@ -19,7 +19,7 @@ def identify_basic_intent(parsed):
 
 def worker_init(*props):
     global parser
-    parser = load('en_core_web_sm')
+    parser = load('en_core_web_md')
 
 
 def tag_document(props):
