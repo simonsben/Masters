@@ -21,6 +21,8 @@ def identify_basic_intent(parsed):
                 # If first verb is related to a first person pronoun
                 if child.dep_ == 'nsubj' and child.text in first_person:
                     is_first = True
+                elif child.dep_ == 'nsubj':
+                    not_first.add(child.text)
                 elif child.dep_ == 'neg':   # If first verb is negated throw out sequence of terms
                     is_first = False
                     break
@@ -35,6 +37,9 @@ def worker_init(*props):
     """ Initialization function for Pool workers """
     global parser
     parser = load('en_core_web_md')
+
+    global not_first
+    not_first = set()
 
 
 def tag_document(props):
@@ -54,9 +59,10 @@ def tag_intent_documents(contexts):
 
     # For document in corpus
     worker_pool = Pool(load_execution_params()['n_threads'], initializer=worker_init)
-    intent_indexes = worker_pool.map(
+    intent_indexes = worker_pool.imap(
         tag_document,
-        ((index, context) for index, context in enumerate(contexts))
+        ((index, context) for index, context in enumerate(contexts)),
+        chunksize=50
     )
     worker_pool.close()
     worker_pool.join()
@@ -108,6 +114,7 @@ def get_intent_terms(contexts, intent_mask=None, content_data=None):
         freq = (lab_count / num_labelled) / (unlabelled_count / num_unlabelled)
         significant_terms.append((term, freq))
 
+    significant_terms = list(filter(lambda term: term[1] > 1, significant_terms))
     significant_terms = sorted(significant_terms, key=lambda term: term[1], reverse=True)
 
     return significant_terms, intent_mask
