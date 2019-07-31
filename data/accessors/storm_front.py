@@ -1,12 +1,12 @@
 stormfront = {
-    'content': 5,
+    'content': 2,
     'is_abusive': None
 }
 
 
 def stormfront_accessor(document):
     """ Accessor for the stormfront dataset """
-    return document[stormfront['content']].encode('ascii', 'xmlcharrefreplace').decode('ascii')
+    return document[stormfront['content']]
 
 
 def stormfront_mutator(modified_content, values, document):

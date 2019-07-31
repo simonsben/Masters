@@ -10,6 +10,7 @@ space_regex = compile(r'\s+(?=\s)|^\s|'
 image_regex = compile(r'Image:\w[\w\s]+.\w{3}')
 repeat_regex = compile(r'(\w+)\1{2,}')
 tag_regex = compile(r'<[\w\d/\'"=;:,.&#%?+()\[\]{}\-\n ]+>(n(?= ))?')
+bracket_regex = compile(r'[\(\[](\w)[\)\]]')
 
 
 def count_upper(document, get_header=False):
@@ -71,6 +72,14 @@ def count_images(document, get_header=False):
     return count, document
 
 
+def count_bracket_text(document, get_header=False):
+    """ Counts the number of instances of bracketed (ex. person(s)) """
+    if get_header: return 'bracket_text_count'
+
+    document, count = subn(bracket_regex, lambda match: match.group(1), document)
+    return count, document
+
+
 def count_repeat_instances(document, get_header=False):
     """ Counts the number of repeated characters (greater than 3) and removes all but one """
     if get_header: return 'repeat_count'
@@ -83,7 +92,7 @@ def count_tags(document, get_header=False):
     """ Counts the number of HTML tags and removes them """
     if get_header: return 'tag_count'
 
-    document, count = subn(tag_regex, '', document)
+    document, count = subn(tag_regex, ' ', document)
     return count, document
 
 

@@ -1,8 +1,6 @@
 from data.accessors import twitter_24k_accessor, twitter_24k_mutator, twitter_100k_accessor, twitter_100k_mutator, \
     kaggle_accessor, kaggle_mutator, insults_accessor, insults_mutator, stormfront_accessor, stormfront_mutator
-from utilities.pre_processing import count_upper, process_documents, original_length, generate_header, count_emojis, \
-    pull_hyperlinks, split_hashtags, manage_special_characters, count_express, count_punctuation, count_digits, \
-    remove_spaces, run_partial_clean, count_images, count_handles, count_repeat_instances, count_tags
+from utilities.pre_processing import *
 from utilities.data_management import make_path, check_existence, check_writable, open_w_pandas, expand_csv_row_size
 from pandas import concat, isna
 from numpy.random import permutation
@@ -13,26 +11,26 @@ expand_csv_row_size()
 
 # Generate path
 data_sets = [
-    # {
-    #     'data_set': '24k-abusive-tweets',
-    #     'accessor': twitter_24k_accessor,
-    #     'mutator': twitter_24k_mutator
-    # },
-    # {
-    #     'data_set': '100k-abusive-tweets',
-    #     'accessor': twitter_100k_accessor,
-    #     'mutator': twitter_100k_mutator
-    # },
+    {
+        'data_set': '24k-abusive-tweets',
+        'accessor': twitter_24k_accessor,
+        'mutator': twitter_24k_mutator
+    },
+    {
+        'data_set': '100k-abusive-tweets',
+        'accessor': twitter_100k_accessor,
+        'mutator': twitter_100k_mutator
+    },
     {
         'data_set': 'kaggle',
         'accessor': kaggle_accessor,
         'mutator': kaggle_mutator
     },
-    # {
-    #     'data_set': 'storm-front',
-    #     'accessor': stormfront_accessor,
-    #     'mutator': stormfront_mutator
-    # },
+    {
+        'data_set': 'storm-front',
+        'accessor': stormfront_accessor,
+        'mutator': stormfront_mutator
+    },
     # {
     #     'data_set': 'insults',
     #     'accessor': insults_accessor,
@@ -48,34 +46,36 @@ for data_set in data_sets:
     set_name = data_set['data_set']
     check_existence(source_directory / set_name / (set_name + '.csv'))
 
+partial_processes = [
+    original_length,
+    count_tags,
+    count_images,
+    count_bracket_text,
+    manage_special_characters,
+    count_emojis,
+    count_handles,
+    split_hashtags,
+    pull_hyperlinks,
+    count_upper,
+    run_partial_clean,
+    remove_spaces
+]
 # Defined pre-processing to be applied
 pre_processes = [
     original_length,
     count_tags,
     count_images,
+    count_bracket_text,
+    manage_special_characters,
     count_emojis,
     count_handles,
     split_hashtags,
     pull_hyperlinks,
-    manage_special_characters,
     count_upper,
     count_express,
     count_punctuation,
     count_digits,
     count_repeat_instances,
-    remove_spaces
-]
-partial_processes = [
-    original_length,
-    count_tags,
-    count_images,
-    count_emojis,
-    count_handles,
-    split_hashtags,
-    pull_hyperlinks,
-    manage_special_characters,
-    count_upper,
-    run_partial_clean,
     remove_spaces
 ]
 
@@ -89,8 +89,8 @@ for run_partial_process in runs:
     modified_header = generate_header(processes)
 
     options = {
-        # 'max_documents': 10000,
-        'encoding': 'utf8'
+        # 'max_documents': 100,
+        # 'encoding': 'utf8'
     }
 
     for data_set in data_sets:

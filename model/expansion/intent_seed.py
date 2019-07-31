@@ -6,14 +6,33 @@ from model.extraction import generate_content_matrix
 
 intent_lead_terms = {'going', 'want', 'need', 'love', 'try',  'tempted', 'like', 'have', 'wish', 'got', 'hope',
                      'hoping', 'trying', 'gon', 'intend', 'wanted', 'tried', 'decided', 'ought', 'meaning'}
+first_person = {'i', 'we', 'me', 'us', 'em', 'mine', 'myself'}
 
 
 # TODO clean up function
 def identify_basic_intent(parsed):
     hits = []
+    # for ind, token in enumerate(parsed):
+    #     if token.tag_ == 'TO' and token.head.pos_ == 'VERB' and token.head.head.pos_ == 'VERB':
+    #         hits.append((token.head.head.text, token.text, token.head.text))
+
     for ind, token in enumerate(parsed):
         if token.tag_ == 'TO' and token.head.pos_ == 'VERB' and token.head.head.pos_ == 'VERB':
-            hits.append((token.head.head.text, token.text, token.head.text))
+            is_first = False
+            for child in token.head.head.children:
+                if child.dep_ == 'nsubj' and child.text in first_person:
+                    is_first = True
+                elif child.dep_ == 'neg':
+                    print('neg filter', parsed)
+                    is_first = False
+                    break
+
+            if is_first:
+                hits.append((token.head.head.text, token.text, token.head.text))
+
+    if len(hits) > 1:
+        print('phat', parsed)
+
     return hits
 
 

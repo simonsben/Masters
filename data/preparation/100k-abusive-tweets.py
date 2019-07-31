@@ -1,6 +1,6 @@
 from utilities.data_management import make_path, check_readable, rename_file, prepare_csv_writer
-from utilities.pre_processing import remove_unicode_values
 from re import compile, match
+from unidecode import unidecode
 
 # Generate and check path
 directory_filename = '../datasets/100k-abusive-tweets/'
@@ -26,7 +26,8 @@ for doc in source_file:
     if doc == '\n':
         continue
     line = match(regex, doc)
-    document = remove_unicode_values([line.group(1), line.group(2)])
+    content = unidecode(line.group(1))
+    document = [line.group(3), content]
 
     csv_writer.writerow(document)
 
