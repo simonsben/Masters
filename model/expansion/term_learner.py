@@ -1,4 +1,4 @@
-from model.extraction import generate_content_matrix
+from model.extraction import generate_context_matrix
 from model.expansion.intent_seed import get_intent_terms
 from numpy import array, asarray, percentile
 from pandas import DataFrame
@@ -10,7 +10,7 @@ def learn_terms(contexts, terms):
     terms = set(terms)
 
     # Get context matrix and context terms
-    context_matrix, features = generate_content_matrix(contexts)
+    context_matrix, features = generate_context_matrix(contexts)
 
     # Generate feature mask
     term_mask = array([feature in terms for feature in features], dtype=bool)

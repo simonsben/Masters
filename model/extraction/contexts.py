@@ -30,11 +30,12 @@ def pull_document_contexts(documents):
     return corpus_contexts, context_map
 
 
-def generate_content_matrix(contexts):
+def generate_context_matrix(contexts):
+    """ Compute context term matrix for word unigrams and bigrams """
     from sklearn.feature_extraction.text import CountVectorizer
 
     # Initialize document vectorizer
-    vectorizer = CountVectorizer(ngram_range=(1, 2), max_features=5000)
+    vectorizer = CountVectorizer(ngram_range=(1, 2), max_features=25000)
 
     # Construct document matrix
     document_matrix = vectorizer.fit_transform(contexts)

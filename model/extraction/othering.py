@@ -65,7 +65,7 @@ def count_pronouns(tokens):
 
 
 def processor(frame):
-    model = load('en_core_web_sm')
+    model = load('en_core_web_md')
 
     parsed_documents = [model(document) for document in frame]
     # print(parsed_documents)

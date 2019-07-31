@@ -2,74 +2,66 @@ from spacy import load
 from numpy import zeros, asarray, squeeze, logical_not, add, percentile, sum
 from itertools import compress
 from multiprocessing import Pool
-from model.extraction import generate_content_matrix
+from model.extraction import generate_context_matrix
 
-intent_lead_terms = {'going', 'want', 'need', 'love', 'try',  'tempted', 'like', 'have', 'wish', 'got', 'hope',
-                     'hoping', 'trying', 'gon', 'intend', 'wanted', 'tried', 'decided', 'ought', 'meaning'}
 first_person = {'i', 'we', 'me', 'us', 'em', 'mine', 'myself'}
 
 
-# TODO clean up function
 def identify_basic_intent(parsed):
-    hits = []
-    # for ind, token in enumerate(parsed):
-    #     if token.tag_ == 'TO' and token.head.pos_ == 'VERB' and token.head.head.pos_ == 'VERB':
-    #         hits.append((token.head.head.text, token.text, token.head.text))
-
+    """ Determines if parsed document contains a sequence of term that indicate intent """
+    # For each token in parsed document
     for ind, token in enumerate(parsed):
+        # If basic intent form of VERB .. TO .. VERB (where tokens are related)
         if token.tag_ == 'TO' and token.head.pos_ == 'VERB' and token.head.head.pos_ == 'VERB':
             is_first = False
+
+            # For each child token of first VERB term
             for child in token.head.head.children:
+
+                # If first verb is related to a first person pronoun
                 if child.dep_ == 'nsubj' and child.text in first_person:
                     is_first = True
-                elif child.dep_ == 'neg':
-                    print('neg filter', parsed)
+                elif child.dep_ == 'neg':   # If first verb is negated throw out sequence of terms
                     is_first = False
                     break
 
+            # If sequence of FIRST_PERSON .. VERB .. TO .. VERB is present, add it
             if is_first:
-                hits.append((token.head.head.text, token.text, token.head.text))
-
-    if len(hits) > 1:
-        print('phat', parsed)
-
-    return hits
+                return True
+    return False
 
 
 def worker_init(*props):
+    """ Initialization function for Pool workers """
     global parser
     parser = load('en_core_web_md')
 
 
 def tag_document(props):
-    index, context, lead_terms = props
+    """ Parses document then checks for intent """
+    index, context = props
 
     # Parse context
     parsed = parser(context)
 
-    # Check for basic intent structure
-    target = identify_basic_intent(parsed)
-
     # For basic structure in context
-    for hit in target:
-        # If leading variable is in the basic intent terms set
-        if hit[0] in lead_terms:
-            return index
-    return None
+    return index if identify_basic_intent(parsed) else None
 
 
-def break_and_tag(contexts, lead_terms=intent_lead_terms):
+def tag_intent_documents(contexts):
+    """ Determines whether each context contains intent, then returns a boolean mask """
     from utilities.data_management import load_execution_params
 
     # For document in corpus
     worker_pool = Pool(load_execution_params()['n_threads'], initializer=worker_init)
     intent_indexes = worker_pool.map(
         tag_document,
-        ((index, context, lead_terms) for index, context in enumerate(contexts))
+        ((index, context) for index, context in enumerate(contexts))
     )
     worker_pool.close()
     worker_pool.join()
 
+    # Pull out indexes
     intent_indexes = filter(lambda index: index is not None, intent_indexes)
 
     # Convert intention index list to boolean array
@@ -82,12 +74,13 @@ def break_and_tag(contexts, lead_terms=intent_lead_terms):
 
 
 def get_intent_terms(contexts, intent_mask=None, content_data=None):
+    """ Computes intention terms """
     if intent_mask is None:
         # Get contexts with intent
-        intent_mask = break_and_tag(contexts)
+        intent_mask = tag_intent_documents(contexts)
         print('Mask computed, running doc matrix')
 
-    document_matrix, features = generate_content_matrix(contexts) if content_data is None else content_data
+    document_matrix, features = generate_context_matrix(contexts) if content_data is None else content_data
 
     # Get mask for contexts without intent
     no_intent_mask = logical_not(intent_mask)
@@ -108,14 +101,12 @@ def get_intent_terms(contexts, intent_mask=None, content_data=None):
     # Assemble significant terms
     relevant_contexts = compress(zip(features, labeled_freq, unlabelled_freq), frequency_mask)
     significant_terms = []
-    for term, lab_count, unlab_count in relevant_contexts:
-        if unlab_count == 0:
-            unlab_count = 1
+    for term, lab_count, unlabelled_count in relevant_contexts:
+        if unlabelled_count == 0:
+            unlabelled_count = 1
 
-        freq = (lab_count / num_labelled) / (unlab_count / num_unlabelled)
-
-        if freq > 1:
-            significant_terms.append((term, freq))
+        freq = (lab_count / num_labelled) / (unlabelled_count / num_unlabelled)
+        significant_terms.append((term, freq))
 
     significant_terms = sorted(significant_terms, key=lambda term: term[1], reverse=True)
 
