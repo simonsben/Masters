@@ -4,7 +4,7 @@ from itertools import compress
 from multiprocessing import Pool
 from model.extraction import generate_context_matrix
 
-first_person = {'i', 'we', 'me', 'us', 'em', 'mine', 'myself'}
+first_person = {'i', 'we', 'me', 'us', 'em', 'mine', 'myself', 'ourselves'}
 
 
 def identify_basic_intent(parsed):
