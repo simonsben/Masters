@@ -1,5 +1,4 @@
-from data.accessors import twitter_24k_accessor, twitter_24k_mutator, twitter_100k_accessor, twitter_100k_mutator, \
-    kaggle_accessor, kaggle_mutator, insults_accessor, insults_mutator, stormfront_accessor, stormfront_mutator
+from data.accessors import *
 from utilities.pre_processing import *
 from utilities.data_management import make_path, check_existence, check_writable, open_w_pandas, expand_csv_row_size
 from pandas import concat, isna
@@ -48,35 +47,36 @@ for data_set in data_sets:
 
 partial_processes = [
     original_length,
+    remove_quotes,
+    manage_special_characters,
+    pull_hyperlinks,
     count_tags,
     count_images,
     count_bracket_text,
-    manage_special_characters,
     count_emojis,
     count_handles,
     split_hashtags,
-    pull_hyperlinks,
     count_upper,
     run_partial_clean,
-    remove_spaces
 ]
 # Defined pre-processing to be applied
 pre_processes = [
     original_length,
+    remove_quotes,
+    manage_special_characters,
+    pull_hyperlinks,
     count_tags,
     count_images,
     count_bracket_text,
-    manage_special_characters,
     count_emojis,
     count_handles,
     split_hashtags,
-    pull_hyperlinks,
     count_upper,
     count_express,
     count_punctuation,
     count_digits,
     count_repeat_instances,
-    remove_spaces
+    remove_spaces,
 ]
 
 # Pre process datasets

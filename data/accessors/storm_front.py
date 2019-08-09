@@ -1,3 +1,5 @@
+from unidecode import unidecode
+
 stormfront = {
     'content': 2,
     'is_abusive': None
@@ -19,7 +21,7 @@ def stormfront_mutator(modified_content, values, document):
 
     :return: Modified document, list
     """
-    is_abusive = ''
+    user = unidecode(document[1])
 
-    modified_document = [values[0], is_abusive] + values[1:] + [modified_content]
+    modified_document = [values[0], user] + values[1:] + [modified_content]
     return modified_document
