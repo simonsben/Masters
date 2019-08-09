@@ -10,7 +10,6 @@ move_to_root()
 dataset_name = load_execution_params()['dataset']
 dataset_path = make_path('data/prepared_data/') / (dataset_name + '.csv')
 predictions_dir = make_path('data/predictions') / dataset_name
-threshold_path = predictions_dir / 'thresholds.csv'
 train_path, test_path = predictions_dir / 'train.csv', predictions_dir / 'test.csv'
 model_path = make_path('data/models/stacked/') / (dataset_name + '.bin')
 figure_dir = make_path('figures/') / dataset_name
@@ -19,7 +18,6 @@ figure_dir = make_path('figures/') / dataset_name
 check_existence(dataset_path)
 check_existence(train_path)
 check_existence(test_path)
-check_existence(threshold_path)
 check_writable(figure_dir)
 
 # Import data

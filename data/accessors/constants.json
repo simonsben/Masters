@@ -20,7 +20,8 @@
     "trust":        "emotion",
 
     "hurtlex":      "lexicon",
-    "subjectivity": "lexicon"
+    "subjectivity": "lexicon",
+    "empath":       "lexicon"
   },
   "layer_names": {
     "char_n_grams": "Character n-gram",
@@ -43,12 +44,14 @@
     "trust":        "Trust",
 
     "hurtlex":      "Hurtlex",
-    "subjectivity": "Subjectivity"
+    "subjectivity": "Subjectivity",
+    "empath":       "Empath"
   },
   "lexicon_names": {
-    "hurtlex": "hurtlex.csv",
+    "hurtlex":      "hurtlex.csv",
     "subjectivity": "mpqa_subjectivity_lexicon.csv",
-    "emotion": "nrc_emotion_lexicon.csv"
+    "emotion":      "nrc_emotion_lexicon.csv",
+    "empath":       "empath_features.csv"
   },
   "datasets": [
     "24k-abusive-tweets",
