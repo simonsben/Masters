@@ -27,9 +27,9 @@ othering_dep = {
 adverb_pos = {
     'ADV'
 }
-adverb_dep = {
+adverb_dep = set([
     # 'advmod'
-}
+])
 
 
 def gen_dep(token):
