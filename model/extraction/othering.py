@@ -1,9 +1,10 @@
 from spacy import load
 from pandas import DataFrame
 from time import time
-from numpy import where
 from multiprocessing import Pool
-from itertools import chain
+from utilities.data_management.file_management import load_execution_params
+from sklearn.feature_extraction.text import CountVectorizer
+from itertools import compress
 
 othering_pos = {
     'NOUN',
@@ -27,9 +28,9 @@ othering_dep = {
 adverb_pos = {
     'ADV'
 }
-adverb_dep = set([
-    # 'advmod'
-])
+adverb_dep = {
+    'advmod'
+}
 
 
 def gen_dep(token):
@@ -49,71 +50,61 @@ def filter_tokens(tokens, pos=othering_pos, dep=othering_dep):
     return ' '.join(terms)
 
 
-def generate_parse_index():
-    """ Generates a dict with tag-to-index mappings """
-    inds = {
-        tag: str(ind) for ind, tag in enumerate(list(othering_pos) + list(othering_dep))
-    }
-
-    return inds
-
-
-def count_pronouns(tokens):
+def contains_pronouns(tokens):
     """ Returns a bool indicating whether the document has at least two pronouns """
     num_propositions = sum(1 for token in tokens if token.pos_ == 'PRON')
     return num_propositions >= 2
 
 
-def processor(frame):
-    model = load('en_core_web_md')
+def worker_process(package):
+    document, document_filter = package
+    parsed = parser(document)
 
-    parsed_documents = [model(document) for document in frame]
-    # print(parsed_documents)
-    return parsed_documents
+    has_pronouns = contains_pronouns(parsed)
+    filtered = document_filter(parsed)
+
+    return filtered, has_pronouns
 
 
-def othering_vectorizer(tokenized, max_terms=10000, token_filter=filter_tokens):
-    from sklearn.feature_extraction.text import CountVectorizer
+def init_workers():
+    global parser
+    parser = load('en_core_web_md')
 
+
+def parse_documents(documents, document_filter):
+    # Initialize processing pool and content
+    workers = Pool(load_execution_params()['n_threads'], initializer=init_workers)
+    document_filter = document_filter if document_filter is not None else filter_tokens
+
+    # Parse content and close pool
+    parsed = list(
+        workers.imap(
+            worker_process,
+            ((document, document_filter) for document in documents['document_content'].values),
+            chunksize=250
+        )
+    )
+    workers.close()
+    workers.join()
+    print('Pool done')
+
+    documents, has_pronouns = map(list, zip(*parsed))
+
+    # Generate DataFrame with content
+    parsed = DataFrame({'multi_props': has_pronouns, 'split_content': documents})
+
+    return parsed
+
+
+def othering_vectorizer(tokenized, max_terms=10000):
     """ Generates the othering vectorizer from the filtered document tokens """
     vectorizer = CountVectorizer(max_features=max_terms, token_pattern=r'\b\w{2,}[a-zA-Z\-]+\b',
                                  lowercase=False)
-
-    tokenized['multi_props'] = tokenized['document_content'].apply(count_pronouns)
-    tokenized['split_content'] = tokenized['document_content'].apply(token_filter)
-
     vectorizer.fit(
-        where(tokenized['multi_props'].values, tokenized['split_content'].values, '')
+        list(compress(tokenized['split_content'].values, tokenized['multi_props'].values))
     )
 
     return vectorizer
-
-
-def parse_documents(documents):
-    from utilities.data_management.file_management import load_execution_params
-
-    # Load execution parameters and data
-    num_threads = load_execution_params()['n_threads']
-    num_frames = num_threads * 10   # Define extra frames (not all docs are the same length)
-    num_docs = documents.shape[0]
-    frame_size = num_docs / num_frames
-
-    # Initialize processing pool and content
-    pool = Pool(num_threads)
-    frames = [
-        documents['document_content'].iloc[int(ind * frame_size):int((ind + 1) * frame_size)]
-        for ind in range(num_frames)
-    ]
-
-    # Parse content and close pool
-    parsed = pool.map(processor, frames)
-    pool.close()
-    pool.join()
-
-    # Generate dataframe with content
-    parsed = DataFrame({'document_content': list(chain.from_iterable(parsed))})
-
-    return parsed
 
 
 def othering_matrix(dataset, token_filter=None):
@@ -123,15 +114,11 @@ def othering_matrix(dataset, token_filter=None):
 
     # Initialize SpaCy processor and tag documents
     start = time()
-    tokenized = parse_documents(dataset)
+    tokenized = parse_documents(dataset, token_filter)
     print('Spacy parse complete in', time() - start)
 
     start = time()
-    if token_filter is not None:
-        vectorizer = othering_vectorizer(tokenized, token_filter=token_filter)
-    else:
-        vectorizer = othering_vectorizer(tokenized)
-
+    vectorizer = othering_vectorizer(tokenized)
     vector_data = vectorizer.transform(
         tokenized['split_content']
     )
@@ -140,6 +127,9 @@ def othering_matrix(dataset, token_filter=None):
     return vector_data, vectorizer.get_feature_names()
 
 
+def adverb_filter(tokens):
+    return filter_tokens(tokens, adverb_pos, adverb_dep)
+
+
 def adverb_matrix(dataset):
-    adverb_filter = lambda tokens: filter_tokens(tokens, adverb_pos, adverb_dep)
     return othering_matrix(dataset, adverb_filter)

@@ -14,7 +14,7 @@ num_features = len(features)
 
 
 def compute_statistic(document):
-    tmp = lexicon.analyze(document)
+    tmp = lexicon.analyze(document) if isinstance(document, str) else None
     tmp = coo_matrix(list(tmp.values())) if tmp is not None else coo_matrix(zeros(num_features))
 
     return tmp
@@ -29,12 +29,6 @@ def empath_matrix(dataset):
     workers = Pool(n_threads)
 
     document_matrix = workers.map(compute_statistic, dataset['document_content'].values)
-    # Compute document matrix
-    # document_matrix = []
-    # for doc in dataset['document_content'].values:
-    #
-    #
-    #     document_matrix.append(tmp)
     document_matrix = vstack(document_matrix).tocsr()
 
     return document_matrix, features
