@@ -30,6 +30,11 @@ data_sets = [
         'accessor': stormfront_accessor,
         'mutator': stormfront_mutator
     },
+    {
+        'data_set': 'hannah_data',
+        'accessor': hannah_data_accessor,
+        'mutator': hannah_data_mutator
+    }
     # {
     #     'data_set': 'insults',
     #     'accessor': insults_accessor,

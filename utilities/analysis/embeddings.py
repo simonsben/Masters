@@ -109,7 +109,7 @@ def get_relative_neighbours(embeddings, ref_words, n_words=50, cos_distance=.5, 
     """
     Calculate equivalent vector (ex. Toronto is to Ontario what ??? is to England, or
     (England, Toronto, Ontario) -> London)
-    :param embeddings: Dask dataframe of
+    :param embeddings: Dask dataframe of term embeddings
     :param ref_words: Reference words (target, desired_reference, target_reference)
     :param n_words: Number of words to return
     :param cos_distance: Maximum cosine distance from desired target
