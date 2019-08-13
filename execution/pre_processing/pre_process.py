@@ -1,5 +1,4 @@
-from data.accessors import twitter_24k_accessor, twitter_24k_mutator, twitter_100k_accessor, twitter_100k_mutator, \
-    kaggle_accessor, kaggle_mutator, insults_accessor, insults_mutator, stormfront_accessor, stormfront_mutator
+from data.accessors import *
 from utilities.pre_processing import *
 from utilities.data_management import make_path, check_existence, check_writable, open_w_pandas, expand_csv_row_size
 from pandas import concat, isna
@@ -31,6 +30,11 @@ data_sets = [
         'accessor': stormfront_accessor,
         'mutator': stormfront_mutator
     },
+    {
+        'data_set': 'hannah_data',
+        'accessor': hannah_data_accessor,
+        'mutator': hannah_data_mutator
+    }
     # {
     #     'data_set': 'insults',
     #     'accessor': insults_accessor,
