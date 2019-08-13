@@ -52,35 +52,36 @@ for data_set in data_sets:
 
 partial_processes = [
     original_length,
+    remove_quotes,
+    manage_special_characters,
+    pull_hyperlinks,
     count_tags,
     count_images,
     count_bracket_text,
-    manage_special_characters,
     count_emojis,
     count_handles,
     split_hashtags,
-    pull_hyperlinks,
     count_upper,
     run_partial_clean,
-    remove_spaces
 ]
 # Defined pre-processing to be applied
 pre_processes = [
     original_length,
+    remove_quotes,
+    manage_special_characters,
+    pull_hyperlinks,
     count_tags,
     count_images,
     count_bracket_text,
-    manage_special_characters,
     count_emojis,
     count_handles,
     split_hashtags,
-    pull_hyperlinks,
     count_upper,
     count_express,
     count_punctuation,
     count_digits,
     count_repeat_instances,
-    remove_spaces
+    remove_spaces,
 ]
 
 # Pre process datasets

@@ -16,7 +16,9 @@ if __name__ == '__main__':
     check_existence(data_path)
     make_dir(dest_dir)
 
-    documents = open_w_pandas(data_path)['document_content']
+    documents = open_w_pandas(data_path, encoding='utf-8')
+    print(documents)
+    documents = documents['document_content']
     print('Content loaded')
 
     contexts, context_map = pull_document_contexts(documents)
@@ -30,4 +32,3 @@ if __name__ == '__main__':
     intent_terms = DataFrame(intent_terms, columns=['terms', 'significance'])
 
     intent_terms.to_csv(dest_dir / 'expanded_intent_terms.csv')
-
