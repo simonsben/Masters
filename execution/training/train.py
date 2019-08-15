@@ -12,7 +12,8 @@ move_to_root()
 exclusions = [
     'train.py',
     'stacked.py',
-    'calculate_thresholds.py'
+    'calculate_thresholds.py',
+    'deep_models.py'
 ]
 
 # Train sub-layers

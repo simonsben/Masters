@@ -1,16 +1,15 @@
 from re import compile, subn, sub
 
 emoji_regex = compile(r'&#\d{4,7};')
-express_regex = compile(r'[!?]+')
+express_regex = compile(r'[!?]')
 punctuation_regex = compile(r'[^a-zA-Z0-9]')
 partial_clean = compile(r'[^a-zA-Z,.!?\'";:\- ]+')
 digit_regex = compile(r'[0-9]+')
-space_regex = compile(r'\s+(?=\s)|^\s|'
-                      r'(?<=\w)\s+(?=[^a-zA-Z0-9])')
+space_regex = compile(r'[\n\r]|[ ]{2,}')
 image_regex = compile(r'Image:\w[\w\s]+.\w{3}')
-repeat_regex = compile(r'(\w+)\1{2,}')
-tag_regex = compile(r'<[\w\d/\'"=;:,.&#%?+()\[\]{}\-\n ]+>(n(?= ))?')
-bracket_regex = compile(r'[\(\[](\w)[\)\]]')
+repeat_regex = compile(r'(\w)\1{2,}')
+tag_regex = compile(r'(?<!<)<[\w\d/\'"=;:,.&#%?+()\[\]{}\-\n ]+>(n(?= ))?')
+bracket_regex = compile(r'(?<=\S)[\(\[](\w)[\)\]]')
 
 
 def count_upper(document, get_header=False):
@@ -84,7 +83,7 @@ def count_repeat_instances(document, get_header=False):
     """ Counts the number of repeated characters (greater than 3) and removes all but one """
     if get_header: return 'repeat_count'
 
-    document, count = subn(repeat_regex, lambda pattern: pattern[0][0], document)
+    document, count = subn(repeat_regex, lambda pattern: pattern.group(1), document)
     return count, document
 
 
@@ -100,7 +99,7 @@ def remove_spaces(document, get_header=False):
     """ Removes extra spaces added into document by previous filters """
     if get_header: return None
 
-    document = sub(space_regex, '', document)
+    document = sub(space_regex, ' ', document)
     return None, document
 
 

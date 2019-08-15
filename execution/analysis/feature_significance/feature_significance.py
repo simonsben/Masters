@@ -6,7 +6,7 @@ move_to_root(4)
 base = make_path('execution/analysis/feature_significance')
 files = listdir(base)
 
-exclusions = ['feature_significance.py', 'deep_models.py']
+exclusions = ['feature_significance.py', 'deep_models.py', 'deep_shap_words.py']
 
 for file in files:
     if file not in exclusions:

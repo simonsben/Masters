@@ -14,4 +14,4 @@ def remove_quotes(document, get_header=False):
     for citation in quote_citation:
         citation.decompose()
 
-    return count, soup.text
+    return count, str(soup)

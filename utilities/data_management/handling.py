@@ -21,7 +21,7 @@ def print_data(data):
         print(row)
 
 
-def split_sets(dataset, test_frac=.3, labels=None):
+def split_sets(dataset, test_frac=.15, labels=None):
     """
     Splits the dataset into a training and test set.
     :param dataset: Full dataset, dataframe

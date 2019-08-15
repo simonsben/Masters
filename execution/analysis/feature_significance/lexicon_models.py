@@ -8,8 +8,7 @@ from scipy.sparse import load_npz
 
 move_to_root(4)
 
-layer_names = ['empath']
-# 'hurtlex', 'subjectivity',
+layer_names = ['hurtlex', 'subjectivity', 'empath']
 
 # Define file paths
 dataset_name = load_execution_params()['dataset']

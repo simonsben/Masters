@@ -21,8 +21,6 @@ fast_predictions = pred_dir / 'fast_text.csv'
 # Check existence of files
 check_existence(train_pred_path)
 check_existence(test_pred_path)
-check_existence(fast_text_filename)
-check_existence(source_path)
 
 # Open predictions
 train_predictions = open_w_pandas(train_pred_path)
@@ -38,6 +36,8 @@ if fast_predictions.exists():
 else:
     print('Computing predictions')
     check_existence(model_path)
+    check_existence(fast_text_filename)
+    check_existence(source_path)
 
     # Open and split processed data
     dataset = open_w_pandas(source_path)

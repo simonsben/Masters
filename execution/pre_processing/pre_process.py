@@ -133,8 +133,8 @@ for variant in variants:
 
     if index_map is None:
         index_map = permutation(arange(mixed_dataset.shape[0]))
-        savetxt(dest_directory / 'mixed_redef_map.csv', index_map, delimiter=',')
-    mixed_dataset = mixed_dataset.reset_index(drop=True).reindex(index_map).sort_index()
+        savetxt(dest_directory / 'mixed_redef_map.csv', index_map, delimiter=',', fmt='%d')
+    mixed_dataset = mixed_dataset.reset_index(drop=True).iloc[index_map].reset_index(drop=True)
 
     bad_indexes = mixed_dataset.index[isna(mixed_dataset['document_content'])]
     content = mixed_dataset['document_content']

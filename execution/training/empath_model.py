@@ -2,6 +2,8 @@ from utilities.data_management import open_w_pandas, make_path, check_writable, 
     save_prepared
 from model.extraction import empath_matrix
 from model.training import train_xg_boost
+from pandas import DataFrame
+from empath import Empath
 
 if __name__ == '__main__':
     move_to_root()  # Change PWD to root project directory
@@ -11,10 +13,12 @@ if __name__ == '__main__':
     data_filename = make_path('data/prepared_data/') / (dataset_name + '.csv')
     processed_base = make_path('data/processed_data/') / dataset_name / 'lexicon'
     model_dir = make_path('data/models/' + dataset_name + '/lexicon/')
+    lexicon_path = make_path('data/prepared_lexicon/empath_features.csv')
 
     # Define destination directory
     check_writable(model_dir)
     check_writable(processed_base)
+    check_writable(lexicon_path)
 
     model_filename = model_dir / 'empath.bin'
     if model_filename.exists():
@@ -35,4 +39,8 @@ if __name__ == '__main__':
         # Save model
         save_prepared(processed_base, 'empath', train[0], test[0])
         model.save_model(str(model_filename))
+
+        if not lexicon_path.exists():
+            lexicon = DataFrame({'words': list(Empath().analyze(''))}).to_csv(lexicon_path)
+
         print('Empath completed.')

@@ -35,13 +35,3 @@ for col in cols:
     ) / test_data.shape[0] * 100
 
     print('|', col, '|', accuracy, '|')
-
-# If fast text predictions are separate, calculate
-if fast_text_path.exists():
-    fast_text = open_w_pandas(fast_text_path)
-    accuracy = sum(
-        equal(test_data, predictions[col].values > threshold)
-    ) / test_data.shape[0] * 100
-    print('| BiLSTM |', accuracy, '|')
-
-
