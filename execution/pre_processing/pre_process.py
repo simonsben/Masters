@@ -62,6 +62,8 @@ partial_processes = [
     count_handles,
     split_hashtags,
     count_upper,
+    count_digits,
+    count_repeat_instances,
     run_partial_clean,
 ]
 # Defined pre-processing to be applied

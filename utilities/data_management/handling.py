@@ -1,7 +1,7 @@
 from pandas import DataFrame, SparseDataFrame, Series
 from scipy.special import digamma
 from scipy.sparse import csr_matrix
-from numpy import float64, array, ndarray
+from numpy import float64, array, ndarray, asarray
 from sklearn.preprocessing import LabelEncoder
 
 
@@ -66,7 +66,10 @@ def normalize_doc_term(dataset):
         if type(matrix) is not csr_matrix:
             return TypeError('Dataset must be a CSR matrix (sparse)')
 
-        matrix.data = digamma(matrix.data)
+        # row_sums = digamma(asarray(matrix.sum(axis=1)).reshape(-1))
+        # row_indices = matrix.tocsc().indices
+        #
+        # matrix.data = matrix.data / row_sums[row_indices]
 
 
 def to_csr_matrix(dataset, conv_type=float64):
