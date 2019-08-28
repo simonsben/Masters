@@ -24,13 +24,12 @@ def identify_basic_intent(parsed):
                 elif child.dep_ == 'nsubj':
                     not_first.add(child.text)
                 elif child.dep_ == 'neg':   # If first verb is negated throw out sequence of terms
-                    is_first = False
-                    break
+                    return 0
 
             # If sequence of FIRST_PERSON .. VERB .. TO .. VERB is present, add it
             if is_first:
-                return True
-    return False
+                return 1
+    return .5
 
 
 def worker_init(*props):
@@ -50,7 +49,7 @@ def tag_document(props):
     parsed = parser(context)
 
     # For basic structure in context
-    return index if identify_basic_intent(parsed) else None
+    return identify_basic_intent(parsed)
 
 
 def tag_intent_documents(contexts):
@@ -59,33 +58,27 @@ def tag_intent_documents(contexts):
 
     # For document in corpus
     worker_pool = Pool(load_execution_params()['n_threads'], initializer=worker_init)
-    intent_indexes = worker_pool.imap(
+    intent_values = list(worker_pool.imap(
         tag_document,
         ((index, context) for index, context in enumerate(contexts)),
         chunksize=50
-    )
+    ))
     worker_pool.close()
     worker_pool.join()
 
-    # Pull out indexes
-    intent_indexes = filter(lambda index: index is not None, intent_indexes)
+    print('intent percentage', sum(intent_values == 1) / len(intent_values))
 
-    # Convert intention index list to boolean array
-    intent_mask = zeros(len(contexts), dtype=bool)
-    intent_mask[list(intent_indexes)] = True
-
-    print('intent percentage', sum(intent_mask) / len(contexts))
-
-    return intent_mask
+    return asarray(intent_values)
 
 
-def get_intent_terms(contexts, intent_mask=None, content_data=None):
+def get_intent_terms(contexts, intent_values=None, content_data=None):
     """ Computes intention terms """
-    if intent_mask is None:
+    if intent_values is None:
         # Get contexts with intent
-        intent_mask = tag_intent_documents(contexts)
-        print('Mask computed, running doc matrix')
+        intent_values = tag_intent_documents(contexts)
+        print('Mask computed, running doc matrix', intent_values)
 
+    intent_mask = intent_values == 1
     document_matrix, features = generate_context_matrix(contexts) if content_data is None else content_data
 
     # Get mask for contexts without intent
@@ -117,4 +110,4 @@ def get_intent_terms(contexts, intent_mask=None, content_data=None):
     significant_terms = list(filter(lambda term: term[1] > 1, significant_terms))
     significant_terms = sorted(significant_terms, key=lambda term: term[1], reverse=True)
 
-    return significant_terms, intent_mask
+    return significant_terms, intent_values

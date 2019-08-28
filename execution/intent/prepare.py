@@ -9,9 +9,9 @@ def pull_intent_terms(contexts, dir_path):
 
     contexts = DataFrame(contexts, columns=['contexts'])
 
-    print('Terms extracted, saving')
+    print('Terms extracted, saving mask, contexts, and terms')
     intent_terms.to_csv(dir_path / 'intent_terms.csv')
     contexts.to_csv(dir_path / 'contexts.csv')
-    savetxt(dir_path / 'intent_mask.csv', has_intent, delimiter=',', fmt='%d')
+    savetxt(dir_path / 'intent_mask.csv', has_intent, delimiter=',', fmt='%.1f')
 
     return intent_terms, has_intent

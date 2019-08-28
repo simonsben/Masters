@@ -19,7 +19,7 @@ def learn_terms(contexts, terms):
     intent_mask = asarray(context_matrix.multiply(term_mask).sum(axis=1)).reshape(-1)
 
     # Compute intent terms
-    significant_terms, _ = get_intent_terms(contexts, intent_mask=intent_mask, content_data=(context_matrix, features))
+    significant_terms, _ = get_intent_terms(contexts, intent_values=intent_mask, content_data=(context_matrix, features))
 
     return significant_terms
 

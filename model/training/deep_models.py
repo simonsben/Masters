@@ -70,7 +70,7 @@ def train_deep_model(model, train, train_label):
         train, train_label,
         epochs=50, verbose=1,
         callbacks=[early_stopping],
-        validation_split=.2, shuffle=True, batch_size=512
+        validation_split=.15, shuffle=True, batch_size=512
     ).history
 
     return history
