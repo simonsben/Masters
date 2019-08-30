@@ -51,6 +51,7 @@ embeddings = [[word, usage_counts[word]] + list(embeddings[word]) for word in em
 print('Generated list, converting to dataframe')
 
 headings = ['words', 'usages'] + [str(ind) for ind in range(1, fast_model.get_dimension() + 1)]
+fast_model = None
 embeddings = DataFrame(embeddings, columns=headings)
 
 if partial:

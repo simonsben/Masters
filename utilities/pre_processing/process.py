@@ -1,4 +1,30 @@
-from utilities.data_management import prepare_csv_reader, prepare_csv_writer
+from utilities.data_management import load_execution_params
+from multiprocessing import Pool
+from pandas import DataFrame, read_csv
+from functools import partial
+
+
+def apply_process(packed_data, processes, get_content, save_content):
+    """
+    Applies the pre-processing filters to a document
+    :param packed_data: a tuple of document index, document
+    :param processes: list of processes to be applied
+    :param get_content: function that acts as an accessor for the dataset
+    :param save_content: function that acts a mutator (ish..) for the dataset
+    :return: list of pre-processing values and
+    """
+    index, document = packed_data
+
+    values = [index]
+    content = get_content(document)
+
+    for process in processes:   # For each pre-processing step to be applied
+        value, content = process(content if isinstance(content, str) else '')
+
+        if value is not None:
+            values.append(value)
+
+    return save_content(content, values, document)
 
 
 def process_documents(source_filename, dest_filename, processes, get_content, save_content, save_header, options):
@@ -16,36 +42,23 @@ def process_documents(source_filename, dest_filename, processes, get_content, sa
         delimiter of the source file, (default ',')
         max_documents to be pre-processed, (default is entire file)
     """
-    # Get options
     delimiter = options['delimiter'] if 'delimiter' in options else ','
     max_documents = options['max_documents'] if 'max_documents' in options else -1
     encoding = options['encoding'] if 'encoding' in options else None
 
-    # check options
-    if type(max_documents) is not int or max_documents < -1:
-        raise ValueError('max_documents provided is invalid, give int in range [0, inf]')
+    n_threads = load_execution_params()['n_threads']
 
-    # Opens files
-    csv_reader, source_fl, header = prepare_csv_reader(source_filename, delimiter=delimiter, encoding=encoding)
-    csv_writer, dest_fl = prepare_csv_writer(dest_filename, save_header)
+    dataset = read_csv(source_filename, delimiter=delimiter, encoding=encoding).values
+    if max_documents is not None:
+        dataset = dataset[:max_documents]
 
-    for ind, doc in enumerate(csv_reader):  # For each document in source file
-        values = [ind]
-        content = get_content(doc)
+    workers = Pool(n_threads)
+    processed_data = list(workers.imap(
+        partial(apply_process, processes=processes, get_content=get_content, save_content=save_content),
+        enumerate(dataset), chunksize=250
+    ))
+    workers.close()
+    workers.join()
 
-        for process in processes:   # For each pre-processing step to be applied
-            value, content = process(content)
-
-            if value is not None:
-                values.append(value)
-
-        # Save modified document for destination file
-        modified_document = save_content(content, values, doc)
-        csv_writer.writerow(modified_document)
-
-        if max_documents != -1 and ind > max_documents:
-            break
-
-    # Close files
-    source_fl.close()
-    dest_fl.close()
+    processed_data = DataFrame(processed_data, columns=save_header)
+    processed_data.to_csv(dest_filename, index=False)
