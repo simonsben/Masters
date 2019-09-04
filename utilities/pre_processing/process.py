@@ -48,7 +48,7 @@ def process_documents(source_filename, dest_filename, processes, get_content, sa
 
     n_threads = load_execution_params()['n_threads']
 
-    dataset = read_csv(source_filename, delimiter=delimiter, encoding=encoding).values
+    dataset = read_csv(source_filename, delimiter=delimiter, encoding=encoding, index_col=0).values
     if max_documents is not None:
         dataset = dataset[:max_documents]
 
