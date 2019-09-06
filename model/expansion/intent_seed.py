@@ -19,7 +19,7 @@ def identify_basic_intent(parsed):
             for child in token.head.head.children:
 
                 # If first verb is related to a first person pronoun
-                if child.dep_ == 'nsubj' and child.text in first_person:
+                if child.dep_ == 'nsubj' and child.tag_ == 'PRP':
                     is_first = True
                 elif child.dep_ == 'nsubj':
                     not_first.add(child.text)

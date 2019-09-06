@@ -56,8 +56,9 @@ if __name__ == '__main__':
     move_to_root(4)
     expand_csv_row_size()
 
-    n_thread = load_execution_params()['n_threads']
-    dataset_name = 'storm-front'
+    params = load_execution_params()
+    n_thread = params['n_threads']
+    dataset_name = params['dataset']
     dataset_path = make_path('data/prepared_data/') / (dataset_name + '.csv')
     fig_path = make_path('figures') / dataset_name / 'analysis' / 'term_rate.png'
 

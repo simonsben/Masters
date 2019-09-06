@@ -53,10 +53,10 @@ def process_documents(source_filename, dest_filename, processes, get_content, sa
         dataset = dataset[:max_documents]
 
     workers = Pool(n_threads)
-    processed_data = list(workers.imap(
+    processed_data = workers.map(
         partial(apply_process, processes=processes, get_content=get_content, save_content=save_content),
-        enumerate(dataset), chunksize=250
-    ))
+        enumerate(dataset)
+    )
     workers.close()
     workers.join()
 

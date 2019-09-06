@@ -10,8 +10,8 @@ dataset_name = params['dataset']
 
 # Define file paths
 pred_base = make_path('data/predictions/') / dataset_name
-pred_path = pred_base / ('test.csv')
-fast_text_path = pred_base / ('fast_text.csv')
+pred_path = pred_base / 'test.csv'
+fast_text_path = pred_base / 'fast_text.csv'
 raw_path = make_path('data/prepared_data') / (dataset_name + '.csv')
 
 # Ensure files exist

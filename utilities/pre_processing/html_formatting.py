@@ -1,7 +1,12 @@
 from bs4 import BeautifulSoup
+from warnings import filterwarnings
+
+# Stop beautiful soup from throwing warnings about url-like text
+filterwarnings("ignore", category=UserWarning, module='bs4')
 
 
 def remove_quotes(document, get_header=False):
+    """ Removes quotes from (primarily) storm-front content """
     if get_header: return 'quotes'
     soup = BeautifulSoup(document, 'html.parser')
 

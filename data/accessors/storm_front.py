@@ -21,7 +21,7 @@ def stormfront_mutator(modified_content, values, document):
 
     :return: Modified document, list
     """
-    user = unidecode(document[1])
+    user = unidecode(document[1]) if isinstance(document[1], str) else 'NO_VALID_USERNAME'
 
     modified_document = [values[0], user] + values[1:] + [modified_content]
     return modified_document
