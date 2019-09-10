@@ -1,34 +1,49 @@
 from spacy import load
-from numpy import zeros, asarray, squeeze, logical_not, add, percentile, sum
+from numpy import asarray, squeeze, logical_not, add, percentile, sum
 from itertools import compress
 from multiprocessing import Pool
 from model.extraction import generate_context_matrix
 
 first_person = {'i', 'we', 'me', 'us', 'em', 'mine', 'myself', 'ourselves'}
+good_verbs = {'VB', 'VBG', 'VBP', 'VBZ'}
+alt_question_indicators = {'if'}
 
 
-def identify_basic_intent(parsed):
+def identify_basic_intent(context):
     """ Determines if parsed document contains a sequence of term that indicate intent """
+    parsed = parser(context)
+
     # For each token in parsed document
-    for ind, token in enumerate(parsed):
-        # If basic intent form of VERB .. TO .. VERB (where tokens are related)
-        if token.tag_ == 'TO' and token.head.pos_ == 'VERB' and token.head.head.pos_ == 'VERB':
-            is_first = False
+    for token in parsed:
+        if token.tag_ != 'TO':  # Start check from TO
+            continue
+        elif token.head.pos_ != 'VERB' or token.head.head.pos_ != 'VERB':  # If there aren't two verbs, pass
+            continue
 
-            # For each child token of first VERB term
-            for child in token.head.head.children:
+        base_verb = token.head.head  # Get base verb
+        # Check for past tense verb
+        if base_verb.tag_ not in good_verbs:
+            continue
 
-                # If first verb is related to a first person pronoun
-                if child.dep_ == 'nsubj' and child.tag_ == 'PRP':
-                    is_first = True
-                elif child.dep_ == 'nsubj':
-                    not_first.add(child.text)
-                elif child.dep_ == 'neg':   # If first verb is negated throw out sequence of terms
-                    return 0
+        # Check for negation or question
+        if len([
+            tok for tok in base_verb.children
+            if tok.dep_ == 'neg' or tok.tag_ == 'WRB' or tok.text in alt_question_indicators
+        ]) > 0:
+            return 0
 
-            # If sequence of FIRST_PERSON .. VERB .. TO .. VERB is present, add it
-            if is_first:
-                return 1
+        # Check for at least one related personal pronoun
+        tmp = [tok.text for tok in base_verb.children if tok.tag_ == 'PRP']
+        if len(tmp) < 1:
+            continue
+        elif len([tok for tok in tmp if tok in first_person]) > 0:
+            return 1
+
+        # Check for at least one future or conditional verb modifier
+        if len([tok for tok in base_verb.children if tok.dep_ == 'aux' and tok.tag_ == 'MD']) > 0:
+            return 1
+        return .9
+
     return .5
 
 
@@ -37,32 +52,18 @@ def worker_init(*props):
     global parser
     parser = load('en_core_web_md')
 
-    global not_first
-    not_first = set()
-
-
-def tag_document(props):
-    """ Parses document then checks for intent """
-    index, context = props
-
-    # Parse context
-    parsed = parser(context)
-
-    # For basic structure in context
-    return identify_basic_intent(parsed)
-
 
 def tag_intent_documents(contexts):
     """ Determines whether each context contains intent, then returns a boolean mask """
     from utilities.data_management import load_execution_params
 
-    # For document in corpus
+    # Initialize worker pool
     worker_pool = Pool(load_execution_params()['n_threads'], initializer=worker_init)
-    intent_values = list(worker_pool.imap(
-        tag_document,
-        ((index, context) for index, context in enumerate(contexts)),
-        chunksize=50
-    ))
+
+    # Process documents
+    intent_values = worker_pool.map(identify_basic_intent, contexts)
+
+    # Close pool
     worker_pool.close()
     worker_pool.join()
 
