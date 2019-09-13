@@ -11,7 +11,7 @@ def generate_data_modifier(header_list, data_header):
     indexes = [data_header[header] for header in header_list]
     max_ind = max(indexes)
 
-    def data_modifier(document):
+    def data_modifier(document, making_header=False):
         # If document does not contain enough fields, return list of None values
         if len(document) < max_ind:
             return [None] * len(indexes)
@@ -50,7 +50,7 @@ class job_runner:
                  chunk_size=10000, worker_lifespan=None):
         self.get_default_params()   # Load defaults
 
-        self.processor = check_processes(processes) # generate_processor(check_processes(processes))
+        self.processor = check_processes(processes)     # generate_processor(check_processes(processes))
         self.worker_init = worker_init
         self.chunk_size = chunk_size
         self.worker_lifespan = worker_lifespan
@@ -101,8 +101,12 @@ class job_runner:
                     raise ValueError('Illegal data modifier, if list of strings is passed, items must match data '
                                      'headers')
             self.data_modifier = generate_data_modifier(data_modifier, self.data_header)
+        elif callable(data_modifier):
+            self.data_modifier = data_modifier
+        else:
+            raise TypeError('Data modifier must be a function')
 
-        dest_header = [''] + self.data_modifier(data_header)
+        dest_header = [''] + self.data_modifier(data_header, True)
         self.csv_writer, self.dest_file = prepare_csv_writer(self.dest_path, dest_header)
 
         self.data_ready = True
@@ -114,7 +118,7 @@ class job_runner:
         self.dest_file.close()
         print('Document finalized.')
 
-    def process_documents(self, data_modifier=None, single_job=True, max_documents=None):
+    def process_documents(self, data_modifier=None, single_job=True, max_documents=None, list_return=False):
         """ Processes documents """
         # While there is still data to process
         if not self.data_ready:
@@ -152,6 +156,8 @@ class job_runner:
             # Process documents
             process_start = time()
             data = self.workers.map(partial(processor, processes=self.processor), data)
+            if list_return:
+                data = sum(data, [])
             process_time = time() - process_start
 
             # If it takes more time to load the data then run the process, get larger chunks at a time
@@ -159,7 +165,11 @@ class job_runner:
                 self.chunk_size *= 2
                 print('Process time less than data load time, doubling chunk size to', self.chunk_size)
 
-            self.csv_writer.writerows(enumerate(data, start=documents_processed - limit))
+            self.csv_writer.writerows((
+                [index] + doc_data
+                for index, doc_data in enumerate(data, start=documents_processed - limit)
+            ))
+            # self.csv_writer.writerows(enumerate(data, start=))
             print('Finished chunk', chunk_number)
 
             # If there are no more documents or there is a max document restriction (that is met)
