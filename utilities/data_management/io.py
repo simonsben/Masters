@@ -111,3 +111,18 @@ def open_exp_lexicon(path, raw=False):
         terms = terms.union(new_terms)
 
     return DataFrame(terms, columns=['word'])
+
+
+def convert_to_parquet(path, data=None):
+    """ Converts a csv file to a parquet file """
+    if data is None:
+        data = open_w_pandas(path.parent / (path.stem + '.csv'))
+    else:
+        if not isinstance(data, DataFrame):
+            raise TypeError('data must be a pandas DataFrame, given ' + str(type(data)))
+
+    if path.suffix == '':
+        raise ValueError('Must provide a filepath, not a directory')
+
+    filename = path.parent / (path.stem + '.parquet')
+    data.to_parquet(filename, compression='gzip')

@@ -30,6 +30,7 @@ def identify_basic_intent(context):
             tok for tok in base_verb.children
             if tok.dep_ == 'neg' or tok.tag_ == 'WRB' or tok.text in alt_question_indicators
         ]) > 0:
+            del parsed
             return 0
 
         # Check for at least one related personal pronoun
@@ -37,13 +38,17 @@ def identify_basic_intent(context):
         if len(tmp) < 1:
             continue
         elif len([tok for tok in tmp if tok in first_person]) > 0:
+            del parsed
             return 1
 
         # Check for at least one future or conditional verb modifier
         if len([tok for tok in base_verb.children if tok.dep_ == 'aux' and tok.tag_ == 'MD']) > 0:
+            del parsed
             return 1
+        del parsed
         return .9
 
+    del parsed
     return .5
 
 

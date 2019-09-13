@@ -22,28 +22,12 @@ while True:
 
 # Generate path
 data_sets = [
-    # {
-    #     'data_set': '24k-abusive-tweets',
-    #     'constants': None
-    # },
-    # {
-    #     'data_set': '100k-abusive-tweets',
-    #     'constants': None
-    # },
-    # {
-    #     'data_set': 'kaggle',
-    #     'constants': None
-    # },
     {
         'data_set': 'storm-front',
         'constants': stormfront
-    },
-    # {
-    #     'data_set': 'insults',
-    #     'accessor': insults_accessor,
-    #     'mutator': insults_mutator
-    # }
+    }
 ]
+
 base_directory = make_path('data/')
 source_directory = base_directory / 'datasets'
 dest_directory = base_directory / 'prepared_data'

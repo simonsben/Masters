@@ -41,6 +41,11 @@ def get_path_maps():
     return maps
 
 
+def in_parent_dir():
+    """ Checks whether the PWD is the project dir """
+    return Path('config.json').is_file()
+
+
 def load_execution_params():
     """ Loads the current execution parameters from the config file """
     path = Path('config.json')
