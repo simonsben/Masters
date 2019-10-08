@@ -16,9 +16,10 @@ def n_gram_matrix(dataset, num_features=10000, use_words=True):
 
     # Initialize vectorizer
     if use_words:
-        vectorizer = CountVectorizer(max_features=num_features)
+        vectorizer = CountVectorizer(max_features=num_features, token_pattern=r'\b\w\w+\b')
     else:
-        vectorizer = CountVectorizer(max_features=num_features, ngram_range=(3, 5), analyzer='char_wb')
+        vectorizer = CountVectorizer(max_features=num_features, ngram_range=(3, 5), analyzer='char_wb',
+                                     token_pattern=r'\b\w\w+\b')
 
     # Vectorize corpus and convert to a sparse dataframe
     vector_data = vectorizer.fit_transform(dataset['document_content'])
