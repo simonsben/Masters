@@ -63,7 +63,7 @@ def tag_intent_documents(contexts):
     from utilities.data_management import load_execution_params
 
     # Initialize worker pool
-    worker_pool = Pool(load_execution_params()['n_threads'], initializer=worker_init)
+    worker_pool = Pool(load_execution_params()['n_threads'], initializer=worker_init, maxtasksperchild=15000)
 
     # Process documents
     intent_values = worker_pool.map(identify_basic_intent, contexts)

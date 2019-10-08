@@ -3,10 +3,11 @@ from pandas import DataFrame
 from numpy import savetxt
 
 
-def pull_intent_terms(contexts, dir_path):
+def pull_intent_terms(contexts, dir_path, full_docs=False):
     # Compute context mask and save
     intent_values = tag_intent_documents(contexts)
-    savetxt(dir_path / 'intent_mask.csv', intent_values, delimiter=',', fmt='%.1f')
+    filename = dir_path / (('document_' if full_docs else '') + 'intent_mask.csv')
+    savetxt(filename, intent_values, delimiter=',', fmt='%.1f')
     print('Mask computed, computing intent terms')
 
     # Compute intent terms
@@ -14,9 +15,10 @@ def pull_intent_terms(contexts, dir_path):
     print('Intent terms computed, saving')
 
     # Convert contexts to dataframe and save
-    contexts = DataFrame(contexts, columns=['contexts'])
-    contexts.to_csv(dir_path / 'contexts.csv')
-    contexts = None
+    if not full_docs:
+        contexts = DataFrame(contexts, columns=['contexts'])
+        contexts.to_csv(dir_path / 'contexts.csv')
+        contexts = None
 
     # Convert intent terms to dataframe and save
     intent_terms = DataFrame(intent_terms, columns=['terms', 'significance'])

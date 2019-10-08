@@ -7,6 +7,7 @@ if __name__ == '__main__':
     from pandas import DataFrame
 
     move_to_root()
+    full_docs = True
 
     params = load_execution_params()
     data_name = params['dataset']
@@ -16,17 +17,20 @@ if __name__ == '__main__':
     check_existence(data_path)
     make_dir(dest_dir)
 
-    documents = open_w_pandas(data_path, encoding='utf-8')['document_content']
+    documents = open_w_pandas(data_path, encoding='utf-8')['document_content'].values
     print('Content loaded')
 
-    contexts, context_map = pull_document_contexts(documents)
-    print('Contexts extracted')
-    print('Initial', len(documents), 'split', len(contexts))
+    if not full_docs:
+        target_content, context_map = pull_document_contexts(documents)
+        print('Contexts extracted')
+        print('Initial', len(documents), 'split', len(target_content))
+    else:
+        target_content = documents = [document if isinstance(document, str) else '' for document in documents]
 
-    intent_terms, has_intent = pull_intent_terms(contexts, dest_dir)
+    intent_terms, has_intent = pull_intent_terms(target_content, dest_dir, full_docs=full_docs)
     print(intent_terms)
 
-    expanded_terms = run_learning(contexts, intent_terms)
+    expanded_terms = run_learning(target_content, intent_terms)
     intent_terms = DataFrame(intent_terms, columns=['terms', 'significance'])
 
     intent_terms.to_csv(dest_dir / 'expanded_intent_terms.csv')
