@@ -1,11 +1,38 @@
 from re import compile
 
-context_breaks = compile(r'[.?!]+')
+context_pattern = compile(r"(?:[\w']+[;:,.?!]\s+)?(?:[\w'-]+\b[\s-]*){2,}")
+repeats = compile(r'(.)(\1{2,})')
+cleaner = compile(r'[^a-zA-Z ]')
+acronym = compile(r'(\w\.){2,}')
+
+
+def clean_acronym(document):
+    """ Removes periods from acronyms (ex. U.S.A.) """
+    return acronym.sub(lambda match: match[0].replace('.', ''), document)
+
+
+def split_document(document):
+    """ Splits document using a more aggressive definition """
+    if not isinstance(document, str):
+        return []
+
+    tmp = clean_acronym(repeats.sub('', document))
+
+    matches, start = [], 0
+    match = context_pattern.search(tmp, start)
+
+    while match is not None:
+        matches.append(match[0])
+        start = match.end()
+        match = context_pattern.search(tmp, start)
+
+    matches = [cleaner.sub('', doc) for doc in matches]
+    return matches
 
 
 def pull_document_contexts(documents):
     """
-    Splits documents into contexts (scentences)
+    Splits documents into contexts (sentences)
     :param documents: Iterable collection of documents
     :return: List of contexts, Mapping of corpus index to context slice
     """
@@ -16,8 +43,7 @@ def pull_document_contexts(documents):
     for index, document in enumerate(documents):
         # Split document into non-zero length contexts
         document_contexts = list(filter(
-            lambda cont: len(cont) > 0,
-            context_breaks.split(document) if isinstance(document, str) else []
+            lambda cont: len(cont) > 0, split_document(document)
         ))
 
         # Add set of contexts to the map
