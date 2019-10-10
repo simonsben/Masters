@@ -1,6 +1,5 @@
-from utilities.data_management import open_w_pandas, move_to_root, make_path, check_writable, check_existence, \
+from utilities.data_management import move_to_root, make_path, check_writable, check_existence, open_w_pandas, \
     load_execution_params
-# from pandas import read_csv
 
 move_to_root()
 
@@ -11,5 +10,4 @@ dest_path = make_path('.').absolute().parent / 'fastText' / 'data/' / (data_name
 check_existence(data_path)
 check_writable(dest_path)
 
-data = open_w_pandas(data_path)
-data['document_content'].to_csv(dest_path, index=False, header=False)
+open_w_pandas(data_path)['document_content'].to_csv(dest_path, index=False, header=False)

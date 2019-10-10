@@ -7,7 +7,7 @@ if __name__ == '__main__':
     from pandas import DataFrame
 
     move_to_root()
-    full_docs = True
+    full_docs = False
 
     params = load_execution_params()
     data_name = params['dataset']
