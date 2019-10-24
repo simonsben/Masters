@@ -1,6 +1,6 @@
 if __name__ == '__main__':
     from utilities.data_management import move_to_root, make_path, open_w_pandas, check_existence, \
-        load_execution_params, make_dir
+        load_execution_params, make_dir, write_context_map
     from execution.intent.prepare import pull_intent_terms
     from model.extraction import pull_document_contexts
     from model.expansion.term_learner import run_learning
@@ -22,6 +22,7 @@ if __name__ == '__main__':
 
     if not full_docs:
         target_content, context_map = pull_document_contexts(documents)
+        write_context_map(dest_dir / 'context_map.csv', context_map)
         print('Contexts extracted')
         print('Initial', len(documents), 'split', len(target_content))
     else:

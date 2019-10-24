@@ -16,7 +16,7 @@ dm_path = base / 'document_matrix.npz'
 feat_path = base / 'ngrams.csv'
 
 # Load contexts
-contexts = open_w_pandas(source)['contexts'].values
+contexts = open_w_pandas(source)['contexts'].values.astype(str)
 print('Data loaded')
 
 # Initialize vectorizer

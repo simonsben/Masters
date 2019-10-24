@@ -2,20 +2,29 @@ from utilities.data_management import load_execution_params, check_existence, mo
     check_writable
 from fastText import load_model
 from pandas import DataFrame
+from re import compile
 
 move_to_root()
+
+non_char = compile(r'[^a-zA-Z]')
+extra_space = compile(r'[ ]+')
 
 # Load execution parameters
 params = load_execution_params()
 lex_name = params['fast_text_model']
 data_name = params['dataset']
 partial = False
+context_run = True
 
 # Define paths
 lex_base = make_path('data/lexicons') / 'fast_text'
 mod_path = lex_base / (lex_name + '.bin')
-data_path = make_path('data/prepared_data') / (data_name + '.csv')
 dest_path = make_path('data/prepared_lexicon/') / (data_name + '-' + lex_name + ('_min' if partial else '') + '.csv')
+
+if context_run:
+    data_path = make_path('data/processed_data') / data_name / 'analysis' / 'intent' / 'contexts.csv'
+else:
+    data_path = make_path('data/prepared_data') / (data_name + '.csv')
 
 # Ensure paths are valid
 check_existence(mod_path)
@@ -24,7 +33,17 @@ check_writable(dest_path)
 print('Paths defined, starting')
 
 # Load data
-data = open_w_pandas(data_path)
+content = open_w_pandas(data_path)['contexts' if context_run else 'document_content'].values
+
+if context_run:
+    for ind, context in enumerate(content):
+        if not isinstance(context, str):
+            content[ind] = ''
+            continue
+        # content[ind] = extra_space.sub(
+        #     ' ', non_char.sub(' ', context
+        #                       )
+        # )
 print('Data imported')
 
 # Load fast text model
@@ -34,7 +53,7 @@ print('Model loaded, generating oov vectors')
 # Generate missing embeddings
 embeddings = {}
 usage_counts = {}
-for doc in data['document_content']:
+for doc in content:
     if not isinstance(doc, str):
         continue
     for word in doc.split(' '):

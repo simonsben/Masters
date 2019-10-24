@@ -126,3 +126,24 @@ def convert_to_parquet(path, data=None):
 
     filename = path.parent / (path.stem + '.parquet')
     data.to_parquet(filename, compression='gzip')
+
+
+def load_tsv(path, has_header=False):
+    """ Opens a tsv file """
+    csv_reader, fl, header = prepare_csv_reader(path, delimiter='\t', has_header=has_header)
+
+    data = [header] if has_header else []
+    for line in csv_reader:
+        data.append(line)
+
+    return data
+
+
+def write_context_map(filename, context_map):
+    file_path = make_path(filename)
+
+    with file_path.open('w') as fl:
+        for key in context_map:
+            tmp = context_map[key]
+            line = [str(val) for val in [key, tmp.start, tmp.stop - 1]]
+            fl.write(','.join(line) + '\n')

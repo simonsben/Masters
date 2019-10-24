@@ -1,9 +1,10 @@
 from re import compile
 
-context_pattern = compile(r"(?:[\w']+[;:,.?!]\s+)?(?:[\w'-]+\b[\s-]*){2,}")
-repeats = compile(r'(.)(\1{2,})')
-cleaner = compile(r'[^a-zA-Z ]')
+# context_pattern = compile(r"(?:[\w']+[;:.?!]\s+)?(?:[\w'-]+\b[\s-]*){2,}")
+repeats = compile(r'(.)(\1{2,})|\s{2,}')
+post_clean = compile(r'[^a-zA-Z\s]+|^\s|\s$')
 acronym = compile(r'(\w\.){2,}')
+split_pattern = compile(r'[.?!;:()\-]+')
 
 
 def clean_acronym(document):
@@ -12,22 +13,22 @@ def clean_acronym(document):
 
 
 def split_document(document):
-    """ Splits document using a more aggressive definition """
+    """ Splits documents into sub-components (called contexts) """
     if not isinstance(document, str):
         return []
 
-    tmp = clean_acronym(repeats.sub('', document))
+    contexts = split_pattern.split(
+        clean_acronym(document)
+    )
+    contexts = [
+        repeats.sub(lambda match: match[0][0], context)
+        for context in contexts
+        if len([
+            term for term in context.split(' ') if len(term) > 0
+        ]) > 1
+    ]
 
-    matches, start = [], 0
-    match = context_pattern.search(tmp, start)
-
-    while match is not None:
-        matches.append(match[0])
-        start = match.end()
-        match = context_pattern.search(tmp, start)
-
-    matches = [cleaner.sub('', doc) for doc in matches]
-    return matches
+    return list(filter(lambda context: len(context) > 1, contexts))
 
 
 def pull_document_contexts(documents):

@@ -26,27 +26,21 @@ def identify_basic_intent(context):
             continue
 
         # Check for negation or question
-        if len([
-            tok for tok in base_verb.children
-            if tok.dep_ == 'neg' or tok.tag_ == 'WRB' or tok.text in alt_question_indicators
-        ]) > 0:
+        for tok in base_verb.children:
+            # If token is not a negation, question, or an alternate question indicator
+            if tok.dep_ != 'neg' and tok.tag_ != 'WRB' and tok.text not in alt_question_indicators:
+                continue
+
             del parsed
             return 0
 
         # Check for at least one related personal pronoun
-        tmp = [tok.text for tok in base_verb.children if tok.tag_ == 'PRP']
+        tmp = [tok for tok in base_verb.children if tok.text in first_person]
         if len(tmp) < 1:
             continue
-        elif len([tok for tok in tmp if tok in first_person]) > 0:
-            del parsed
-            return 1
 
-        # Check for at least one future or conditional verb modifier
-        if len([tok for tok in base_verb.children if tok.dep_ == 'aux' and tok.tag_ == 'MD']) > 0:
-            del parsed
-            return 1
         del parsed
-        return .9
+        return 1
 
     del parsed
     return .5
@@ -63,7 +57,7 @@ def tag_intent_documents(contexts):
     from utilities.data_management import load_execution_params
 
     # Initialize worker pool
-    worker_pool = Pool(load_execution_params()['n_threads'], initializer=worker_init, maxtasksperchild=15000)
+    worker_pool = Pool(load_execution_params()['n_threads'], initializer=worker_init, maxtasksperchild=50000)
 
     # Process documents
     intent_values = worker_pool.map(identify_basic_intent, contexts)

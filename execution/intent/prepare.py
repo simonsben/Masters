@@ -1,4 +1,5 @@
 from model.expansion.intent_seed import get_intent_terms, tag_intent_documents
+from model.extraction.contexts import post_clean
 from pandas import DataFrame
 from numpy import savetxt
 
@@ -17,6 +18,7 @@ def pull_intent_terms(contexts, dir_path, full_docs=False):
     # Convert contexts to dataframe and save
     if not full_docs:
         contexts = DataFrame(contexts, columns=['contexts'])
+        contexts['contexts'] = contexts['contexts'].map(lambda context: post_clean.sub('', context))
         contexts.to_csv(dir_path / 'contexts.csv')
         contexts = None
 
