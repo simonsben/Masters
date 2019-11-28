@@ -18,4 +18,7 @@ scatter_plot((abuse, intent), 'Intent vs abuse predictions', size=10)
 ax_titles = ('Predicted abuse', 'Predicted intent')
 hist_plot([abuse, intent], 'Prediction comparison histogram', ax_titles=ax_titles, c_bar_title='Document density')
 
+hist_plot(abuse, 'Abuse histogram')
+hist_plot(intent, 'Intent histogram')
+
 show()

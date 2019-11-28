@@ -1,6 +1,7 @@
 from utilities.data_management import make_path, check_existence, move_to_root, open_w_dask, check_writable
 from numpy import min, max, mean, std
 from matplotlib.pyplot import show, figure, savefig
+from utilities.plotting import hist_plot
 
 move_to_root(4)
 
@@ -24,14 +25,7 @@ document_lengths = content.map_partitions(
 print('word length desc')
 print(document_lengths.describe())
 
-figure()
-ax = document_lengths.hist(bins=25, log=True)
-
-ax.set_title('Document word counts')
-ax.set_xlabel('Number of words')
-ax.set_ylabel('Number of documents')
-
-savefig(fig_dir / 'word_count.png')
+hist_plot(document_lengths.values, 'Document word counts', fig_dir / 'word_count.png', ('Number of words', 'Number of documents'))
 
 
 def lengths(document, metric):
@@ -58,13 +52,14 @@ def apply_metric(documents, metric):
 
 vals = apply_metric(content, max)
 
-figure()
-ax = vals.hist(bins=25, log=True)
-
-ax.set_title('Max word lengths')
-ax.set_xlabel('Word length')
-ax.set_ylabel('Number of words')
-
-savefig(fig_dir / 'word_length.png')
+# figure()
+hist_plot(vals, 'Max word length', fig_dir / 'word_length.png', ('Word length', 'Number of words'))
+# # ax = vals.hist(bins=25, log=True)
+# #
+# # ax.set_title('Max word lengths')
+# # ax.set_xlabel('Word length')
+# # ax.set_ylabel('Number of words')
+#
+# savefig(fig_dir / 'word_length.png')
 
 show()

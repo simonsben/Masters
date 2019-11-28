@@ -20,7 +20,7 @@ subset_mask[max_docs:] = False
 
 abuse = abuse[subset_mask]
 contexts = contexts[subset_mask]
-print(abuse.shape, intent.shape, contexts.shape)
+print('Filtered vector shapes', abuse.shape, intent.shape, contexts.shape)
 
 # Cap value range
 intent[intent > 1] = 1
@@ -28,6 +28,7 @@ intent[intent < 0] = 0
 abuse[abuse > 1] = 1
 print('Content prepared.')
 
+# Compute the euclidean norm of the (abuse, intent) vectors for each context
 hybrid = asarray([
     norm((_intent, _abuse)) for _intent, _abuse in zip(intent, abuse)
 ])
@@ -42,10 +43,10 @@ def print_out(index_set):
 
 
 # Print records
-num_records = 30
+num_records = 40
 
-print('High')
-print_out(hybrid_indexes[-num_records:])
+print('\nHigh')
+print_out(reversed(hybrid_indexes[-num_records:]))
 
-print('Low')
+print('\nLow')
 print_out(hybrid_indexes[:num_records])

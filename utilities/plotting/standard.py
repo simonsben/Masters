@@ -133,7 +133,7 @@ def hist_plot(values, fig_title, filename=None, ax_titles=None, cmap='Blues', c_
         if c_bar_title is not None:
             c_bar.ax.set_ylabel(c_bar_title)
     else:                       # If single dimensional data is provided, compute a standard hist
-        ax.hist(values, bins=bins, cmap=cmap, log=apply_log)
+        ax.hist(values, bins=bins, log=apply_log)
 
     if ax_titles is not None:   # If provided, add axis titles
         x_t, y_t = ax_titles
