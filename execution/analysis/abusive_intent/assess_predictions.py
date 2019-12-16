@@ -1,9 +1,11 @@
 from utilities.data_management import read_csv, move_to_root, make_path, load_execution_params
-from numpy import asarray, argsort
+from numpy import asarray, argsort, max, min
 from scipy.linalg import norm
+from utilities.analysis import rescale_data
 
 move_to_root(4)
 params = load_execution_params()
+is_subset = False
 
 base = make_path('data/processed_data/') / params['dataset'] / 'analysis'
 analysis_base = base / 'intent_abuse'
@@ -14,17 +16,17 @@ contexts = read_csv(base / 'intent' / 'contexts.csv')['contexts'].values
 print('Content loaded.')
 
 # Remove small documents
-max_docs = int(contexts.shape[0] * .25)
-subset_mask = asarray([(len(context.split(' ')) > 4) for context in contexts]).astype(bool)
-subset_mask[max_docs:] = False
+if is_subset:
+    max_docs = int(contexts.shape[0] * .25)
+    subset_mask = asarray([(len(context.split(' ')) > 4) for context in contexts]).astype(bool)
+    subset_mask[max_docs:] = False
 
-abuse = abuse[subset_mask]
-contexts = contexts[subset_mask]
+    abuse = abuse[subset_mask]
+    contexts = contexts[subset_mask]
 print('Filtered vector shapes', abuse.shape, intent.shape, contexts.shape)
 
-# Cap value range
-intent[intent > 1] = 1
-intent[intent < 0] = 0
+# Rescale value range
+intent = rescale_data(intent)
 abuse[abuse > 1] = 1
 print('Content prepared.')
 
@@ -43,7 +45,7 @@ def print_out(index_set):
 
 
 # Print records
-num_records = 40
+num_records = 50
 
 print('\nHigh')
 print_out(reversed(hybrid_indexes[-num_records:]))

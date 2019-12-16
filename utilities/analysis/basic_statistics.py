@@ -1,7 +1,22 @@
 from pandas import DataFrame
 from re import compile, match
+from numpy import min, max, ndarray
 
 base_name_regex = compile(r'^[a-z]+')
+
+
+def rescale_data(values):
+    if not isinstance(values, ndarray):
+        values = ndarray(values)
+    if len(values.shape) > 1:
+        raise TypeError('Expected values with shape (N,)')
+
+    min_value = min(values)
+    max_value = max(values)
+    values += -min_value if min_value < 0 else min_value
+    values /= (max_value - min_value)
+
+    return values
 
 
 def take_basics(dataset, display=False):
