@@ -6,12 +6,14 @@ from model.extraction import generate_context_matrix
 
 first_person = {'i', 'we', 'me', 'us', 'em', 'mine', 'myself', 'ourselves'}
 good_verbs = {'VB', 'VBG', 'VBP', 'VBZ'}
-alt_question_indicators = {'if'}
+past_verbs = {'VBD', 'VBN'}
+alt_question_indicators = {'if', 'do'}
 
 
 def identify_basic_intent(context):
     """ Determines if parsed document contains a sequence of term that indicate intent """
     parsed = parser(context)
+    base_verb = None
 
     # For each token in parsed document
     for token in parsed:
@@ -24,6 +26,8 @@ def identify_basic_intent(context):
         # Check for past tense verb
         if base_verb.tag_ not in good_verbs:
             continue
+        elif base_verb.tag_ in past_verbs:
+            return 0, base_verb.text
 
         # Check for negation or question
         for tok in base_verb.children:
@@ -31,19 +35,15 @@ def identify_basic_intent(context):
             if tok.dep_ != 'neg' and tok.tag_ != 'WRB' and tok.text not in alt_question_indicators:
                 continue
 
-            del parsed
-            return 0
+            return 0, base_verb.text
 
         # Check for at least one related personal pronoun
         tmp = [tok for tok in base_verb.children if tok.text in first_person]
         if len(tmp) < 1:
             continue
 
-        del parsed
-        return 1
-
-    del parsed
-    return .5
+        return 1, base_verb.text
+    return .5, base_verb.text if base_verb is not None else None
 
 
 def worker_init(*props):
@@ -53,22 +53,27 @@ def worker_init(*props):
 
 
 def tag_intent_documents(contexts):
-    """ Determines whether each context contains intent, then returns a boolean mask """
+    """ Determines whether each context contains intent, then return intent value and base verb """
     from utilities.data_management import load_execution_params
 
     # Initialize worker pool
     worker_pool = Pool(load_execution_params()['n_threads'], initializer=worker_init, maxtasksperchild=50000)
 
     # Process documents
-    intent_values = worker_pool.map(identify_basic_intent, contexts)
+    intent_data = worker_pool.map(identify_basic_intent, contexts)
 
     # Close pool
     worker_pool.close()
     worker_pool.join()
 
+    # Split intent values and base verbs
+    intent_data = asarray(intent_data)
+    intent_values = intent_data[:, 0].astype(float)
+    base_verbs = intent_data[:, 1]
+
     print('intent percentage', sum(intent_values == 1) / len(intent_values))
 
-    return asarray(intent_values)
+    return intent_values, base_verbs
 
 
 def get_intent_terms(contexts, intent_values=None, content_data=None):

@@ -14,7 +14,7 @@ params = load_execution_params()
 lex_name = params['fast_text_model']
 data_name = params['dataset']
 partial = False
-context_run = True
+context_run = False
 
 # Define paths
 lex_base = make_path('data/lexicons') / 'fast_text'
@@ -33,7 +33,7 @@ check_writable(dest_path)
 print('Paths defined, starting')
 
 # Load data
-content = open_w_pandas(data_path)['contexts' if context_run else 'document_content'].values
+content = open_w_pandas(data_path, index_col=None)['contexts' if context_run else 'document_content'].values
 
 if context_run:
     for ind, context in enumerate(content):
