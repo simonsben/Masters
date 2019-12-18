@@ -19,22 +19,22 @@ if __name__ == '__main__':
 
     # Check files
     check_existence(pre_filename)
-    check_existence(partial_filename)
+    # check_existence(partial_filename)
     check_existence(lexicon_path)
     check_writable(processed_base)
     check_writable(model_dir)
 
     # Load dataset
     pre_dataset = open_w_pandas(pre_filename)
-    partial_dataset = open_w_pandas(partial_filename)
+    # partial_dataset = open_w_pandas(partial_filename)
     print('Data loaded.')
 
     sub_layers = [
-        {
-            'model_name': 'othering',
-            'executor': othering_matrix,
-            'dataset': partial_dataset
-        },
+        # {
+        #     'model_name': 'othering',
+        #     'executor': othering_matrix,
+        #     'dataset': partial_dataset
+        # },
         {
             'model_name': 'word_n_grams',
             'executor': n_gram_matrix,
@@ -45,16 +45,16 @@ if __name__ == '__main__':
             'executor': lambda doc: n_gram_matrix(doc, 5000, False),
             'dataset': pre_dataset
         },
-        {
-            'model_name': 'adverbs',
-            'executor': adverb_matrix,
-            'dataset': partial_dataset
-        },
-        {
-            'model_name': 'doc_stats',
-            'executor': document_statistics,
-            'dataset': pre_dataset
-        }
+        # {
+        #     'model_name': 'adverbs',
+        #     'executor': adverb_matrix,
+        #     'dataset': partial_dataset
+        # },
+        # {
+        #     'model_name': 'doc_stats',
+        #     'executor': document_statistics,
+        #     'dataset': pre_dataset
+        # }
     ]
 
     for layer in sub_layers:

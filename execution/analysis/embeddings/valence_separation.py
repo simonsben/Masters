@@ -35,7 +35,7 @@ if not svd_path.exists():
 else:
     raw_vectors = panda_read(svd_path)
     print('Loaded SVD vectors')
-vector_dictionary = {term[0]: term[1:] for term in raw_vectors}
+vector_dictionary = {term[0]: term[1:] for term in raw_vectors.values[:, 1:]}
 
 
 get_vectors = lambda theme: asarray([vector_dictionary[term] for term in dictionary[theme] if term in vector_dictionary])
@@ -45,10 +45,14 @@ vectors = vstack([p_vectors, n_vectors]).astype(float)
 print('Generated vector sets')
 
 centroids, distortion = kmeans(whiten(vectors), 2)
+
+if len(centroids) < 1:
+    raise ValueError('No centroids found')
+
 distances = [
-    [euclidean(centroid, vector) for vector in vectors]
-    for centroid in centroids
+    [euclidean(centroid, vector) for vector in vectors] for centroid in centroids
 ]
+
 colours = [1] * len(p_vectors) + [2] * len(n_vectors)
 print('Computed K-means')
 
