@@ -1,20 +1,26 @@
-from utilities.data_management import make_path, check_existence, move_to_root, open_w_dask, check_writable
+from utilities.data_management import make_path, check_existence, move_to_root, open_w_dask, check_writable, \
+    load_execution_params
 from numpy import min, max, mean, std
 from matplotlib.pyplot import show, figure, savefig
 from utilities.plotting import hist_plot
 
 move_to_root(4)
+context_run = True
 
-dataset_name = 'mixed_redef'
-dataset_path = make_path('data/prepared_data/') / (dataset_name + '.csv')
+params = load_execution_params()
+dataset_name = params['dataset']
+
 fig_dir = make_path('figures/') / dataset_name / 'analysis'
-
-check_existence(dataset_path)
 check_writable(fig_dir)
 
-
-dataset = open_w_dask(dataset_path, dtypes={'hyperlinks': 'object'})
-content = dataset['document_content'].astype(str)
+if context_run:
+    dataset_path = make_path('data/processed_data/') / dataset_name / 'analysis' / 'intent' / 'contexts.csv'
+    dataset = open_w_dask(dataset_path)
+    content = dataset['contexts'].astype(str)
+else:
+    dataset_path = make_path('data/prepared_data/') / (dataset_name + '.csv')
+    dataset = open_w_dask(dataset_path, dtypes={'hyperlinks': 'object'})
+    content = dataset['document_content'].astype(str)
 print('Content loaded')
 
 document_lengths = content.map_partitions(

@@ -30,7 +30,7 @@ def bar_plot(values, features, fig_title, filename=None, horizontal=False):
     return fig, ax
 
 
-def scatter_plot(values, fig_title, weights=None, filename=None, pre_split=True, c_bar_title=None, cmap='Blues', size=20):
+def scatter_plot(values, fig_title, weights=None, filename=None, ax_titles=None, pre_split=True, c_bar_title=None, cmap='Blues', size=20):
     """
     Makes a 2D scatter plot
     :param values: List of values to be plotted
@@ -54,6 +54,11 @@ def scatter_plot(values, fig_title, weights=None, filename=None, pre_split=True,
     img = ax.scatter(x, y, s=size, c=weights, cmap=cmap, edgecolors='k')
 
     # Add titles and colourbar (optional)
+    if ax_titles is not None:
+        x_t, y_t = ax_titles
+        ax.set_xlabel(x_t)
+        ax.set_ylabel(y_t)
+
     ax.set_title(fig_title)
     if weights is not None:
         c_bar = fig.colorbar(img, ax=ax)

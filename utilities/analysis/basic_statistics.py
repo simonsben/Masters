@@ -1,6 +1,6 @@
 from pandas import DataFrame
 from re import compile, match
-from numpy import min, max, ndarray
+from numpy import min, max, ndarray, vectorize, mean, var
 
 base_name_regex = compile(r'^[a-z]+')
 
@@ -17,6 +17,36 @@ def rescale_data(values):
     values /= (max_value - min_value)
 
     return values
+
+
+def list_means(values):
+    return apply_vectorizer(values, mean)
+
+
+def list_variances(values):
+    return apply_vectorizer(values, var)
+
+
+def list_lengths(values):
+    return apply_vectorizer(values, len)
+
+
+def list_maxes(values):
+    return apply_vectorizer(values, max)
+
+
+def list_mins(values):
+    return apply_vectorizer(values, min)
+
+
+def apply_vectorizer(values, function):
+    if not isinstance(values, list):
+        raise TypeError('Expected list of values.')
+    if not callable(function):
+        raise TypeError('Expected function to be callable.')
+
+    vectorizer = vectorize(function)
+    return vectorizer(values)
 
 
 def take_basics(dataset, display=False):
