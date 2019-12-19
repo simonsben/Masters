@@ -1,31 +1,31 @@
 from keras import Sequential
 from keras.layers import Bidirectional, LSTM, Dense, Embedding, TimeDistributed
 from keras.initializers import Constant
-from model.layers.attention import AttentionWithContext
+from model.networks.attention import AttentionWithContext
 from utilities.data_management import load_dataset_params
 
 
-def generate_deep_model(embedding_matrix, summary=False):
-    """ Returns the compiled BiLSTM model """
+def generate_abuse_network(embedding_matrix, summary=False):
+    """ Returns the compiled abuse network """
     params = load_dataset_params()
     max_tokens = params['max_document_tokens']
     fast_text_dim = params['fast_text_dim']
 
-    # Define network layers
+    # Define network
     deep_model = Sequential([
         Embedding(embedding_matrix.shape[0], fast_text_dim,
                   embeddings_initializer=Constant(embedding_matrix),
-                  input_length=max_tokens, trainable=True
+                  input_length=max_tokens, trainable=False, mask_zero=True
                   ),
         Bidirectional(
-            LSTM(int(fast_text_dim / 2), dropout=.3, recurrent_dropout=.3, return_sequences=True),
-            input_shape=(max_tokens, fast_text_dim)
+            LSTM(int(fast_text_dim / 2), dropout=.5, recurrent_dropout=.5,
+                 return_sequences=True)
         ),
         TimeDistributed(
-            Dense(200)
+            Dense(150)
         ),
         AttentionWithContext(),
-        Dense(100),
+        Dense(50),
         Dense(1, activation='sigmoid')
     ])
 

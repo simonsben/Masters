@@ -30,33 +30,33 @@ statistics['min'] = list_mins(document_intentions)
 statistics['max'] = list_maxes(document_intentions)
 statistics['variance'] = list_variances(document_intentions)
 statistics['length'] = list_lengths(document_intentions)
+statistics['context'] = contexts
 
 min_contexts = 2
-# statistics.sort_values('length', inplace=True, ascending=False)
+statistics.sort_values('length', inplace=True, ascending=False)
 long_documents = statistics['length'] >= min_contexts
-# statistics = statistics.loc[long_documents]
+statistics = statistics.loc[long_documents]
 
-means, mins, maxes, variances, lengths = statistics.values.transpose()
+means, mins, maxes, variances, lengths, contexts = statistics.values.transpose()
 log_lengths = log2(lengths)
 print('Statistics computed.')
 
 c_bar_title = 'Logged number of document contexts'
 y_label = 'Variance of document intent'
 
-# scatter_plot((means, variances), 'Intent vs document variance', log_lengths,
-#              ax_titles=('Average document intent', y_label), c_bar_title=c_bar_title)
-#
-# scatter_plot((means, maxes), 'means vs maxes', log_lengths,
-#              ax_titles=('mean intent', 'max intent'), c_bar_title='intent variance')
-# scatter_plot((log_lengths, variances), 'lengths vs variances', means)
+scatter_plot((means, variances), 'Intent vs document variance', log_lengths,
+             ax_titles=('Average document intent', y_label), c_bar_title=c_bar_title)
 
-# hist_plot(lengths, 'Context set lengths')
-# scatter_plot((log_lengths, means), 'Document contexts vs average intent',
-#              ax_titles=('Logged number of document contexts', 'Average document intent'))
+scatter_plot((means, maxes), 'means vs maxes', log_lengths,
+             ax_titles=('mean intent', 'max intent'), c_bar_title='intent variance')
+scatter_plot((log_lengths, variances), 'lengths vs variances', means)
+
+hist_plot(lengths, 'Context set lengths')
+scatter_plot((log_lengths, means), 'Document contexts vs average intent',
+             ax_titles=('Logged number of document contexts', 'Average document intent'))
 
 hybrid = sqrt(power(means, 2) + power(maxes, 2))
 hybrid_order = argsort(hybrid)
-hybrid_order = hybrid_order[lengths[hybrid_order] > 1]
 
 for document_index in reversed(hybrid_order[-40:]):
     tmp = context_maps.iloc[document_index]

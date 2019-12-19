@@ -2,7 +2,6 @@ from utilities.data_management import open_w_pandas, check_existence,  make_path
     to_numpy_array, move_to_root, load_execution_params
 from model.extraction import vectorize_data
 from model.training import generate_deep_model, train_deep_model, generate_attention_model
-from model.layers.convolution import generate_cnn
 from fastText import load_model
 
 move_to_root()
