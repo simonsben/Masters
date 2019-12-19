@@ -1,5 +1,5 @@
 from utilities.data_management import read_csv, move_to_root, make_path, load_execution_params
-from numpy import asarray, argsort, max, min
+from numpy import asarray, argsort, max, min, savetxt
 from scipy.linalg import norm
 from utilities.analysis import rescale_data
 
@@ -38,7 +38,10 @@ hybrid_indexes = argsort(hybrid)
 print('Finished computations.')
 
 
-def print_out(index_set):
+def print_out(index_set, filename):
+    index_set = asarray(list(index_set))
+    savetxt(analysis_base / (filename + '.csv'), index_set, delimiter=',', fmt='%d')
+
     print('%10s %8s %8s %8s  %s' % ('index', 'hybrid', 'intent', 'abuse', 'context'))
     for index in index_set:
         print('%10d %8.4f %8.4f %8.4f  %s' % (index, hybrid[index], intent[index], abuse[index], contexts[index]))
@@ -48,7 +51,7 @@ def print_out(index_set):
 num_records = 50
 
 print('\nHigh')
-print_out(reversed(hybrid_indexes[-num_records:]))
+print_out(reversed(hybrid_indexes[-num_records:]), 'high_indexes')
 
 print('\nLow')
-print_out(hybrid_indexes[:num_records])
+print_out(hybrid_indexes[:num_records], 'low_indexes')

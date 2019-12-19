@@ -61,7 +61,8 @@
   "dataset_parameters": {
     "max_document_tokens": {
       "24k-abusive-tweets": 50,
-      "mixed_dataset": 100
+      "mixed_dataset": 100,
+      "storm-front": 100
     },
     "fast_text_dim": 300
   }

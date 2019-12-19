@@ -5,10 +5,10 @@ from model.networks.attention import AttentionWithContext
 from utilities.data_management import load_dataset_params
 
 
-def generate_abuse_network(embedding_matrix, summary=False):
+def generate_abuse_network(embedding_matrix, max_tokens, summary=False):
     """ Returns the compiled abuse network """
     params = load_dataset_params()
-    max_tokens = params['max_document_tokens']
+    # max_tokens = params['max_document_tokens']
     fast_text_dim = params['fast_text_dim']
 
     # Define network

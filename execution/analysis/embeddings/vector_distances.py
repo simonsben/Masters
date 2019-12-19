@@ -2,7 +2,7 @@ from dask.dataframe import read_csv
 from utilities.data_management import load_execution_params, make_path, move_to_root, check_existence, make_dir
 from matplotlib.pyplot import show, savefig, tight_layout
 from utilities.analysis import get_nearest_neighbours, get_relative_neighbours, svd_embeddings
-from utilities.plotting import scatter_plot, plot_embedding_rep, scatter_3_plot
+from utilities.plotting import scatter_plot, plot_embedding_representation, scatter_3_plot
 from scipy.linalg import norm as two_norm
 # from scipy.stats import pearsonr
 # from numpy import abs, argsort
@@ -67,7 +67,7 @@ ax.legend(['Similar words', 'Target word'], loc='lower right')
 savefig(dest_dir / 'metrics.png')
 
 # Plot representation of source vector space
-plot_embedding_rep(target_norm, words['euclidean_distances'].max(), words['cosine_distances'].max())
+plot_embedding_representation(target_norm, words['euclidean_distances'].max(), words['cosine_distances'].max())
 savefig(dest_dir / 'embedding_rep.png')
 
 # Plot columns correlations

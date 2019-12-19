@@ -3,7 +3,7 @@ from os import mkdir
 from matplotlib.pyplot import show
 from model.training import load_attention
 from fastText import load_model
-from utilities.plotting import word_importance
+from utilities.plotting import plot_token_importance
 from numpy import zeros
 
 move_to_root(4)
@@ -41,6 +41,6 @@ for ind, document in enumerate(dataset):
 print('Sample vectorized')
 
 path_gen = lambda ind: shap_dir / ('word_shap_' + str(ind) + '.png')
-word_importance(dataset.values, vectorized, model=model, path_gen=path_gen)
+plot_token_importance(dataset.values, vectorized, model=model, path_generator=path_gen)
 
 show()

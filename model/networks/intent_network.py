@@ -4,10 +4,10 @@ from keras.initializers import Constant
 from keras.models import Sequential
 
 
-def generate_intent_network(embedding_matrix, summary=False):
+def generate_intent_network(embedding_matrix, max_tokens, summary=False):
     """ Returns the compiled intent network """
     params = load_dataset_params()
-    max_tokens = params['max_document_tokens']
+    # max_tokens = params['max_document_tokens']
     fast_text_dim = params['fast_text_dim']
 
     # Define network

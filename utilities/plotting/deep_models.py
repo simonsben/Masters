@@ -2,42 +2,56 @@ from shap import DeepExplainer
 from numpy import min, max, arange, sum, pi
 from matplotlib.pyplot import subplots, savefig
 from matplotlib import cm
-from numpy.random import randint
+from numpy.random import choice
 from utilities.plotting.utilities import plot_sphere, plot_cone
 
 
-def word_importance(documents, embedded_docs, model=None, path_gen=None, num_samples=10):
-    if model is None:
-        shap_values = embedded_docs
-    else:
-        explainer = DeepExplainer(model, embedded_docs)
-        sample_inds = randint(0, embedded_docs.shape[0], num_samples)
-        [shap_values] = explainer.shap_values(embedded_docs[sample_inds])
-        shap_values = sum(shap_values, axis=2)
-        documents = documents[sample_inds]
+def plot_token_importance(documents, indexed_documents, target_documents, model=None, path_generator=None, num_samples=10):
+    """
+    Generates a statistical representation of document token importance then plots it
+    :param documents: list/array of (pre-processed) documents
+    :param indexed_documents: list/array of documents with tokens replaced by embedding indexes
+    :param target_documents: list/array of target document indexes (within indexed documents)
+    :param model: compiled network model
+    :param path_generator: function to return desired file path for figures
+    :param num_samples: number of documents to use to model feature importance
+    :return: None
+    """
 
-    for ind, document, values in zip(range(num_samples), documents, shap_values):
-        fig, ax = subplots()
+    # Get sample of documents to estimate feature importance with
+    example_indexes = choice(indexed_documents.shape[0], num_samples, replace=False)
+    example_documents = indexed_documents[example_indexes]
 
-        words = document if type(document) == list else document.split(' ')
-        num_words = len(words)
+    explainer = DeepExplainer(model, example_documents)     # Generate statistical model for network
 
-        values = values[:num_words].reshape(1, len(words))
-        vmin, vmax = min(values), max(values)
+    # Compute feature importance for given documents
+    shap_values = explainer.shap_values(indexed_documents[target_documents])
+    print('shap value shape', shap_values.shape)
+    shap_values = sum(shap_values, axis=2)
+    # documents = documents[sample_inds]
 
-        img = ax.imshow(values, cmap=cm.Blues, vmin=vmin, vmax=vmax)
+    # for index, document, values in zip(range(num_samples), documents, shap_values):
+    #     fig, ax = subplots()
+    #
+    #     words = document if type(document) == list else document.split(' ')     # Get list of words in document
+    #     num_words = len(words)
+    #
+    #     values = values[:num_words].reshape(1, len(words))
+    #     vmin, vmax = min(values), max(values)
+    #
+    #     img = ax.imshow(values, cmap=cm.Blues, vmin=vmin, vmax=vmax)
+    #
+    #     ax.set_xticks(arange(len(words)))
+    #     ax.set_xticklabels(words, rotation=80)
+    #
+    #     fig.colorbar(img, ax=ax)
+    #     ax.get_yaxis().set_visible(False)
+    #
+    #     if path_generator is not None:
+    #         savefig(path_generator(index))
 
-        ax.set_xticks(arange(len(words)))
-        ax.set_xticklabels(words, rotation=80)
 
-        fig.colorbar(img, ax=ax)
-        ax.get_yaxis().set_visible(False)
-
-        if path_gen is not None:
-            savefig(path_gen(ind))
-
-
-def plot_embedding_rep(target_norm, sphere_radius, cos_dist):
+def plot_embedding_representation(target_norm, sphere_radius, cos_dist):
     """
     Plots a 3D representation of a higher dimensional set of vectors
     :param target_norm: Norm of the target vector
