@@ -40,10 +40,6 @@ if context_run:
         if not isinstance(context, str):
             content[ind] = ''
             continue
-        # content[ind] = extra_space.sub(
-        #     ' ', non_char.sub(' ', context
-        #                       )
-        # )
 print('Data imported')
 
 # Load fast text model
