@@ -6,7 +6,7 @@ from numpy.random import choice
 from utilities.plotting.utilities import plot_sphere, plot_cone
 
 
-def plot_token_importance(documents, indexed_documents, target_documents, model=None, path_generator=None, num_samples=10):
+def plot_token_importance(documents, indexed_documents, target_documents, model=None, path_generator=None, num_samples=250):
     """
     Generates a statistical representation of document token importance then plots it
     :param documents: list/array of (pre-processed) documents
@@ -23,32 +23,34 @@ def plot_token_importance(documents, indexed_documents, target_documents, model=
     example_documents = indexed_documents[example_indexes]
 
     explainer = DeepExplainer(model, example_documents)     # Generate statistical model for network
+    print('Statistical model complete.')
 
     # Compute feature importance for given documents
-    shap_values = explainer.shap_values(indexed_documents[target_documents])
+    [shap_values] = explainer.shap_values(indexed_documents[target_documents])
     print('shap value shape', shap_values.shape)
-    shap_values = sum(shap_values, axis=2)
-    # documents = documents[sample_inds]
+    # shap_values = sum(shap_values, axis=2)
+    documents = documents[target_documents]
+    print('SHAP values computed.')
 
-    # for index, document, values in zip(range(num_samples), documents, shap_values):
-    #     fig, ax = subplots()
-    #
-    #     words = document if type(document) == list else document.split(' ')     # Get list of words in document
-    #     num_words = len(words)
-    #
-    #     values = values[:num_words].reshape(1, len(words))
-    #     vmin, vmax = min(values), max(values)
-    #
-    #     img = ax.imshow(values, cmap=cm.Blues, vmin=vmin, vmax=vmax)
-    #
-    #     ax.set_xticks(arange(len(words)))
-    #     ax.set_xticklabels(words, rotation=80)
-    #
-    #     fig.colorbar(img, ax=ax)
-    #     ax.get_yaxis().set_visible(False)
-    #
-    #     if path_generator is not None:
-    #         savefig(path_generator(index))
+    for index, document, values in zip(range(num_samples), documents, shap_values):
+        fig, ax = subplots()
+
+        words = document if type(document) == list else document.split(' ')     # Get list of words in document
+        num_words = len(words)
+
+        values = values[:num_words].reshape(1, len(words))
+        vmin, vmax = min(values), max(values)
+
+        img = ax.imshow(values, cmap=cm.Blues, vmin=vmin, vmax=vmax)
+
+        ax.set_xticks(arange(len(words)))
+        ax.set_xticklabels(words, rotation=80)
+
+        fig.colorbar(img, ax=ax)
+        ax.get_yaxis().set_visible(False)
+
+        if path_generator is not None:
+            savefig(path_generator(target_documents[index]))
 
 
 def plot_embedding_representation(target_norm, sphere_radius, cos_dist):
