@@ -17,7 +17,7 @@ partial = False
 context_run = False
 
 # Define paths
-lex_base = make_path('data/lexicons') / 'fast_text'
+lex_base = make_path('data/lexicons/fast_text')
 mod_path = lex_base / (lex_name + '.bin')
 dest_path = make_path('data/prepared_lexicon/') / (data_name + '-' + lex_name + ('_min' if partial else '') + '.csv')
 

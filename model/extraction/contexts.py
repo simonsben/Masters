@@ -4,12 +4,12 @@ from re import compile
 repeats = compile(r'(.)(\1{2,})|\s{2,}')
 post_clean = compile(r'[^a-zA-Z\s]+|^\s|\s$')
 acronym = compile(r'(\w\.){2,}')
-split_pattern = compile(r'[.?!;:()\-]+')
+split_pattern = compile(r'[.?!;]+')
 
 
 def clean_acronym(document):
-    """ Removes periods from acronyms (ex. U.S.A.) """
-    return acronym.sub(lambda match: match[0].replace('.', ''), document)
+    """ Removes periods from acronyms (ex. U.S.A. -> USA) """
+    return acronym.sub(lambda match: match[0].replace('.', '') + ' ', document)
 
 
 def split_document(document):
