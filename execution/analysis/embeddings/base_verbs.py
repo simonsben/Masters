@@ -6,6 +6,7 @@ from pandas import read_csv, DataFrame, read_hdf
 from numpy import any, mean, std, log, asarray, percentile, sum
 from os import remove
 from scipy.linalg import svd
+from sklearn.decomposition import PCA
 
 move_to_root(4)
 
@@ -63,7 +64,7 @@ vector_std = std(embedding_vectors, axis=0)
 embedding_vectors = (embedding_vectors - vector_mean) / vector_std
 
 occurrences = asarray([base_verbs[verb] for verb in base_verbs])
-percentile_value = 98
+percentile_value = 99.6
 threshold = max(percentile(occurrences, percentile_value), 10)
 high_occurrence = occurrences > threshold
 print('Computed base verbs with threshold of', threshold)
@@ -77,5 +78,17 @@ axis_titles = ['SVD axis ' + str(index) for index in range(1, 4)]
 scatter_3_plot(vector_svds, str(percentile_value) + 'th percentile base verb embeddings',
                weights=log(occurrences[high_occurrence]), ax_titles=axis_titles,
                c_bar_title='Log of number of occurrences', filename=figure_path)
+
+pca = PCA()
+single = pca.fit_transform(vector_svds.transpose())[:, 0]
+
+verbs = asarray(list(base_verbs.keys()))
+pairs = sorted(
+    [(value, term) for value, term in zip(single, verbs[high_occurrence])],
+    key=lambda bla: bla[0]
+)
+
+for pair in pairs:
+    print(pair)
 
 show()

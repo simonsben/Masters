@@ -7,19 +7,18 @@ from re import compile
 move_to_root()
 
 non_char = compile(r'[^a-zA-Z]')
-extra_space = compile(r'[ ]+')
+extra_space = compile(r'[ ]{2,}')
 
 # Load execution parameters
 params = load_execution_params()
 lex_name = params['fast_text_model']
 data_name = params['dataset']
-partial = False
 context_run = False
 
 # Define paths
 lex_base = make_path('data/lexicons/fast_text')
 mod_path = lex_base / (lex_name + '.bin')
-dest_path = make_path('data/prepared_lexicon/') / (data_name + '-' + lex_name + ('_min' if partial else '') + '.csv')
+dest_path = make_path('data/prepared_lexicon/') / (data_name + '-' + lex_name + '.csv')
 
 if context_run:
     data_path = make_path('data/processed_data') / data_name / 'analysis' / 'intent' / 'contexts.csv'
@@ -44,7 +43,7 @@ print('Data imported')
 
 # Load fast text model
 fast_model = load_model(str(mod_path))
-print('Model loaded, generating oov vectors')
+print('Model loaded, generating word vectors')
 
 # Generate missing embeddings
 embeddings = {}
@@ -65,20 +64,17 @@ print(len(embeddings), 'word embeddings calculated')
 embeddings = [[word, usage_counts[word]] + list(embeddings[word]) for word in embeddings]
 print('Generated list, converting to dataframe')
 
+# Convert to dataframe
 headings = ['words', 'usages'] + [str(ind) for ind in range(1, fast_model.get_dimension() + 1)]
 fast_model = None
 embeddings = DataFrame(embeddings, columns=headings)
 
-if partial:
-    threshold = 1
-    # threshold = percentile(embeddings['usages'].values, 5)
-    embeddings = embeddings.loc[embeddings['usages'] > threshold]
-    print('Removed embeddings for less than', threshold, 'occurrences')
-
+# Sort
 embeddings.sort_values(['usages', 'words'], inplace=True, ascending=[False, True])
 embeddings.drop(columns='usages', inplace=True)
-print(embeddings)
 
+print(embeddings)
 print('Dataframe complete, saving')
 
+# Save
 embeddings.to_csv(dest_path, index=False)
