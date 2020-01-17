@@ -4,3 +4,4 @@ from data.accessors.kaggle import *
 from data.accessors.insults import *
 from data.accessors.storm_front import *
 from data.accessors.hannah_data import *
+from data.accessors.manifesto import *

@@ -16,7 +16,7 @@ data_name = params['dataset']
 context_run = False
 
 # Define paths
-lex_base = make_path('data/lexicons') / 'fast_text'
+lex_base = make_path('data/lexicons/fast_text')
 mod_path = lex_base / (lex_name + '.bin')
 dest_path = make_path('data/prepared_lexicon/') / (data_name + '-' + lex_name + '.csv')
 
