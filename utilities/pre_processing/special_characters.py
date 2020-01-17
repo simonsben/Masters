@@ -1,10 +1,5 @@
-from re import compile
 from html import unescape
 from unidecode import unidecode
-from string import printable
-
-special_regex = compile(r'&\S+;')
-printable_characters = set(printable)
 
 
 def manage_special_characters(document, get_header=False):

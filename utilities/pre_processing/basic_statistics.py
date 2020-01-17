@@ -10,6 +10,7 @@ image_regex = compile(r'Image:\w[\w\s]+.\w{3}')
 repeat_regex = compile(r'(\w)\1{2,}')
 tag_regex = compile(r'(?<!<)<[\w\d/\'"=;:,.&#%?+()\[\]{}\-\n ]+>(n(?= ))?')
 bracket_regex = compile(r'(?<=\S)[\(\[](\w)[\)\]]')
+acronym = compile(r'([a-zA-Z]\.){2,}')
 
 
 def count_upper(document, get_header=False):
@@ -109,3 +110,14 @@ def run_partial_clean(document, get_header=False):
 
     document = sub(partial_clean, ' ', document)
     return None, document
+
+
+def count_acronym(document, get_header=False):
+    """ Removes periods from acronyms (ex. U.S.A. -> USA) """
+    if get_header: return 'acronym_count'
+
+    document, count = acronym.subn(
+        lambda match: match[0].replace('.', '') + ' ',
+        document
+        )
+    return count, document
