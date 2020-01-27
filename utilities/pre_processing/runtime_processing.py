@@ -2,21 +2,23 @@ from re import compile
 from numpy import zeros
 
 # Run clean on contexts
-non_char = compile(r'[^a-zA-Z]')
-extra_space = compile(r'\s{2,}')
+non_char = compile(r'[^a-zA-Z ]')    # Replace non-alphabetic characters
+extra_space = compile(r'\s{2,}')     # Replace repeat spaces
 
 
 def runtime_clean(documents):
     """ Last function to be executed before training (mainly used when executing on Google Colab) """
-    for index, document in enumerate(documents):
+    for ind, document in enumerate(documents):
         if not isinstance(document, str):
-            documents[index] = ''
+            documents[ind] = ''
             continue
+
+        documents[ind] = extra_space.sub(' ', non_char.sub(' ', document))
 
     return documents
 
 
-def token_to_index(raw_documents, raw_words, max_tokens=250):
+def token_to_index(raw_documents, raw_words, max_tokens):
     """ Takes documents and replaces their tokens with the index within the word embeddings """
     words = {term: index for index, term in enumerate(raw_words)}
     indexed_documents = []

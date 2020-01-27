@@ -39,6 +39,7 @@ def identify_basic_intent(context):
 
         # Check for at least one related personal pronoun
         tmp = [tok for tok in base_verb.children if tok.text in first_person]
+        print('almost 1', context)
         if len(tmp) < 1:
             continue
 

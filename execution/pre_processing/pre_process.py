@@ -33,11 +33,11 @@ if __name__ == '__main__':
             'accessor': stormfront_accessor,
             'mutator': stormfront_mutator
         },
-        # {
-        #     'data_set': 'storm-front-full',
-        #     'accessor': stormfront_accessor,
-        #     'mutator': stormfront_mutator
-        # },
+        {
+            'data_set': 'storm-front-full',
+            'accessor': stormfront_accessor,
+            'mutator': stormfront_mutator
+        },
         {
             'data_set': 'hannah_data',
             'accessor': hannah_data_accessor,

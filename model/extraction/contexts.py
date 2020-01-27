@@ -1,8 +1,9 @@
 from re import compile
 
 # context_pattern = compile(r"(?:[\w']+[;:.?!]\s+)?(?:[\w'-]+\b[\s-]*){2,}")
-repeats = compile(r'(.)(\1{2,})|\s{2,}')
-post_clean = compile(r'[^a-zA-Z\s]+|^\s|\s$')
+repeats = compile(r'(.)(\1{2,})')
+extra_spaces = compile(r'\s{2,}')
+post_clean = compile(r'[^a-zA-Z ]|^\s|\s$')
 acronym = compile(r'(\w\.){2,}')
 split_pattern = compile(r'[.?!;]+')
 
@@ -12,21 +13,23 @@ def clean_acronym(document):
     return acronym.sub(lambda match: match[0].replace('.', '') + ' ', document)
 
 
+def pre_intent_clean(document):
+    """ Perform final clean on contexts before saving and exporting. """
+    document = repeats.sub(lambda match: match[0][0], document)     # Remove repeat characters
+    return extra_spaces.sub(' ', document)                          # Remove extra spaces
+
+
+def final_clean(document):
+    return extra_spaces.sub(' ', post_clean.sub(' ', document))     # Run post clean regex
+
+
 def split_document(document):
     """ Splits documents into sub-components (called contexts) """
     if not isinstance(document, str):
         return []
 
-    contexts = split_pattern.split(
-        clean_acronym(document)
-    )
-    contexts = [
-        repeats.sub(lambda match: match[0][0], context)
-        for context in contexts
-        if len([
-            term for term in context.split(' ') if len(term) > 0
-        ]) > 1
-    ]
+    contexts = split_pattern.split(clean_acronym(document))
+    contexts = [pre_intent_clean(context) for context in contexts if len(context.split(' ')) > 1]
 
     return list(filter(lambda context: len(context) > 1, contexts))
 

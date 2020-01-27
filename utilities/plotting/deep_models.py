@@ -6,7 +6,7 @@ from numpy.random import choice
 from utilities.plotting.utilities import plot_sphere, plot_cone
 
 
-def plot_token_importance(documents, indexed_documents, target_documents, model=None, path_generator=None, num_samples=250):
+def plot_token_importance(documents, indexed_documents, target_documents, model, path_generator=None, num_samples=500):
     """
     Generates a statistical representation of document token importance then plots it
     :param documents: list/array of (pre-processed) documents

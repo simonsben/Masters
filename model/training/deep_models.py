@@ -1,8 +1,8 @@
 from keras.models import Sequential, load_model
-from keras.layers import Dense, LSTM, Bidirectional, Conv2D, MaxPooling2D, Flatten, Dropout, TimeDistributed
+from keras.layers import Dense, LSTM, Bidirectional, TimeDistributed
 from keras.callbacks import EarlyStopping
 from utilities.data_management import load_dataset_params
-from model.networks.attention import AttentionWithContext
+from model.layers.attention import AttentionWithContext
 
 
 def generate_deep_model(summary=False):

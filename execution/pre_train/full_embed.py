@@ -2,12 +2,9 @@ from utilities.data_management import load_execution_params, check_existence, mo
     check_writable
 from fastText import load_model
 from pandas import DataFrame
-from re import compile
+from utilities.pre_processing import runtime_clean
 
 move_to_root()
-
-non_char = compile(r'[^a-zA-Z]')
-extra_space = compile(r'[ ]{2,}')
 
 # Load execution parameters
 params = load_execution_params()
@@ -23,7 +20,7 @@ dest_path = make_path('data/prepared_lexicon/') / (data_name + '-' + lex_name + 
 if context_run:
     data_path = make_path('data/processed_data') / data_name / 'analysis' / 'intent' / 'contexts.csv'
 else:
-    data_path = make_path('data/prepared_data') / (data_name + '.csv')
+    data_path = make_path('data/prepared_data') / (data_name + '_partial.csv')
 
 # Ensure paths are valid
 check_existence(mod_path)
@@ -32,13 +29,8 @@ check_writable(dest_path)
 print('Paths defined, starting')
 
 # Load data
-content = open_w_pandas(data_path, index_col=None)['contexts' if context_run else 'document_content'].values
-
-if context_run:
-    for ind, context in enumerate(content):
-        if not isinstance(context, str):
-            content[ind] = ''
-            continue
+content = open_w_pandas(data_path, index_col=None).values[:, -1]
+content = runtime_clean(content)
 print('Data imported')
 
 # Load fast text model
