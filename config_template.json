@@ -1,7 +1,8 @@
 {
   "execution": {
-    "dataset": "dataset_name",
+    "dataset": "",
     "n_threads": 4,
-    "fast_text_model": "fast_text"
+    "fast_text_model": "",
+    "max_tokens": 250
   }
 }
