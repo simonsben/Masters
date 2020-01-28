@@ -52,6 +52,11 @@ def load_execution_params():
     with path.open(mode='r') as fl:
         params = load(fl)['execution']
 
+    # Print out key execution parameters
+    dataset = params['dataset']
+    fast_text_model = params['fast_text_model']
+    print('Loaded execution params with dataset', dataset, 'and fastText model', fast_text_model)
+
     return params
 
 

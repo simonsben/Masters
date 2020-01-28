@@ -35,16 +35,17 @@ def plot_token_importance(documents, indexed_documents, target_documents, model,
     for index, document, values in zip(range(num_samples), documents, shap_values):
         fig, ax = subplots()
 
-        words = document if type(document) == list else document.split(' ')     # Get list of words in document
-        num_words = len(words)
+        tokens = document if type(document) == list else document.split(' ')            # Get list of words in document
+        tokens = list(filter(lambda token: len(token) > 0 and token != ' ', tokens))    # Remove crap tokens
+        num_words = len(tokens)
 
-        values = values[:num_words].reshape(1, len(words))
+        values = values[:num_words].reshape(1, len(tokens))
         vmin, vmax = min(values), max(values)
 
         img = ax.imshow(values, cmap=cm.Blues, vmin=vmin, vmax=vmax)
 
-        ax.set_xticks(arange(len(words)))
-        ax.set_xticklabels(words, rotation=80)
+        ax.set_xticks(arange(len(tokens)))
+        ax.set_xticklabels(tokens, rotation=80)
 
         fig.colorbar(img, ax=ax)
         ax.get_yaxis().set_visible(False)

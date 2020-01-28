@@ -54,4 +54,4 @@ path_function = lambda index: figure_base / (run_name + '_token_shap_' + str(ind
 plot_token_importance(contexts, indexed_contexts, high_labels, deep_model, path_function)
 print('Computed shap values')
 
-show()
+# show()

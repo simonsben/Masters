@@ -1,5 +1,5 @@
 from utilities.data_management import read_csv, move_to_root, make_path, load_execution_params
-from numpy import asarray, argsort, max, min, savetxt
+from numpy import asarray, argsort, savetxt
 from scipy.linalg import norm
 from utilities.analysis import rescale_data
 
