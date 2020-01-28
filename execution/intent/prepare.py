@@ -6,13 +6,13 @@ from numpy import savetxt
 
 def pull_intent_terms(contexts, dir_path, full_docs=False):
     # Compute context mask and save
-    intent_values, base_verbs = tag_intent_documents(contexts)
+    intent_values, intent_frame = tag_intent_documents(contexts)
 
     intent_values_filename = dir_path / (('document_' if full_docs else '') + 'intent_mask.csv')
-    base_verbs_filename = dir_path / (('document_' if full_docs else '') + 'base_verbs.csv')
+    intent_frame_filename = dir_path / (('document_' if full_docs else '') + 'intent_frame.csv')
 
     savetxt(intent_values_filename, intent_values, delimiter=',', fmt='%.1f')
-    savetxt(base_verbs_filename, base_verbs, delimiter=',', fmt='%s')
+    savetxt(intent_frame_filename, intent_frame, delimiter=',', fmt='%s')
     print('Mask computed, computing intent terms')
 
     # Compute intent terms
