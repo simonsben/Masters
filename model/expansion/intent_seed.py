@@ -13,7 +13,7 @@ first_person_pronouns = {'i', 'we', 'me', 'us', 'em', 'mine', 'myself', 'ourselv
 target_dependencies = {'dobj', 'ccomp', 'acomp', 'xcomp'}
 target_relations = {'det', 'compound', 'poss'}
 timing_dependencies = {'npadvmod'}
-timing_relations = {'nmod'}
+timing_relations = {'nmod', 'compound'}
 
 question_tags = {'WRB', 'WP'}
 question_indicators = {'if', 'do'}
@@ -22,8 +22,8 @@ question_indicators = {'if', 'do'}
 def assemble_related_information(base, base_dependency, information_dependency):
     potentials = list(filter(lambda _token: _token.dep_ in base_dependency, base.children))
     if len(potentials) > 0:
-        information_pieces = [_token.text for _token in potentials[0].children if _token.dep_ in information_dependency]
-        information = ' '.join(information_pieces + [potentials[0].text])
+        information_indexes = [_token.i for _token in potentials[0].children if _token.dep_ in information_dependency]
+        information = '"(' + ','.join((str(index) for index in information_indexes + [potentials[0].i])) + ')"'
 
         return information
     return None
@@ -70,9 +70,6 @@ def identify_basic_intent(context):
             desire_verb.children
         )))
 
-        desire_verb = desire_verb.text
-        action_verb = action_verb.text
-
         if negations % 2 != 0:
             intent_score = 0 if intent_score == .5 else intent_score
             continue
@@ -83,6 +80,9 @@ def identify_basic_intent(context):
         # Contains positive intent
         intent_score = 1
         break
+
+    desire_verb = desire_verb.text if desire_verb is not None else None
+    action_verb = action_verb.text if action_verb is not None else None
 
     return intent_score, desire_verb, action_verb, target, timing
 
