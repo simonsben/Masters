@@ -1,11 +1,11 @@
 from model.expansion.intent_seed import get_intent_terms, tag_intent_documents
-from model.extraction.contexts import final_clean
+from utilities.pre_processing import final_clean
 from pandas import DataFrame
 from numpy import savetxt
 
 
 def pull_intent_terms(contexts, dir_path, full_docs=False):
-    # Compute context mask and save
+    """ Pull documents with basic intent and save mask and contexts """
     intent_values, intent_frame = tag_intent_documents(contexts)
 
     intent_values_filename = dir_path / (('document_' if full_docs else '') + 'intent_mask.csv')

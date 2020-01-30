@@ -2,7 +2,7 @@ from utilities.data_management import load_execution_params, check_existence, mo
     check_writable
 from fastText import load_model
 from pandas import DataFrame
-from utilities.pre_processing import runtime_clean
+from utilities.pre_processing import simulated_runtime_clean
 
 move_to_root()
 
@@ -10,31 +10,26 @@ move_to_root()
 params = load_execution_params()
 lex_name = params['fast_text_model']
 data_name = params['dataset']
-context_run = False
 
 # Define paths
-lex_base = make_path('data/lexicons/fast_text')
-mod_path = lex_base / (lex_name + '.bin')
-dest_path = make_path('data/prepared_lexicon/') / (data_name + '-' + lex_name + '.csv')
-
-if context_run:
-    data_path = make_path('data/processed_data') / data_name / 'analysis' / 'intent' / 'contexts.csv'
-else:
-    data_path = make_path('data/prepared_data') / (data_name + '_partial.csv')
+lexicon_base = make_path('data/lexicons/fast_text')
+model_path = lexicon_base / (lex_name + '.bin')
+destination_path = make_path('data/prepared_lexicon/') / (data_name + '-' + lex_name + '.csv')
+data_path = make_path('data/prepared_data') / (data_name + '_partial.csv')
 
 # Ensure paths are valid
-check_existence(mod_path)
+check_existence(model_path)
 check_existence(data_path)
-check_writable(dest_path)
+check_writable(destination_path)
 print('Paths defined, starting')
 
 # Load data
 content = open_w_pandas(data_path, index_col=None).values[:, -1]
-content = runtime_clean(content)
+content = simulated_runtime_clean(content)
 print('Data imported')
 
 # Load fast text model
-fast_model = load_model(str(mod_path))
+fast_model = load_model(str(model_path))
 print('Model loaded, generating word vectors')
 
 # Generate missing embeddings
@@ -43,20 +38,22 @@ usage_counts = {}
 for doc in content:
     if not isinstance(doc, str):
         continue
+
     for word in doc.split(' '):
-        if str(word) not in embeddings:
-            embeddings[str(word)] = fast_model.get_word_vector(str(word))
-            usage_counts[str(word)] = 1
+        tmp_word = str(word)
+        if tmp_word not in embeddings:
+            embeddings[tmp_word] = fast_model.get_word_vector(tmp_word)
+            usage_counts[tmp_word] = 1
         else:
-            usage_counts[str(word)] += 1
+            usage_counts[tmp_word] += 1
 
 print(len(embeddings), 'word embeddings calculated')
 
 # Convert to list
 embeddings = [[word, usage_counts[word]] + list(embeddings[word]) for word in embeddings]
-print('Generated list, converting to dataframe')
+print('Generated list, converting to DataFrame')
 
-# Convert to dataframe
+# Convert to DataFrame
 headings = ['words', 'usages'] + [str(ind) for ind in range(1, fast_model.get_dimension() + 1)]
 fast_model = None
 embeddings = DataFrame(embeddings, columns=headings)
@@ -66,7 +63,7 @@ embeddings.sort_values(['usages', 'words'], inplace=True, ascending=[False, True
 embeddings.drop(columns='usages', inplace=True)
 
 print(embeddings)
-print('Dataframe complete, saving')
+print('DataFrame complete, saving')
 
-# Save
-embeddings.to_csv(dest_path, index=False)
+# Save word embeddings
+embeddings.to_csv(destination_path, index=False)

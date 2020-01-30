@@ -1,26 +1,4 @@
-from re import compile
-
-# context_pattern = compile(r"(?:[\w']+[;:.?!]\s+)?(?:[\w'-]+\b[\s-]*){2,}")
-repeats = compile(r'(.)(\1{2,})')
-extra_spaces = compile(r'\s{2,}')
-post_clean = compile(r'[^a-zA-Z ]|^\s|\s$')
-acronym = compile(r'(\w\.){2,}')
-split_pattern = compile(r'[.?!;]+')
-
-
-def clean_acronym(document):
-    """ Removes periods from acronyms (ex. U.S.A. -> USA) """
-    return acronym.sub(lambda match: match[0].replace('.', '') + ' ', document)
-
-
-def pre_intent_clean(document):
-    """ Perform final clean on contexts before saving and exporting. """
-    document = repeats.sub(lambda match: match[0][0], document)     # Remove repeat characters
-    return extra_spaces.sub(' ', document)                          # Remove extra spaces
-
-
-def final_clean(document):
-    return extra_spaces.sub(' ', post_clean.sub(' ', document))     # Run post clean regex
+from utilities.pre_processing import split_pattern, clean_acronym, pre_intent_clean
 
 
 def split_document(document):
