@@ -1,5 +1,7 @@
 from utilities.data_management import read_csv, move_to_root, make_path, load_execution_params
 from utilities.plotting import scatter_plot, show, hist_plot
+from utilities.analysis import rescale_data
+from model.analysis import compute_abusive_intent
 
 move_to_root(4)
 params = load_execution_params()
@@ -9,16 +11,18 @@ analysis_base = base / 'intent_abuse'
 
 intent = read_csv(analysis_base / 'intent_predictions.csv', header=None)[0].values
 abuse = read_csv(analysis_base / 'abuse_predictions.csv', header=None)[0].values
-# contexts = read_csv(base / 'intent' / 'contexts.csv')['contexts'].values
+hybrid = compute_abusive_intent(intent, abuse)
 
-abuse = abuse[:intent.shape[0]]
+intent = rescale_data(intent)
+abuse = rescale_data(abuse)
 
-scatter_plot((abuse, intent), 'Intent vs abuse predictions', size=10)
+# scatter_plot((abuse, intent), 'Intent vs abuse predictions', size=10)
 
 ax_titles = ('Predicted abuse', 'Predicted intent')
 hist_plot([abuse, intent], 'Prediction comparison histogram', ax_titles=ax_titles, c_bar_title='Document density')
 
 hist_plot(abuse, 'Abuse histogram')
 hist_plot(intent, 'Intent histogram')
+hist_plot(hybrid, 'Abusive intent histogram')
 
 show()

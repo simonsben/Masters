@@ -6,6 +6,7 @@ base_name_regex = compile(r'^[a-z]+')
 
 
 def rescale_data(values):
+    """ Linearly rescale data to (0, 1) """
     if not isinstance(values, ndarray):
         values = ndarray(values)
     if len(values.shape) > 1:

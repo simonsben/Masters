@@ -4,6 +4,7 @@ from pathlib import Path
 from pandas import read_csv, DataFrame
 from re import search, compile
 from dask.dataframe import read_csv as dask_read
+from numpy import asarray, savetxt
 
 file_regex = compile(r'\w+\.\w+$')
 
@@ -147,3 +148,16 @@ def write_context_map(filename, context_map):
             tmp = context_map[key]
             line = [str(val) for val in [key, tmp.start, tmp.stop - 1]]
             fl.write(','.join(line) + '\n')
+
+
+def output_abusive_intent(index_set, predictions, contexts, filename=None):
+    """ Prints abusive intent results to console and saves to disk """
+    index_set = asarray(list(index_set))
+    hybrid, intent, abuse = predictions
+
+    if filename is not None:
+        savetxt(filename, index_set, delimiter=',', fmt='%d')
+
+    print('%10s %8s %8s %8s  %s' % ('index', 'hybrid', 'intent', 'abuse', 'context'))
+    for index in index_set:
+        print('%10d %8.4f %8.4f %8.4f  %s' % (index, hybrid[index], intent[index], abuse[index], contexts[index]))
