@@ -1,5 +1,10 @@
-from numpy import ndarray, zeros_like
+from numpy import ndarray, zeros_like, vectorize
 from scipy.linalg import norm
+from math import sqrt
+
+
+def compute_norm(value_one, value_two, norm=2):
+    return (value_one ** norm + value_two ** norm) ** (1 / norm)
 
 
 def compute_abusive_intent(intent_predictions, abuse_predictions, use_multiplication=True):
@@ -16,8 +21,7 @@ def compute_abusive_intent(intent_predictions, abuse_predictions, use_multiplica
     if use_multiplication:
         return intent_predictions * abuse_predictions
 
-    abusive_intent = zeros_like(intent_predictions)
-    for index, (intent, abuse) in enumerate(zip(intent_predictions, abuse_predictions)):
-        abusive_intent[index] = norm(intent, abuse)
+    norm = vectorize(compute_norm)
+    abusive_intent = norm(intent_predictions, abuse_predictions)
 
     return abusive_intent

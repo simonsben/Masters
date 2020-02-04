@@ -1,5 +1,6 @@
 from utilities.data_management import read_csv, move_to_root, make_path, load_execution_params, output_abusive_intent
-from numpy import argsort
+from numpy import argsort, where, all
+from numpy.random import choice
 from utilities.analysis import rescale_data
 from model.analysis import compute_abusive_intent
 
@@ -20,18 +21,30 @@ abuse = rescale_data(abuse)
 print('Content prepared.')
 
 # Compute the euclidean norm of the (abuse, intent) vectors for each context
-hybrid = compute_abusive_intent(intent, abuse)
+hybrid = compute_abusive_intent(intent, abuse, False)
+hybrid = rescale_data(hybrid)
 hybrid_indexes = argsort(hybrid)
 print('Finished computations.')
 
-gen_filename = lambda name: analysis_base / (name + '.csv')
+# gen_filename = lambda name: analysis_base / (name + '.csv')
 predictions = (hybrid, intent, abuse)
 
 # Print records
 num_records = 50
+zone_size = .1
 
-print('\nHigh')
-output_abusive_intent(reversed(hybrid_indexes[-num_records:]), predictions, contexts, gen_filename('high_indexes'))
+if (1 / zone_size) % 1 != 0:
+    raise ValueError('Zone size must evenly divide 1')
 
-print('\nLow')
-output_abusive_intent(hybrid_indexes[:num_records], predictions, contexts, gen_filename('low_indexes'))
+print('Printing out samples from zones')
+num_zones = int(1 / zone_size)
+for index in range(num_zones):
+    base = index * zone_size
+    [indexes_in_range] = where(all([hybrid >= base, hybrid <= (base + zone_size)], axis=0))
+
+    index_selection = indexes_in_range[
+        choice(indexes_in_range.shape[0], num_records, replace=False)
+    ]
+
+    print('\nZone from', base, 'to', base + zone_size)
+    output_abusive_intent(index_selection, predictions, contexts)
