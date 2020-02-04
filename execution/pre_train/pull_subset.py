@@ -6,7 +6,7 @@ move_to_root()
 
 base = make_path('data/prepared_data/')
 source_name = 'storm-front-full'
-dest_name = 'storm-front'
+destination_name = 'storm-front'
 
 variants = ['', '_partial']
 num_lines = 250000
@@ -16,10 +16,10 @@ subset = None
 
 for variant in variants:
     source_path = base / (source_name + variant + '.csv')
-    dest_path = base / (dest_name + variant + '.csv.gz')
+    destination_path = base / (destination_name + variant + '.csv.gz')
 
     source = read_csv(source_path, index_col=0)
-    print('Loaded data')
+    print('Loaded data variant', variant)
 
     # Define the same subset for both variants
     if subset is None:
@@ -27,7 +27,7 @@ for variant in variants:
         print('Defined subset')
 
     sample = source.iloc[subset]
-    sample.to_csv(dest_path)
+    sample.to_csv(destination_path)
 
-    print('Finished', variant)
+    print('Finished variant', variant)
 print('All writes complete.')

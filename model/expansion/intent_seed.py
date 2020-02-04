@@ -23,7 +23,7 @@ def assemble_related_information(base, base_dependency, information_dependency):
     potentials = list(filter(lambda _token: _token.dep_ in base_dependency, base.children))
     if len(potentials) > 0:
         information_indexes = [_token.i for _token in potentials[0].children if _token.dep_ in information_dependency]
-        information = '"(' + ','.join((str(index) for index in information_indexes + [potentials[0].i])) + ')"'
+        information = '"' + ','.join((str(index) for index in information_indexes + [potentials[0].i])) + '"'
 
         return information
     return None
@@ -33,12 +33,12 @@ def identify_basic_intent(context):
     """ Determines if parsed document contains a sequence of term that indicate intent """
     context = parser(context)
     
-    target, timing, desire_verb, action_verb = None, None, None, None
+    source, target, timing, desire_verb, action_verb = None, None, None, None, None
     intent_score = .5
 
     for token in context:
         if intent_score == .5:
-            target, timing, desire_verb, action_verb = None, None, None, None
+            source, target, timing, desire_verb, action_verb = None, None, None, None, None
 
         if token.tag_ != 'TO': continue                                         # Check for TO
         if token.head is None or token.head.pos_ != 'VERB': continue            # Check for action verb
@@ -57,6 +57,7 @@ def identify_basic_intent(context):
             desire_verb.children
         ))
         if len(pronouns) < 1: continue
+        source = pronouns[0].text
 
         # Get action target
         target = assemble_related_information(action_verb, target_dependencies, target_relations)
@@ -84,7 +85,7 @@ def identify_basic_intent(context):
     desire_verb = desire_verb.text if desire_verb is not None else None
     action_verb = action_verb.text if action_verb is not None else None
 
-    return intent_score, desire_verb, action_verb, target, timing
+    return intent_score, source, desire_verb, action_verb, target, timing
 
 
 def worker_init(*props):

@@ -8,7 +8,7 @@ digit_regex = compile(r'[0-9]+(\.[0-9]+)?')
 space_regex = compile(r'[\n\r]|[ ]{2,}')
 image_regex = compile(r'Image:\w[\w\s]+.\w{3}')
 repeat_regex = compile(r'(\w)\1{2,}')
-tag_regex = compile(r'(?<!<)<[\w\d/\'"=;:,.&#%?+()\[\]{}\-\n ]+>(n(?= ))?')
+tag_regex = compile(r'(?<!<)<[\w\d/\'"=;:,.&#%?!+()\[\]{}\-\n ]+>(n(?= ))?')
 bracket_regex = compile(r'(?<=\S)[\(\[](\w)[\)\]]')
 acronym = compile(r'([a-zA-Z]\.){2,}')
 
