@@ -1,6 +1,6 @@
 from matplotlib.pyplot import subplots, tight_layout, savefig, show
 from numpy import arange, ndarray, asarray
-from utilities.plotting.utilities import generate_3d_figure
+from utilities.plotting.utilities import generate_3d_figure, set_labels
 from matplotlib.colors import LogNorm
 
 
@@ -21,7 +21,7 @@ def bar_plot(values, features, fig_title, filename=None, horizontal=False):
 
     ax.set_xticks(arange(len(features)))
     ax.set_xticklabels(features, rotation='vertical')
-    ax.set_title(fig_title)
+    set_labels(ax, fig_title, None)
     tight_layout()
 
     if filename is not None:
@@ -54,12 +54,8 @@ def scatter_plot(values, fig_title, weights=None, filename=None, ax_titles=None,
     img = ax.scatter(x, y, s=size, c=weights, cmap=cmap, edgecolors='k')
 
     # Add titles and colourbar (optional)
-    if ax_titles is not None:
-        x_t, y_t = ax_titles
-        ax.set_xlabel(x_t)
-        ax.set_ylabel(y_t)
+    set_labels(ax, fig_title, ax_titles)
 
-    ax.set_title(fig_title)
     if weights is not None:
         c_bar = fig.colorbar(img, ax=ax)
         if c_bar_title is not None:
@@ -99,12 +95,7 @@ def scatter_3_plot(values, fig_title, weights=None, filename=None, ax_titles=Non
         if c_bar_title is not None:
             c_bar.ax.set_ylabel(c_bar_title)
 
-    if ax_titles is not None:
-        x_t, y_t, z_t = ax_titles
-        ax.set_xlabel(x_t)
-        ax.set_ylabel(y_t)
-        ax.set_zlabel(z_t)
-    ax.set_title(fig_title)
+    set_labels(ax, fig_title, ax_titles)
 
     if filename is not None:
         savefig(filename)
@@ -140,11 +131,7 @@ def hist_plot(values, fig_title, filename=None, ax_titles=None, cmap='Blues', c_
     else:                       # If single dimensional data is provided, compute a standard hist
         ax.hist(values, bins=bins, log=apply_log)
 
-    if ax_titles is not None:   # If provided, add axis titles
-        x_t, y_t = ax_titles
-        ax.set_xlabel(x_t)
-        ax.set_ylabel(y_t)
-    ax.set_title(fig_title)     # Add title to figure
+    set_labels(ax, fig_title, ax_titles)
     tight_layout()              # Remove extra margin
 
     if filename is not None:    # If filename provided, save figure

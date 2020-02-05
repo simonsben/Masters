@@ -1,5 +1,5 @@
 from utilities.data_management import read_csv, move_to_root, make_path, load_execution_params
-from utilities.plotting import scatter_plot, show, hist_plot
+from utilities.plotting import scatter_plot, show, hist_plot, plot_cumulative_distribution, plot_joint_distribution
 from utilities.analysis import rescale_data
 from model.analysis import compute_abusive_intent
 
@@ -24,5 +24,13 @@ hist_plot([abuse, intent], 'Prediction comparison histogram', ax_titles=ax_title
 hist_plot(abuse, 'Abuse histogram')
 hist_plot(intent, 'Intent histogram')
 hist_plot(hybrid, 'Abusive intent histogram')
+
+ax_labels = ('Predicted value', 'Cumulative sum')
+
+plot_cumulative_distribution(intent, 'Intent cumulative distribution', ax_labels)
+plot_cumulative_distribution(abuse, 'Abuse cumulative distribution', ax_labels)
+
+ax_labels = ('Intent prediction', 'Abuse prediction', 'Joint cumulative sum')
+plot_joint_distribution(intent, abuse, 'Joint intent-abuse cumulative distribution', ax_labels)
 
 show()

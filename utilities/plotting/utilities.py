@@ -44,3 +44,15 @@ def plot_cone(base, angle, distance, axis=None, color='b', alpha=.6):
     axis.plot_surface(x, y, z, color=color, alpha=alpha)
 
     return axis
+
+
+def set_labels(axis, title, axis_labels):
+    """ Set figure labels """
+    if title is not None:
+        axis.set_title(title)
+
+    if axis_labels is not None:
+        axis.set_xlabel(axis_labels[0])
+        axis.set_ylabel(axis_labels[1])
+        if len(axis_labels) > 2:
+            axis.set_zlabel(axis_labels[2])

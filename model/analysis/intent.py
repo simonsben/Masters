@@ -1,6 +1,4 @@
-from numpy import ndarray, zeros_like, vectorize
-from scipy.linalg import norm
-from math import sqrt
+from numpy import ndarray, zeros_like, vectorize, histogram, cumsum, argmin, sqrt
 
 
 def compute_norm(value_one, value_two, norm=2):
@@ -25,3 +23,23 @@ def compute_abusive_intent(intent_predictions, abuse_predictions, use_multiplica
     abusive_intent = norm(intent_predictions, abuse_predictions)
 
     return abusive_intent
+
+
+# TODO correct to space bins based on distribution
+def estimate_cumulative(predictions, num_bins=150):
+    distribution, bin_edges = histogram(predictions, bins=num_bins)
+    bin_edges = bin_edges[:-1]
+
+    cumulative = cumsum(distribution)
+    cumulative -= cumulative[0]
+    cumulative = sqrt(cumulative / cumulative[-1])
+
+    def cumulative_function(prediction):
+        relative_locations = bin_edges <= prediction
+        if relative_locations[-1]:              # If its in the last bin
+            return cumulative[-1]
+
+        bin_index = argmin(relative_locations)  # Get index of the bin
+        return cumulative[bin_index]            # Return approx cumulative sum at the point
+
+    return cumulative_function
