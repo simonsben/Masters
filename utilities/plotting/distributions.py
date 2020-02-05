@@ -1,6 +1,6 @@
 from matplotlib.pyplot import subplots, tight_layout
 from numpy import ndarray, linspace, vectorize, arange, meshgrid
-from model.analysis import estimate_cumulative
+from model.analysis import estimate_cumulative, estimate_joint_cumulative
 from utilities.plotting.utilities import generate_3d_figure, set_labels
 
 
@@ -45,16 +45,12 @@ def plot_joint_distribution(data_a, data_b, fig_title, ax_labels=None, resolutio
     if not isinstance(data_a, ndarray) or not isinstance(data_b, ndarray):
         return TypeError('Expected data as numpy array.')
 
-    cumulative_function_a = estimate_cumulative(data_a, num_bins=int(1 / resolution * 2))
-    cumulative_function_b = estimate_cumulative(data_b, num_bins=int(1 / resolution * 2))
-
-    cumulative_function_a = vectorize(cumulative_function_a)
-    cumulative_function_b = vectorize(cumulative_function_b)
+    joint_cumulative_function = estimate_joint_cumulative(data_a, data_b, resolution)
 
     x, y = [arange(0, 1, resolution) for _ in range(2)]
     x, y = meshgrid(x, y)
 
-    z = cumulative_function_a(x) * cumulative_function_b(y)
+    z = joint_cumulative_function(x, y)
 
     fig, ax = generate_3d_figure()
     ax.plot_surface(x, y, z)
