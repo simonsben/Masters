@@ -5,7 +5,7 @@ def compute_norm(value_one, value_two, norm=2):
     return (value_one ** norm + value_two ** norm) ** (1 / norm)
 
 
-def compute_abusive_intent(intent_predictions, abuse_predictions, use_multiplication=True):
+def compute_abusive_intent(intent_predictions, abuse_predictions, use_distribution=True):
     """ Compute a 'score' for abusive intent from intent and abuse predictions """
     if not isinstance(intent_predictions, ndarray):
         raise TypeError('Expected intent predictions to be a numpy array.')
@@ -16,8 +16,10 @@ def compute_abusive_intent(intent_predictions, abuse_predictions, use_multiplica
     if len(intent_predictions.shape) > 1:
         raise TypeError('Predictions should be a vector, not an array')
 
-    if use_multiplication:
-        return intent_predictions * abuse_predictions
+    if use_distribution:
+        cumulative_function = vectorize(estimate_cumulative(intent_predictions))
+
+        return abuse_predictions * cumulative_function(intent_predictions)
 
     norm = vectorize(compute_norm)
     abusive_intent = norm(intent_predictions, abuse_predictions)
