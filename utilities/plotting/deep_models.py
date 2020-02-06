@@ -28,7 +28,7 @@ def plot_token_importance(documents, indexed_documents, target_documents, model,
     # Compute feature importance for given documents
     [shap_values] = explainer.shap_values(indexed_documents[target_documents])
     print('shap value shape', shap_values.shape)
-    # shap_values = sum(shap_values, axis=2)
+
     documents = documents[target_documents]
     print('SHAP values computed.')
 

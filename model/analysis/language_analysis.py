@@ -1,4 +1,5 @@
 from numpy import asarray, where, ndarray
+from pandas import DataFrame
 
 english_label = '__label__en'
 
@@ -35,3 +36,19 @@ def filter_non_english(documents, model, return_indexes=False):
     if return_indexes:
         return documents[is_english], is_english
     return documents[is_english]
+
+
+def generate_word_vectors(words, model):
+    word_vectors = [
+        [word] + list(model.get_word_vector(word))
+        for word in words if isinstance(word, str)
+    ]
+
+    word_vectors = DataFrame(
+        word_vectors,
+        columns=(
+                ['word'] + [str(index) for index in range(model.get_dimension())]
+        )
+    )
+
+    return word_vectors

@@ -71,3 +71,12 @@ def estimate_joint_cumulative(data_a, data_b, resolution=.01):
         return cumulative_function_a(prediction_a) * cumulative_function_b(prediction_b)
 
     return join_cumulative_function
+
+
+def get_verbs(raw_frames, column_index, unique=True):
+    raw_verbs = raw_frames[:, column_index]
+    verbs = raw_verbs[raw_verbs != None]
+
+    if unique:
+        return list(set(verbs))
+    return verbs

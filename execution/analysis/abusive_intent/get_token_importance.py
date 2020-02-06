@@ -6,7 +6,7 @@ from utilities.pre_processing import runtime_clean, token_to_index
 
 move_to_root(4)
 
-abuse_run = False
+abuse_run = True
 run_name = 'abuse' if abuse_run else 'intent'
 
 params = load_execution_params()
