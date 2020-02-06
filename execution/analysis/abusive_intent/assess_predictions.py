@@ -20,7 +20,7 @@ abuse = rescale_data(abuse)
 print('Content prepared.')
 
 # Compute the euclidean norm of the (abuse, intent) vectors for each context
-hybrid = compute_abusive_intent(intent, abuse)
+hybrid = compute_abusive_intent(intent, abuse, True)
 hybrid_indexes = argsort(hybrid)
 print('Finished computations.')
 

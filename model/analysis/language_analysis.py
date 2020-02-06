@@ -12,10 +12,13 @@ def classify_languages(documents, model):
     return document_languages
 
 
-def get_english_indexes(documents, model):
+def get_english_indexes(documents, model, boolean_mask=False):
     """ Gets the indexes of english documents """
     languages = asarray(classify_languages(documents, model))
-    [is_english] = where(languages == english_label)
+
+    is_english = languages == english_label
+    if not boolean_mask:
+        [is_english] = where(is_english)
 
     return is_english
 

@@ -18,6 +18,7 @@ language_model = load_model(str(model_path))
 contexts = open_w_pandas(base_dir / 'contexts.csv').values[:, -1]
 print('Loaded model and data.')
 
-indexes = get_english_indexes(contexts, language_model)
+mask = get_english_indexes(contexts, language_model, boolean_mask=True)
+print('Computed mask.')
 
-savetxt(str(dest_path), indexes, fmt='%d', delimiter=',')
+savetxt(str(dest_path), mask, fmt='%d', delimiter=',')
