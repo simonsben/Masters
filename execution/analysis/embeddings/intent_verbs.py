@@ -1,8 +1,7 @@
 from fasttext import load_model
 from utilities.data_management import move_to_root, make_path, check_existence, load_execution_params, make_dir
 from pandas import read_csv
-from model.analysis import get_verbs
-from model.analysis import generate_word_vectors
+from model.analysis import get_verbs, intent_verb_filename, generate_word_vectors
 
 move_to_root(4)
 
@@ -39,12 +38,10 @@ print('Isolated verbs.')
 model = load_model(str(model_path))
 print('Loaded model.')
 
-generate_filename = lambda name: name + '_vectors-' + model_name + '.csv.gz'
-
 desire_vectors = generate_word_vectors(desire_verbs, model)
-desire_vectors.to_csv(destination_dir / generate_filename('desire'), compression='gzip')
+desire_vectors.to_csv(destination_dir / intent_verb_filename('desire', model_name), compression='gzip')
 print('Completed desire verbs.')
 
 action_vectors = generate_word_vectors(action_verbs, model)
-action_vectors.to_csv(destination_dir / generate_filename('action'), compression='gzip')
+action_vectors.to_csv(destination_dir / intent_verb_filename('action', model_name), compression='gzip')
 print('Completed action verbs.')

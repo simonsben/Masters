@@ -74,9 +74,25 @@ def estimate_joint_cumulative(data_a, data_b, resolution=.01):
 
 
 def get_verbs(raw_frames, column_index, unique=True):
+    """ Extracts the verbs from an intent frame matrix """
     raw_verbs = raw_frames[:, column_index]
     verbs = raw_verbs[raw_verbs != None]
 
     if unique:
-        return list(set(verbs))
+        verb_set = {}
+        for verb in verbs:
+            verb_set[verb] = 1 + (verb_set[verb] if verb in verb_set else 0)
+        verb_set = sorted(
+            [(verb, verb_set[verb]) for verb in verb_set],
+            key=lambda _set: _set[1],
+            reverse=True
+        )
+        verb_set = list(map(lambda _set: _set[0], verb_set))
+
+        return verb_set
     return verbs
+
+
+def intent_verb_filename(name, model_name):
+    """ Generates the filename for intent verb embeddings """
+    return name + '_vectors-' + model_name + '.csv.gz'

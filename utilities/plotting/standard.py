@@ -49,7 +49,11 @@ def scatter_plot(values, fig_title, weights=None, filename=None, ax_titles=None,
         values = values if type(values) is ndarray else asarray(values)
         x, y = values[:, 0], values[:, 1]
     else:
-        [x, y] = values
+        if len(values) == 2:
+            [x, y] = values
+        else:
+            y = values
+            x = arange(len(y))
 
     img = ax.scatter(x, y, s=size, c=weights, cmap=cmap, edgecolors='k')
 
