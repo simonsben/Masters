@@ -1,5 +1,6 @@
 from numpy import asarray, where, ndarray
 from pandas import DataFrame
+from sklearn.cluster import AgglomerativeClustering
 
 english_label = '__label__en'
 
@@ -41,7 +42,7 @@ def filter_non_english(documents, model, return_indexes=False):
 def generate_word_vectors(words, model):
     word_vectors = [
         [word] + list(model.get_word_vector(word))
-        for word in words if isinstance(word, str)
+        for word in words
     ]
 
     word_vectors = DataFrame(
@@ -52,3 +53,10 @@ def generate_word_vectors(words, model):
     )
 
     return word_vectors
+
+
+def cluster_verbs(verb_vectors, num_top_verbs=30, num_dimensions=50):
+    model = AgglomerativeClustering(distance_threshold=1, n_clusters=None, affinity='cosine', linkage='complete')
+    model.fit(verb_vectors[:num_top_verbs, :num_dimensions])
+
+    return model
