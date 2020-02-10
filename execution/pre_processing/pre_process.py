@@ -1,6 +1,7 @@
 from data.accessors import *
 from utilities.pre_processing import *
-from utilities.data_management import make_path, check_existence, check_writable, open_w_pandas, expand_csv_row_size, move_to_root
+from utilities.data_management import make_path, check_existence, check_writable, open_w_pandas, expand_csv_row_size, \
+    move_to_root
 from pandas import concat, isna
 from numpy.random import permutation
 from numpy import arange, savetxt
@@ -29,11 +30,6 @@ if __name__ == '__main__':
             'mutator': kaggle_mutator
         },
         {
-            'data_set': 'storm-front',
-            'accessor': stormfront_accessor,
-            'mutator': stormfront_mutator
-        },
-        {
             'data_set': 'storm-front-full',
             'accessor': stormfront_accessor,
             'mutator': stormfront_mutator
@@ -47,12 +43,17 @@ if __name__ == '__main__':
             'data_set': 'manifesto',
             'accessor': manifesto_accessor,
             'mutator': manifesto_mutator
+        },
+        {
+            'data_set': 'hate_speech_dataset',
+            'accessor': hate_speech_dataset_accessor,
+            'mutator': hate_speech_dataset_mutator
+        },
+        {
+            'data_set': 'insults',
+            'accessor': insults_accessor,
+            'mutator': insults_mutator
         }
-        # {
-        #     'data_set': 'insults',
-        #     'accessor': insults_accessor,
-        #     'mutator': insults_mutator
-        # }
     ]
     base_directory = make_path('data/')
     source_directory = base_directory / 'datasets'

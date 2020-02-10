@@ -1,11 +1,11 @@
-def insults_accessor(document):
-    """ Accessor for the insults dataset """
-    return document[1]
+def hate_speech_dataset_accessor(document):
+    """ Accessor for hate speech dataset """
+    return document[-1]
 
 
-def insults_mutator(modified_content, values, document):
+def hate_speech_dataset_mutator(modified_content, values, document):
     """
-    Mutator for the insults dataset
+    Mutator for hate speech dataset
 
     :param modified_content: Pre-processed document, string
     :param values: Extracted values, list
