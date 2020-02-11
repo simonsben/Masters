@@ -1,5 +1,5 @@
 from utilities.data_management import read_csv, move_to_root, make_path, load_execution_params
-from utilities.plotting import scatter_plot, show, hist_plot, plot_cumulative_distribution, plot_joint_distribution
+from utilities.plotting import show, hist_plot, plot_cumulative_distribution, plot_joint_distribution
 from utilities.analysis import rescale_data
 from model.analysis import compute_abusive_intent
 
@@ -15,8 +15,6 @@ hybrid = compute_abusive_intent(intent, abuse)
 
 intent = rescale_data(intent)
 abuse = rescale_data(abuse)
-
-# scatter_plot((abuse, intent), 'Intent vs abuse predictions', size=10)
 
 ax_titles = ('Predicted abuse', 'Predicted intent')
 hist_plot([abuse, intent], 'Prediction comparison histogram', ax_titles=ax_titles, c_bar_title='Document density')

@@ -4,7 +4,7 @@ from pathlib import Path
 from pandas import read_csv, DataFrame
 from re import search, compile
 from dask.dataframe import read_csv as dask_read
-from numpy import asarray, savetxt
+from numpy import asarray, savetxt, object
 
 file_regex = compile(r'\w+\.\w+$')
 
@@ -161,3 +161,16 @@ def output_abusive_intent(index_set, predictions, contexts, filename=None):
     print('%10s %8s %8s %8s  %s' % ('index', 'hybrid', 'intent', 'abuse', 'context'))
     for index in index_set:
         print('%10d %8.4f %8.4f %8.4f  %s' % (index, hybrid[index], intent[index], abuse[index], contexts[index]))
+
+
+type_map = {
+    'O': '%s'
+}
+
+
+def vector_to_file(data_vector, filename):
+    data_type = data_vector.dtype.kind
+    if data_type not in type_map:
+        raise TypeError('Unsupported type,', data_type)
+
+    savetxt(filename, data_vector, delimiter=',', fmt=type_map[data_type])

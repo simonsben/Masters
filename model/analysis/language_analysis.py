@@ -26,7 +26,7 @@ def get_english_indexes(documents, model, boolean_mask=False):
 
 
 def filter_non_english(documents, model, return_indexes=False):
-    """ Returns the english documents """
+    """ Returns the english documents with (optionally) the associated mask """
     if isinstance(documents, list):
         documents = asarray(documents)
     elif not isinstance(documents, ndarray):
@@ -40,6 +40,7 @@ def filter_non_english(documents, model, return_indexes=False):
 
 
 def generate_word_vectors(words, model):
+    """ Generates word vectors for a given list of words using a fastText model """
     word_vectors = [
         [word] + list(model.get_word_vector(word))
         for word in words
@@ -56,7 +57,8 @@ def generate_word_vectors(words, model):
 
 
 def cluster_verbs(verb_vectors, num_top_verbs=30, num_dimensions=50):
-    model = AgglomerativeClustering(distance_threshold=1, n_clusters=None, affinity='cosine', linkage='complete')
+    """ Clusters verb vectors using hierarchical clustering """
+    model = AgglomerativeClustering(distance_threshold=1, n_clusters=None, affinity='cosine', linkage='average')
     model.fit(verb_vectors[:num_top_verbs, :num_dimensions])
 
     return model
