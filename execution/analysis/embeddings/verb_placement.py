@@ -5,7 +5,6 @@ from utilities.analysis import normalize_embeddings
 from utilities.plotting import scatter_plot, show, scatter_3_plot, plot_dendrogram
 from sklearn.decomposition import PCA
 from empath import Empath
-from itertools import compress
 from numpy import asarray
 
 move_to_root(4)
@@ -18,6 +17,7 @@ base_dir = make_path('data/processed_data') / dataset / 'analysis' / 'embeddings
 action_path = base_dir / intent_verb_filename('action', model_name)
 desire_path = base_dir / intent_verb_filename('desire', model_name)
 verb_path_generator = lambda name: base_dir / (name + '_verbs.csv')
+figure_dir = make_path('figures') / dataset / 'analysis'
 
 check_existence(action_path)
 check_existence(desire_path)
@@ -54,7 +54,13 @@ action_model = cluster_verbs(reduced_action, num_top_verbs=num_verbs, num_dimens
 desire_model = cluster_verbs(reduced_desire, num_top_verbs=num_verbs, num_dimensions=num_dimensions)
 print('Completed clustering')
 
-plot_dendrogram(action_model, action_tokens[is_polarizing][:action_model.n_leaves_], 'Dendrogram of action verbs')
-plot_dendrogram(desire_model, desire_tokens[:desire_model.n_leaves_], 'Dendrogram of desire verbs')
+plot_dendrogram(
+    action_model, action_tokens[is_polarizing][:action_model.n_leaves_], 'Dendrogram of action verbs',
+    filename=(figure_dir / 'action_verb_clustering.png')
+)
+plot_dendrogram(
+    desire_model, desire_tokens[:desire_model.n_leaves_], 'Dendrogram of desire verbs',
+    filename=(figure_dir / 'desire_verb_clustering.png')
+)
 
 show()

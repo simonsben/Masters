@@ -1,9 +1,9 @@
 from scipy.cluster.hierarchy import dendrogram
 from numpy import zeros, column_stack
-from matplotlib.pyplot import tight_layout, subplots
+from matplotlib.pyplot import tight_layout, subplots, savefig
 
 
-def plot_dendrogram(model, labels, title=None):
+def plot_dendrogram(model, labels, title=None, filename=None):
     """
     Plots the dendrogram of a sklearn agglomerative clustering model, based on code from the sklearn documentation
     :param model: sklearn agglomerative clustering model
@@ -35,4 +35,8 @@ def plot_dendrogram(model, labels, title=None):
         ax.set_title(title)
 
     tight_layout()
+
+    if filename is not None:
+        savefig(filename)
+
     return ax

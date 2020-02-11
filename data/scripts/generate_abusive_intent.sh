@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ ! -z $1 ]; then
+  echo "Performing a clean remake."
+  rm ../prepared_data/abusive_data*
+fi
+
 if [ ! -f "../prepared_data/abusive_data.csv" ]; then
   echo "Abusive data not generated, running first."
   bash "generate_abuse.sh"
