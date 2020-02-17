@@ -1,5 +1,5 @@
 from utilities.data_management import load_execution_params, check_existence, move_to_root, make_path, open_w_pandas, \
-    check_writable
+    check_writable, generate_embeddings
 from fasttext import load_model
 from pandas import DataFrame
 from utilities.pre_processing import simulated_runtime_clean
@@ -29,40 +29,10 @@ content = simulated_runtime_clean(content)
 print('Data imported')
 
 # Load fast text model
-fast_model = load_model(str(model_path))
+fast_text_model = load_model(str(model_path))
 print('Model loaded, generating word vectors')
 
-# Generate missing embeddings
-embeddings = {}
-usage_counts = {}
-for doc in content:
-    if not isinstance(doc, str):
-        continue
-
-    for word in doc.split(' '):
-        tmp_word = str(word)
-        if tmp_word not in embeddings:
-            embeddings[tmp_word] = fast_model.get_word_vector(tmp_word)
-            usage_counts[tmp_word] = 1
-        else:
-            usage_counts[tmp_word] += 1
-
-print(len(embeddings), 'word embeddings calculated')
-
-# Convert to list
-embeddings = [[word, usage_counts[word]] + list(embeddings[word]) for word in embeddings]
-print('Generated list, converting to DataFrame')
-
-# Convert to DataFrame
-headings = ['words', 'usages'] + [str(ind) for ind in range(1, fast_model.get_dimension() + 1)]
-fast_model = None
-embeddings = DataFrame(embeddings, columns=headings)
-
-# Sort
-embeddings.sort_values(['usages', 'words'], inplace=True, ascending=[False, True])
-embeddings.drop(columns='usages', inplace=True)
-
-print(embeddings)
+embeddings = generate_embeddings(content, fast_text_model)
 print('DataFrame complete, saving')
 
 # Save word embeddings
