@@ -1,8 +1,9 @@
 from pandas import DataFrame
 
 
-def not_string(document):
-    return not isinstance(document, str)
+def is_string(document):
+    """ Returns whether the provided document isn't a string, for filtering """
+    return isinstance(document, str)
 
 
 def generate_embeddings(documents, model):
@@ -12,7 +13,7 @@ def generate_embeddings(documents, model):
     usage_counts = {}
 
     # Generate embeddings for non-empty documents
-    for document in filter(not_string, documents):
+    for document in filter(is_string, documents):
         # For each token in document
         for token in document.split(' '):
             token = str(token)

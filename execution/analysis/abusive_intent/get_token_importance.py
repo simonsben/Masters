@@ -13,7 +13,7 @@ params = load_execution_params()
 max_tokens = params['max_tokens']
 training_set = params['fast_text_model']
 
-embedding_model = ('abusive_intent-' if abuse_run else 'intent_dataset-') + training_set
+embedding_model = ('abusive_data-' if abuse_run else 'intent_dataset-') + training_set
 
 weight_path = make_path('data/models/') / training_set / 'analysis' / (run_name + '_model_weights.h5')
 lexicon_path = make_path('data/prepared_lexicon') / (embedding_model + '.csv')
