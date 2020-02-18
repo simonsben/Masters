@@ -12,10 +12,11 @@ def split_document(document):
     return list(filter(lambda context: len(context) > 1, contexts))
 
 
-def pull_document_contexts(documents):
+def split_into_contexts(documents, original_indexes=None):
     """
     Splits documents into contexts (sentences)
     :param documents: Iterable collection of documents
+    :param original_indexes: Indexes of the original documents, if not enumeration
     :return: List of contexts, Mapping of corpus index to context slice
     """
     context_map = {}
@@ -28,9 +29,12 @@ def pull_document_contexts(documents):
             lambda cont: len(cont) > 0, split_document(document)
         ))
 
-        # Add set of contexts to the map
-        corpus_index = len(corpus_contexts)
-        context_map[index] = slice(corpus_index, corpus_index + len(document_contexts))
+        # Compute index of contexts and get index of the original document
+        context_index = len(corpus_contexts)
+        corpus_index = index if original_indexes is None else original_indexes[index]
+
+        # Add context mapping to dictionary
+        context_map[corpus_index] = slice(context_index, context_index + len(document_contexts))
 
         # Add the contexts to the list
         corpus_contexts += document_contexts
@@ -43,7 +47,7 @@ def generate_context_matrix(contexts):
     from sklearn.feature_extraction.text import CountVectorizer
 
     # Initialize document vectorizer
-    vectorizer = CountVectorizer(ngram_range=(1, 2), max_features=25000)
+    vectorizer = CountVectorizer(ngram_range=(3, 6), max_features=25000)
 
     # Construct document matrix
     document_matrix = vectorizer.fit_transform(contexts)

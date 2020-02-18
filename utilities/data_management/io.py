@@ -1,5 +1,5 @@
 from os import access, W_OK, R_OK, rename
-from csv import reader, writer, QUOTE_NONE
+from csv import reader, writer, QUOTE_NONNUMERIC
 from pathlib import Path
 from pandas import read_csv, DataFrame
 from re import search, compile
@@ -79,6 +79,12 @@ def open_w_pandas(path, columns=None, index_col=0, encoding=None):
     data_frame = read_csv(path, usecols=columns, index_col=index_col, encoding=encoding)
 
     return data_frame
+
+
+def save_dataframe(data_frame, path):
+    """ Saves DataFrame with standard parameters """
+    path = make_path(path)
+    data_frame.to_csv(path, quoting=QUOTE_NONNUMERIC)
 
 
 def open_w_dask(path, index_col=0, dtypes=None):

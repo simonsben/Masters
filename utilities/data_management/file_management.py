@@ -7,13 +7,13 @@ from csv import field_size_limit
 from sys import maxsize
 
 prediction_filename = Path('data/processed_data/predictions.csv')
-target_file = '.gitignore'
+root_dir_file = '.gitignore'
 
 
-def move_to_root(max_levels=3, target=target_file):
+def move_to_root(max_levels=4, target=root_dir_file):
     """
-     Changes PWD to root project directory.
-     NOTE: By default assumes there is only one .gitignore file in project files.
+    Changes PWD to root project directory.
+    NOTE: By default assumes there is only one .gitignore file in project files.
     :param max_levels: Maximum number of directory levels checked, (default 3)
     :param target: Target file, must only be one in project files, (default .gitignore)
     """
