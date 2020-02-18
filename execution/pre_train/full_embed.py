@@ -1,7 +1,6 @@
 from utilities.data_management import load_execution_params, check_existence, move_to_root, make_path, open_w_pandas, \
     check_writable, generate_embeddings
 from fasttext import load_model
-from pandas import DataFrame
 from utilities.pre_processing import simulated_runtime_clean
 
 move_to_root()

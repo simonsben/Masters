@@ -39,3 +39,6 @@ def generate_embeddings(documents, model):
     embeddings.drop(columns='usages', inplace=True)
 
     return embeddings
+
+
+# def load_trained_parameters(network, weights):

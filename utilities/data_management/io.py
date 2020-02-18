@@ -92,12 +92,15 @@ def open_w_dask(path, index_col=0, dtypes=None):
     return data_frame.iloc[:, indexes]
 
 
-def open_fast_embed(path):
-    """ Opens a FastText embedding file (.vec) """
+def open_embeddings(path):
+    """ Loads pre-calculated embeddings """
     path = make_path(path)
-    embedding = read_csv(path, quoting=QUOTE_NONE, delimiter=' ', skiprows=1, header=None)
+    raw_embeddings = read_csv(path)
 
-    return embedding
+    embeddings = raw_embeddings.values[:, 1:]
+    tokens = raw_embeddings['words'].values
+
+    return tokens, embeddings
 
 
 def open_exp_lexicon(path, raw=False):
