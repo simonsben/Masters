@@ -1,5 +1,5 @@
 from os import access, W_OK, R_OK, rename
-from csv import reader, writer, QUOTE_NONE
+from csv import reader, writer, QUOTE_NONNUMERIC
 from pathlib import Path
 from pandas import read_csv, DataFrame
 from re import search, compile
@@ -81,6 +81,12 @@ def open_w_pandas(path, columns=None, index_col=0, encoding=None):
     return data_frame
 
 
+def save_dataframe(data_frame, path):
+    """ Saves DataFrame with standard parameters """
+    path = make_path(path)
+    data_frame.to_csv(path, quoting=QUOTE_NONNUMERIC)
+
+
 def open_w_dask(path, index_col=0, dtypes=None):
     path = make_path(path)
     data_frame = dask_read(path, dtype=dtypes)
@@ -92,12 +98,15 @@ def open_w_dask(path, index_col=0, dtypes=None):
     return data_frame.iloc[:, indexes]
 
 
-def open_fast_embed(path):
-    """ Opens a FastText embedding file (.vec) """
+def open_embeddings(path):
+    """ Loads pre-calculated embeddings """
     path = make_path(path)
-    embedding = read_csv(path, quoting=QUOTE_NONE, delimiter=' ', skiprows=1, header=None)
+    raw_embeddings = read_csv(path)
 
-    return embedding
+    embeddings = raw_embeddings.values[:, 1:]
+    tokens = raw_embeddings['words'].values
+
+    return tokens, embeddings
 
 
 def open_exp_lexicon(path, raw=False):

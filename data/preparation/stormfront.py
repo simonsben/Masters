@@ -4,7 +4,7 @@ from re import compile
 from unidecode import unidecode
 from multiprocessing import Pool
 from pandas import read_csv, DataFrame, to_datetime, concat
-from numpy import ndarray
+from numpy import ndarray, sum
 
 newline_regex = compile(r'(<br />)[\n\r]?n|[\n\r]n')
 full_run = True
@@ -65,6 +65,10 @@ if __name__ == '__main__':
     print('Cleaned dates, extending dataset')
 
     dataset = concat([dataset, dataset_extension])
-    print('Dataset extended, saving')
+    print('Dataset extended, checking for duplicates')
+
+    duplicates = dataset.duplicated()
+    dataset = dataset.drop(duplicates)
+    print(str(sum(duplicates)), 'duplicates dropped, saving.')
 
     dataset.to_csv(dest_path)

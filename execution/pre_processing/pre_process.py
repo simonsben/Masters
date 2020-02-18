@@ -12,6 +12,7 @@ if __name__ == '__main__':
     runs = [False, True]
     expand_csv_row_size()
 
+    # TODO re-write this part to dynamically generate the list of datasets
     # Generate path
     data_sets = [
         {
