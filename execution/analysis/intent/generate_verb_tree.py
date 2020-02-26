@@ -35,13 +35,16 @@ desire_tokens, desire_vectors = split_embeddings(desire)
 
 is_polarizing = get_polarizing_mask(action_tokens)
 
-action_model, reduced_action = reduce_and_cluster(action_vectors, is_polarizing)
+action_model, reduced_action = reduce_and_cluster(action_vectors, is_polarizing, num_verbs=100)
 desire_model, reduced_desire = reduce_and_cluster(desire_vectors)
 
 action_tokens = action_tokens[is_polarizing][:action_model.n_leaves_]
 
+print(action_model)
+
 tree = build_verb_tree(action_model, action_tokens)
 leaves = get_branch_leaves(tree, ['kill', 'fight', 'eliminate'])
+print(tree)
 print(leaves)
 
 plot_dendrogram(action_model, action_tokens, 'Action dendrogram')

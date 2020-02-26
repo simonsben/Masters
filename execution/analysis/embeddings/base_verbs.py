@@ -1,4 +1,4 @@
-from fastText import load_model
+from fasttext import load_model
 from tables.exceptions import HDF5ExtError
 from utilities.data_management import load_execution_params, make_path, check_existence, move_to_root
 from utilities.plotting import scatter_3_plot, show

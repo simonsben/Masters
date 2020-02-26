@@ -1,6 +1,5 @@
 from utilities.analysis import svd_embeddings, get_nearest_neighbours
 from scipy.cluster.vq import whiten, kmeans
-from scipy.spatial.distance import euclidean
 from scipy.linalg import norm
 from scipy.spatial.distance import euclidean
 from numpy import percentile, argmin
@@ -89,31 +88,38 @@ def embedding_expansion(lexicon, embeddings, simple_expand=None):
 
 
 def expand_lexicon(lexicon, embeddings=None, simple_expand=None):
-    # If no embeddings assume wordnet expansion
+    """ Expand lexicon using either wordnet expansion or word embeddings """
     if embeddings is None:
         return wordnet_expansion(lexicon, simple_expand)
-    # If embeddings supplied assume embedding expansion
     else:
         return embedding_expansion(lexicon, embeddings, simple_expand)
 
 
 def build_verb_tree(verb_model, labels=None):
+    """
+    Construct a tree from tokens clustered using agglomerative clustering
+    :param verb_model: Agglomerative clustering model
+    :param labels: Labels
+    :return: Tree of lists (i.e. nexted lists forming a tree structure)
+    """
     tree_joints = verb_model.children_
     num_children = verb_model.n_leaves_
 
     tree = {}
     for index, relation in enumerate(tree_joints):
-        new_joint = []
-        targets = []
-        for joint in relation:
+        new_joint = []  # New sub-tree
+        targets = []    # List of sub-trees (in list) to join new joint to
+
+        for joint in relation:  # For each joint
+            # Determine whether the joint is a leaf (label) index or a sub-tree index to join to
             if joint < num_children:
                 new_joint.append(joint if labels is None else labels[joint])
             else:
                 targets.append(joint - num_children)
 
-        if len(targets) == 0:
+        if len(targets) == 0:   # If sub-tree only has leaf nodes
             tree[index] = new_joint
-        else:
+        else:                   # If sub-tree connects to other sub-tree(s)
             for target in targets:
                 new_joint.append(tree[target])
                 tree.pop(target)
@@ -123,6 +129,12 @@ def build_verb_tree(verb_model, labels=None):
 
 
 def get_branch_leaves(verb_tree, target_labels):
+    """
+    Get labels from all leaves within the smallest sub-tree that contains all the target labels
+    :param verb_tree: Tree of lists (i.e. nexted lists forming a tree structure)
+    :param target_labels: Set of target labels
+    :return: All leaf labels from sub-tree
+    """
     if not isinstance(target_labels, set):
         target_labels = set(target_labels)
 
@@ -131,6 +143,13 @@ def get_branch_leaves(verb_tree, target_labels):
 
 
 def extract_leaves(tree, collection, leaf_type=str):
+    """
+    Extract all leaf labels from tree of lists
+    :param tree: Tree of lists (i.e. nexted lists forming a tree structure)
+    :param collection: Set to collect leaf labels in
+    :param leaf_type: Type of leaf labels (ex. string)
+    :return: None (collects using pass-by-reference)
+    """
     if isinstance(tree, leaf_type):
         collection.add(tree)
         return
@@ -139,22 +158,51 @@ def extract_leaves(tree, collection, leaf_type=str):
         extract_leaves(sub_tree, collection, leaf_type)
 
 
-def pull_leaves(branch, target_labels, leaf_type=str):
-    if isinstance(branch, leaf_type):
-        return branch in target_labels
-    elif isinstance(branch, set):
-        return branch
+def pull_leaves(tree, target_labels, leaf_type=str, extract_terms=True):
+    """
+    Find smallest sub-tree that contains all target labels
+    :param tree: Tree of lists (i.e. nexted lists forming a tree structure)
+    :param target_labels: Set of labels that sub-tree must contain
+    :param leaf_type: Type of leaf labels
+    :param extract_terms: Whether to extract the labels from the found sub-tree
+    :return: sub-tree of lists or set of sub-tree labels
+    """
+    if isinstance(tree, leaf_type):   # If leaf
+        return tree in target_labels
+    elif isinstance(tree, set):       # If found sub-tree already
+        return tree
 
-    child_sum = 0
-    for sub_branch in branch:
-        tmp = pull_leaves(sub_branch, target_labels, leaf_type)
+    # Compute how many of the target labels are contained in the current sub-tree
+    sub_tree_sum = 0
+    for sub_tree in tree:
+        tmp = pull_leaves(sub_tree, target_labels, leaf_type)
         if isinstance(tmp, set):
             return tmp
-        child_sum += tmp
+        sub_tree_sum += tmp
 
-    print(child_sum, branch)
-    if child_sum == len(target_labels):
-        new_dict = set()
-        extract_leaves(branch, new_dict, leaf_type)
-        return new_dict
-    return child_sum
+    # If current sub-tree doesn't contain all target labels
+    if sub_tree_sum < len(target_labels):
+        return sub_tree_sum
+
+    if not extract_terms:
+        return tree
+
+    sub_tree_labels = set()
+    extract_leaves(tree, sub_tree_labels, leaf_type)
+    return sub_tree_labels
+
+
+def check_for_labels(labels, target_labels, clean=True):
+    labels = set(labels)
+    target_labels = set(target_labels)
+    bad_targets = set()
+
+    for label in target_labels:
+        if label not in labels:
+            if clean:
+                print('Removing', label, 'from target set')
+                bad_targets.add(label)
+            else:
+                raise ValueError('Invalid label', label)
+
+    return target_labels - bad_targets
