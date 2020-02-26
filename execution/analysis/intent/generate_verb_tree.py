@@ -1,9 +1,8 @@
 from utilities.data_management import move_to_root, make_path, load_execution_params, load_vector, open_w_pandas, \
     check_existence, split_embeddings
-from model.analysis import intent_verb_filename, get_polarizing_mask
+from model.analysis import intent_verb_filename, get_polarizing_mask, build_verb_tree, get_branch_leaves
 from model.analysis.clustering import reduce_and_cluster
-from numpy.random import choice
-from numpy import sum, where
+from utilities.plotting import plot_dendrogram, show
 
 move_to_root()
 params = load_execution_params()
@@ -39,4 +38,12 @@ is_polarizing = get_polarizing_mask(action_tokens)
 action_model, reduced_action = reduce_and_cluster(action_vectors, is_polarizing)
 desire_model, reduced_desire = reduce_and_cluster(desire_vectors)
 
-print(action_model.children_)
+action_tokens = action_tokens[is_polarizing][:action_model.n_leaves_]
+
+tree = build_verb_tree(action_model, action_tokens)
+leaves = get_branch_leaves(tree, ['kill', 'fight', 'eliminate'])
+print(leaves)
+
+plot_dendrogram(action_model, action_tokens, 'Action dendrogram')
+
+show()

@@ -95,3 +95,66 @@ def expand_lexicon(lexicon, embeddings=None, simple_expand=None):
     # If embeddings supplied assume embedding expansion
     else:
         return embedding_expansion(lexicon, embeddings, simple_expand)
+
+
+def build_verb_tree(verb_model, labels=None):
+    tree_joints = verb_model.children_
+    num_children = verb_model.n_leaves_
+
+    tree = {}
+    for index, relation in enumerate(tree_joints):
+        new_joint = []
+        targets = []
+        for joint in relation:
+            if joint < num_children:
+                new_joint.append(joint if labels is None else labels[joint])
+            else:
+                targets.append(joint - num_children)
+
+        if len(targets) == 0:
+            tree[index] = new_joint
+        else:
+            for target in targets:
+                new_joint.append(tree[target])
+                tree.pop(target)
+                tree[index] = new_joint
+
+    return list(tree.values())[0]
+
+
+def get_branch_leaves(verb_tree, target_labels):
+    if not isinstance(target_labels, set):
+        target_labels = set(target_labels)
+
+    target_terms = pull_leaves(verb_tree, target_labels)
+    return target_terms
+
+
+def extract_leaves(tree, collection, leaf_type=str):
+    if isinstance(tree, leaf_type):
+        collection.add(tree)
+        return
+
+    for sub_tree in tree:
+        extract_leaves(sub_tree, collection, leaf_type)
+
+
+def pull_leaves(branch, target_labels, leaf_type=str):
+    if isinstance(branch, leaf_type):
+        return branch in target_labels
+    elif isinstance(branch, set):
+        return branch
+
+    child_sum = 0
+    for sub_branch in branch:
+        tmp = pull_leaves(sub_branch, target_labels, leaf_type)
+        if isinstance(tmp, set):
+            return tmp
+        child_sum += tmp
+
+    print(child_sum, branch)
+    if child_sum == len(target_labels):
+        new_dict = set()
+        extract_leaves(branch, new_dict, leaf_type)
+        return new_dict
+    return child_sum
