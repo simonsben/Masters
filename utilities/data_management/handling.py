@@ -3,6 +3,7 @@ from scipy.special import digamma
 from scipy.sparse import csr_matrix
 from numpy import float64, array, ndarray, asarray
 from sklearn.preprocessing import LabelEncoder
+from utilities.analysis import normalize_embeddings
 
 
 def parse_data(data, data_formats):
@@ -132,3 +133,14 @@ def match_feature_weights(features, weights):
     )
 
     return feature_weights
+
+
+def split_embeddings(raw_embeddings, normalize=True):
+    """ Split embeddings into tokens and word-vectors """
+    tokens = raw_embeddings[:, 0]
+    vectors = raw_embeddings[:, 1:].astype(float)
+
+    if normalize:
+        vectors = normalize_embeddings(vectors)
+
+    return tokens, vectors

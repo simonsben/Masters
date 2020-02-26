@@ -43,7 +43,7 @@ def split_into_contexts(documents, original_indexes=None):
 
 
 def generate_context_matrix(contexts):
-    """ Compute context term matrix for word unigrams and bigrams """
+    """ Compute context term matrix for word n-grams """
     from sklearn.feature_extraction.text import CountVectorizer
 
     # Initialize document vectorizer
