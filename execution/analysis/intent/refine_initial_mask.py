@@ -1,11 +1,13 @@
 from utilities.data_management import move_to_root, make_path, load_execution_params, load_vector, open_w_pandas, \
     check_existence, split_embeddings, read_csv
-from model.analysis import intent_verb_filename, get_polarizing_mask, build_verb_tree, get_branch_leaves, \
-    check_for_labels
+from model.analysis import intent_verb_filename
+from model.expansion.verb_tree import build_verb_tree, get_branch_leaves, check_for_labels
 from model.analysis.clustering import reduce_and_cluster
 from numpy import asarray, logical_not, all, sum
+from utilities.plotting import plot_dendrogram, show
 
-target_action_verbs = ['kill', 'fight', 'eliminate', 'punch']
+target_action_verbs = ['kill', 'fight']
+target_desire_verbs = ['want', 'going', 'have', 'must']
 
 move_to_root()
 params = load_execution_params()
@@ -38,18 +40,24 @@ print('Content loaded.')
 action_tokens, action_vectors = split_embeddings(action)
 desire_tokens, desire_vectors = split_embeddings(desire)
 
-# is_polarizing = get_polarizing_mask(action_tokens)
-
-action_model, reduced_action = reduce_and_cluster(action_vectors, None, num_verbs=100)
-# desire_model, reduced_desire = reduce_and_cluster(desire_vectors)
+action_model, reduced_action = reduce_and_cluster(action_vectors, num_verbs=None)
+desire_model, reduced_desire = reduce_and_cluster(desire_vectors, num_verbs=None)
 print('Verbs clustered')
 
 action_tokens = action_tokens[:action_model.n_leaves_]
+desire_tokens = desire_tokens[:desire_model.n_leaves_]
 
-tree = build_verb_tree(action_model, action_tokens)
+action_tree = build_verb_tree(action_model, action_tokens)
 target_action_verbs = check_for_labels(action_tokens, target_action_verbs)
-action_leaves = get_branch_leaves(tree, target_action_verbs)
+action_leaves = get_branch_leaves(action_tree, target_action_verbs)
 print('Identified sub-tree')
+
+action_sub_tree_mask = asarray([label in action_leaves for label in action_tokens])
+action_sub_tree_vectors = reduced_action[action_sub_tree_mask]
+
+num = 100
+sub_tree_model, reduced_sub_action = reduce_and_cluster(action_sub_tree_vectors, num_verbs=num)
+plot_dendrogram(sub_tree_model, action_tokens[action_sub_tree_mask][:num], 'Action sub-tree dendrogram', figsize=(15, 8))
 
 desire_verb_index = 1
 action_verb_index = 2
@@ -68,3 +76,5 @@ corrected_mask[
 ] = 0
 
 print('Num changes', sum(initial_mask != corrected_mask), 'of', sum(initial_mask == 1))
+
+show()
