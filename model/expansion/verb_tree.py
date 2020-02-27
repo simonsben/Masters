@@ -1,5 +1,6 @@
 from utilities.data_management import split_embeddings
 from model.analysis import cluster_verbs
+from numpy import asarray
 
 
 def build_verb_tree(verb_model, labels=None):
@@ -116,22 +117,36 @@ def check_for_labels(labels, target_labels, clean=True):
     return target_labels - bad_targets
 
 
-def build_tree_and_collect_leaves(embeddings, target_labels, max_labels=75):
+def build_tree_and_collect_leaves(embeddings, target_labels, max_labels=75, mask=None):
     """
     Takes embeddings, performs clustering, builds a tree, then collects the leaves from the smallest sub-tree that
     contains the target labels
     :param embeddings: Matrix with the first column containing the labels and the remainder containing the vectors
     :param target_labels: Target labels for defining the sub-tree
     :param max_labels: Max number of labels to include in the tree
+    :param mask: Mask for
     :return: model, leaves, labels
     """
+    if mask is not None:
+        embeddings = embeddings[mask]
+
     labels, vectors = split_embeddings(embeddings)
 
     model = cluster_verbs(vectors, max_verbs=max_labels)
+
     labels = labels[:model.n_leaves_]
+    vectors = vectors[:model.n_leaves_]
 
     action_tree = build_verb_tree(model, labels)
     target_action_verbs = check_for_labels(labels, target_labels)
     leaves = get_branch_leaves(action_tree, target_action_verbs)
 
-    return model, leaves, labels
+    return model, leaves, labels, vectors
+
+
+def get_sub_tree(leaves, labels, vectors, max_verbs=75):
+    sub_tree_mask = asarray([label in leaves for label in labels])
+    sub_tree_vectors = vectors[sub_tree_mask]
+    sub_tree_model = cluster_verbs(sub_tree_vectors, max_verbs=max_verbs)
+
+    return sub_tree_model, sub_tree_mask

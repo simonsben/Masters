@@ -5,7 +5,7 @@ from model.expansion.verb_tree import build_tree_and_collect_leaves
 from utilities.plotting import plot_dendrogram, show
 
 target_action_labels = ['kill', 'fight', 'eliminate']
-target_desire_labels = ['wish', 'hope', 'believe']
+target_desire_labels = ['wish', 'hope', 'try']
 
 move_to_root()
 params = load_execution_params()

@@ -1,13 +1,12 @@
 from utilities.data_management import move_to_root, make_path, load_execution_params, load_vector, open_w_pandas, \
-    check_existence, split_embeddings, read_csv
+    check_existence, read_csv
 from model.analysis import intent_verb_filename
-from model.expansion.verb_tree import build_verb_tree, get_branch_leaves, check_for_labels
-from model.analysis.clustering import reduce_and_cluster
 from numpy import asarray, logical_not, all, sum
 from utilities.plotting import plot_dendrogram, show
+from model.expansion.verb_tree import build_tree_and_collect_leaves, get_sub_tree
 
-target_action_verbs = ['kill', 'fight']
-target_desire_verbs = ['wish', 'hope', 'believe']
+target_action_labels = ['kill', 'fight', 'act', 'action', 'take']
+target_desire_labels = ['want', 'need', 'going', 'have']
 
 move_to_root()
 params = load_execution_params()
@@ -29,7 +28,6 @@ print('Completed config.')
 
 action = open_w_pandas(action_path).values
 desire = open_w_pandas(desire_path).values
-
 print('Loaded data.')
 
 initial_mask = load_vector(intent_dir / 'intent_mask.csv')
@@ -37,44 +35,45 @@ contexts = open_w_pandas(intent_dir / 'contexts.csv')['contexts'].values
 intent_frames = read_csv(intent_dir / 'intent_frame.csv', header=None).values
 print('Content loaded.')
 
-action_tokens, action_vectors = split_embeddings(action)
-desire_tokens, desire_vectors = split_embeddings(desire)
+max_verbs = None
 
-action_model, reduced_action = reduce_and_cluster(action_vectors, max_verbs=None)
-desire_model, reduced_desire = reduce_and_cluster(desire_vectors, max_verbs=None)
-print('Verbs clustered')
+action_model, action_leaves, action_tokens, action_vectors = build_tree_and_collect_leaves(action, target_action_labels, max_labels=max_verbs)
+print(action_leaves)
 
-action_tokens = action_tokens[:action_model.n_leaves_]
-desire_tokens = desire_tokens[:desire_model.n_leaves_]
+desire_model, desire_leaves, desire_tokens, desire_vectors = build_tree_and_collect_leaves(desire, target_desire_labels, max_labels=max_verbs)
+print(desire_leaves)
+print('Dropped desire verbs', set(desire_tokens) - desire_leaves)
+print(len(desire_tokens), len(desire_leaves))
 
-action_tree = build_verb_tree(action_model, action_tokens)
-target_action_verbs = check_for_labels(action_tokens, target_action_verbs)
-action_leaves = get_branch_leaves(action_tree, target_action_verbs)
-print('Identified sub-tree')
-
-action_sub_tree_mask = asarray([label in action_leaves for label in action_tokens])
-action_sub_tree_vectors = reduced_action[action_sub_tree_mask]
-
-num = 100
-sub_tree_model, reduced_sub_action = reduce_and_cluster(action_sub_tree_vectors, max_verbs=num)
-plot_dendrogram(sub_tree_model, action_tokens[action_sub_tree_mask][:num], 'Action sub-tree dendrogram', figsize=(15, 8))
+sub_dimensions = 100
+sub_action_model, sub_action_mask = get_sub_tree(action_leaves, action_tokens, action_vectors)
+sub_desire_model, sub_desire_mask = get_sub_tree(desire_leaves, desire_tokens, desire_vectors)
 
 desire_verb_index = 1
 action_verb_index = 2
 action_verb_mask = intent_frames[:, action_verb_index]
-
-print(action_leaves)
+desire_verb_mask = intent_frames[:, desire_verb_index]
 
 corrected_mask = initial_mask.copy()
-within_action_mask = asarray([verb in action_leaves for verb in action_verb_mask])
+within_action_mask = asarray([verb in action_leaves or verb == 'None' for verb in action_verb_mask])
+within_desire_mask = asarray([verb in desire_leaves or verb == 'None' for verb in desire_verb_mask])
 
-print('Number of documents protected', sum(within_action_mask))
+action_corrections = all([logical_not(within_action_mask), initial_mask == 1], axis=0)
+desire_corrections = all([logical_not(within_desire_mask), initial_mask == 1], axis=0)
+
+total = sum(initial_mask == 1)
+print('Desire hits', total - sum(action_corrections), 'of', total)
+print('Action hits', total - sum(desire_corrections), 'of', total)
 
 # Set positive intent docs with verbs outside the action verbs to non-intent
-corrected_mask[
-    all([logical_not(within_action_mask), initial_mask == 1], axis=0)
-] = 0
+# corrected_mask[
+#     all([logical_not(within_action_mask), initial_mask == 1], axis=0)
+# ] = 0
+#
+# print('Num changes', sum(initial_mask != corrected_mask), 'of', sum(initial_mask == 1))
 
-print('Num changes', sum(initial_mask != corrected_mask), 'of', sum(initial_mask == 1))
+
+plot_dendrogram(sub_action_model, action_tokens[sub_action_mask][:sub_dimensions], 'Action sub-tree dendrogram', figsize=(15, 8))
+plot_dendrogram(sub_desire_model, desire_tokens[sub_desire_mask][:sub_dimensions], 'Desire sub-tree dendrogram', figsize=(15, 8))
 
 show()
