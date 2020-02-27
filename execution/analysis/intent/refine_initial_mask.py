@@ -7,7 +7,7 @@ from numpy import asarray, logical_not, all, sum
 from utilities.plotting import plot_dendrogram, show
 
 target_action_verbs = ['kill', 'fight']
-target_desire_verbs = ['want', 'going', 'have', 'must']
+target_desire_verbs = ['wish', 'hope', 'believe']
 
 move_to_root()
 params = load_execution_params()
@@ -40,8 +40,8 @@ print('Content loaded.')
 action_tokens, action_vectors = split_embeddings(action)
 desire_tokens, desire_vectors = split_embeddings(desire)
 
-action_model, reduced_action = reduce_and_cluster(action_vectors, num_verbs=None)
-desire_model, reduced_desire = reduce_and_cluster(desire_vectors, num_verbs=None)
+action_model, reduced_action = reduce_and_cluster(action_vectors, max_verbs=None)
+desire_model, reduced_desire = reduce_and_cluster(desire_vectors, max_verbs=None)
 print('Verbs clustered')
 
 action_tokens = action_tokens[:action_model.n_leaves_]
@@ -56,7 +56,7 @@ action_sub_tree_mask = asarray([label in action_leaves for label in action_token
 action_sub_tree_vectors = reduced_action[action_sub_tree_mask]
 
 num = 100
-sub_tree_model, reduced_sub_action = reduce_and_cluster(action_sub_tree_vectors, num_verbs=num)
+sub_tree_model, reduced_sub_action = reduce_and_cluster(action_sub_tree_vectors, max_verbs=num)
 plot_dendrogram(sub_tree_model, action_tokens[action_sub_tree_mask][:num], 'Action sub-tree dendrogram', figsize=(15, 8))
 
 desire_verb_index = 1

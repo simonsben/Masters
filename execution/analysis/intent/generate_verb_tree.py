@@ -1,9 +1,11 @@
 from utilities.data_management import move_to_root, make_path, load_execution_params, load_vector, open_w_pandas, \
-    check_existence, split_embeddings
-from model.analysis import intent_verb_filename, get_polarizing_mask
-from model.expansion.verb_tree import build_verb_tree, get_branch_leaves, check_for_labels
-from model.analysis.clustering import reduce_and_cluster
+    check_existence
+from model.analysis import intent_verb_filename
+from model.expansion.verb_tree import build_tree_and_collect_leaves
 from utilities.plotting import plot_dendrogram, show
+
+target_action_labels = ['kill', 'fight', 'eliminate']
+target_desire_labels = ['wish', 'hope', 'believe']
 
 move_to_root()
 params = load_execution_params()
@@ -16,7 +18,6 @@ intent_dir = base / 'intent'
 
 action_path = embedding_dir / intent_verb_filename('action', model_name)
 desire_path = embedding_dir / intent_verb_filename('desire', model_name)
-verb_path_generator = lambda name: embedding_dir / (name + '_verbs.csv')
 figure_dir = make_path('figures') / dataset / 'analysis'
 
 check_existence(action_path)
@@ -31,29 +32,14 @@ initial_mask = load_vector(intent_dir / 'intent_mask.csv')
 contexts = open_w_pandas(intent_dir / 'contexts.csv')['contexts'].values
 print('Content loaded.')
 
-action_tokens, action_vectors = split_embeddings(action)
-desire_tokens, desire_vectors = split_embeddings(desire)
-
-is_polarizing = get_polarizing_mask(action_tokens)
-
-action_model, reduced_action = reduce_and_cluster(action_vectors, is_polarizing, num_verbs=50)
-desire_model, reduced_desire = reduce_and_cluster(desire_vectors, num_verbs=50)
-
-action_tokens = action_tokens[is_polarizing][:action_model.n_leaves_]
-desire_tokens = desire_tokens[:desire_model.n_leaves_]
-
-action_tree = build_verb_tree(action_model, action_tokens)
-action_leaves = get_branch_leaves(action_tree, ['kill', 'fight', 'eliminate'])
+action_model, action_leaves, action_tokens = build_tree_and_collect_leaves(action, target_action_labels)
 print(action_leaves)
 
-target_desire_verbs = ['wish', 'hope', '']
-
-desire_tree = build_verb_tree(desire_model, desire_tokens)
-target_desire_verbs = check_for_labels(desire_tokens, target_desire_verbs)
-desire_leaves = get_branch_leaves(desire_tree, target_desire_verbs)
+desire_model, desire_leaves, desire_tokens = build_tree_and_collect_leaves(desire, target_desire_labels)
 print(desire_leaves)
 
-plot_dendrogram(action_model, action_tokens, 'Action dendrogram')
-plot_dendrogram(desire_model, desire_tokens, 'Desire dendrogram')
+fig_size = (15, 7)
+plot_dendrogram(action_model, action_tokens, 'Action dendrogram', figsize=fig_size)
+plot_dendrogram(desire_model, desire_tokens, 'Desire dendrogram', figsize=fig_size)
 
 show()

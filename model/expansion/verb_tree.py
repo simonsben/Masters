@@ -1,3 +1,7 @@
+from utilities.data_management import split_embeddings
+from model.analysis import cluster_verbs
+
+
 def build_verb_tree(verb_model, labels=None):
     """
     Construct a tree from tokens clustered using agglomerative clustering
@@ -112,4 +116,22 @@ def check_for_labels(labels, target_labels, clean=True):
     return target_labels - bad_targets
 
 
+def build_tree_and_collect_leaves(embeddings, target_labels, max_labels=75):
+    """
+    Takes embeddings, performs clustering, builds a tree, then collects the leaves from the smallest sub-tree that
+    contains the target labels
+    :param embeddings: Matrix with the first column containing the labels and the remainder containing the vectors
+    :param target_labels: Target labels for defining the sub-tree
+    :param max_labels: Max number of labels to include in the tree
+    :return: model, leaves, labels
+    """
+    labels, vectors = split_embeddings(embeddings)
 
+    model = cluster_verbs(vectors, max_verbs=max_labels)
+    labels = labels[:model.n_leaves_]
+
+    action_tree = build_verb_tree(model, labels)
+    target_action_verbs = check_for_labels(labels, target_labels)
+    leaves = get_branch_leaves(action_tree, target_action_verbs)
+
+    return model, leaves, labels

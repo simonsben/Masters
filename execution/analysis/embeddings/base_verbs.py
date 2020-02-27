@@ -1,5 +1,4 @@
 from fasttext import load_model
-from tables.exceptions import HDF5ExtError
 from utilities.data_management import load_execution_params, make_path, check_existence, move_to_root
 from utilities.plotting import scatter_3_plot, show
 from pandas import read_csv, DataFrame, read_hdf
@@ -43,7 +42,7 @@ embeddings = None
 if verb_embeddings_path.exists():
     try:
         embeddings = read_hdf(verb_embeddings_path, key='embeddings')
-    except (OSError, HDF5ExtError, KeyError) as e:
+    except (OSError, KeyError) as e:
         embeddings = None
         print('Bad file, re-computing embeddings')
 

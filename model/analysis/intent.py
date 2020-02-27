@@ -97,6 +97,7 @@ sample_categories = ['kill', 'leisure', 'exercise', 'communication']
 
 
 def get_polarizing_mask(tokens, categories=sample_categories):
+    """ Get a mask of polarizing/strong action verbs """
     thing = Empath()
     is_polarizing = asarray([
         sum(thing.analyze(verb, categories=categories).values())
