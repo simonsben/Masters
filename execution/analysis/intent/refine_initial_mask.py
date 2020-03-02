@@ -4,8 +4,9 @@ from model.analysis import intent_verb_filename
 from numpy import asarray, logical_not, all, sum
 from utilities.plotting import plot_dendrogram, show
 from model.expansion.verb_tree import build_tree_and_collect_leaves, get_sub_tree
+from model.expansion.verb_space import get_cube_mask, get_cone_mask
 
-target_action_labels = ['kill', 'fight', 'act', 'action', 'take']
+target_action_labels = ['kill', 'fight', 'act', 'take']
 target_desire_labels = ['want', 'need', 'going', 'have']
 
 move_to_root()
@@ -37,43 +38,58 @@ print('Content loaded.')
 
 max_verbs = None
 
+cube_action_tokens = get_cube_mask(action, target_action_labels)
+cube_desire_tokens = get_cube_mask(desire, target_desire_labels)
+
+cone_action_tokens = get_cone_mask(action, target_action_labels)
+cone_desire_tokens = get_cone_mask(desire, target_desire_labels)
+
+print('Tree')
 action_model, action_leaves, action_tokens, action_vectors = build_tree_and_collect_leaves(action, target_action_labels, max_labels=max_verbs)
 print(action_leaves)
 
 desire_model, desire_leaves, desire_tokens, desire_vectors = build_tree_and_collect_leaves(desire, target_desire_labels, max_labels=max_verbs)
 print(desire_leaves)
-print('Dropped desire verbs', set(desire_tokens) - desire_leaves)
-print(len(desire_tokens), len(desire_leaves))
 
-sub_dimensions = 100
-sub_action_model, sub_action_mask = get_sub_tree(action_leaves, action_tokens, action_vectors)
-sub_desire_model, sub_desire_mask = get_sub_tree(desire_leaves, desire_tokens, desire_vectors)
+print('Cube')
+print(cube_action_tokens)
+print(cube_desire_tokens)
 
-desire_verb_index = 1
-action_verb_index = 2
-action_verb_mask = intent_frames[:, action_verb_index]
-desire_verb_mask = intent_frames[:, desire_verb_index]
+print('Cone')
+print(cone_action_tokens)
+print(cone_desire_tokens)
 
-corrected_mask = initial_mask.copy()
-within_action_mask = asarray([verb in action_leaves or verb == 'None' for verb in action_verb_mask])
-within_desire_mask = asarray([verb in desire_leaves or verb == 'None' for verb in desire_verb_mask])
-
-action_corrections = all([logical_not(within_action_mask), initial_mask == 1], axis=0)
-desire_corrections = all([logical_not(within_desire_mask), initial_mask == 1], axis=0)
-
-total = sum(initial_mask == 1)
-print('Desire hits', total - sum(action_corrections), 'of', total)
-print('Action hits', total - sum(desire_corrections), 'of', total)
-
-# Set positive intent docs with verbs outside the action verbs to non-intent
-# corrected_mask[
-#     all([logical_not(within_action_mask), initial_mask == 1], axis=0)
-# ] = 0
+# print('Dropped desire verbs', set(desire_tokens) - desire_leaves)
 #
-# print('Num changes', sum(initial_mask != corrected_mask), 'of', sum(initial_mask == 1))
-
-
-plot_dendrogram(sub_action_model, action_tokens[sub_action_mask][:sub_dimensions], 'Action sub-tree dendrogram', figsize=(15, 8))
-plot_dendrogram(sub_desire_model, desire_tokens[sub_desire_mask][:sub_dimensions], 'Desire sub-tree dendrogram', figsize=(15, 8))
-
-show()
+# sub_dimensions = 100
+# sub_action_model, sub_action_mask = get_sub_tree(action_leaves, action_tokens, action_vectors)
+# sub_desire_model, sub_desire_mask = get_sub_tree(desire_leaves, desire_tokens, desire_vectors)
+#
+# desire_verb_index = 1
+# action_verb_index = 2
+# action_verb_mask = intent_frames[:, action_verb_index]
+# desire_verb_mask = intent_frames[:, desire_verb_index]
+#
+# corrected_mask = initial_mask.copy()
+# within_action_mask = asarray([verb in action_leaves or verb == 'None' for verb in action_verb_mask])
+# within_desire_mask = asarray([verb in desire_leaves or verb == 'None' for verb in desire_verb_mask])
+#
+# action_corrections = all([logical_not(within_action_mask), initial_mask == 1], axis=0)
+# desire_corrections = all([logical_not(within_desire_mask), initial_mask == 1], axis=0)
+#
+# total = sum(initial_mask == 1)
+# print('Desire hits', total - sum(action_corrections), 'of', total)
+# print('Action hits', total - sum(desire_corrections), 'of', total)
+#
+# # Set positive intent docs with verbs outside the action verbs to non-intent
+# # corrected_mask[
+# #     all([logical_not(within_action_mask), initial_mask == 1], axis=0)
+# # ] = 0
+# #
+# # print('Num changes', sum(initial_mask != corrected_mask), 'of', sum(initial_mask == 1))
+#
+#
+# plot_dendrogram(sub_action_model, action_tokens[sub_action_mask][:sub_dimensions], 'Action sub-tree dendrogram', figsize=(15, 8))
+# plot_dendrogram(sub_desire_model, desire_tokens[sub_desire_mask][:sub_dimensions], 'Desire sub-tree dendrogram', figsize=(15, 8))
+#
+# show()

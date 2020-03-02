@@ -2,9 +2,13 @@ from sklearn.cluster import AgglomerativeClustering
 from sklearn.decomposition import PCA
 
 
+def reduce(vectors):
+    pca = PCA(random_state=42)
+    return pca.fit_transform(vectors)
+
+
 def reduce_and_cluster(vectors, mask=None, max_verbs=50, num_dimensions=None):
-    pca = PCA(random_state=420)
-    reduced_vectors = pca.fit_transform(vectors)
+    reduced_vectors = reduce(vectors)
 
     if mask is not None:
         reduced_vectors = reduced_vectors[mask]
