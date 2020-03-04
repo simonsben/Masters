@@ -110,3 +110,17 @@ def get_polarizing_mask(tokens, categories=sample_categories):
 def intent_verb_filename(name, model_name):
     """ Generates the filename for intent verb embeddings """
     return name + '_vectors-' + model_name + '.csv.gz'
+
+
+def refine_mask(mask, tokens, document_tokens, token_index=None):
+    tokens = set(tokens).copy()
+    tokens.add('None')
+
+    if token_index is not None:
+        document_tokens = document_tokens[:, token_index]
+
+    correction_mask = asarray([token not in tokens for token in document_tokens])
+
+    mask = mask.copy()
+    mask[correction_mask] = .5
+    return mask

@@ -22,7 +22,7 @@ def get_cube_mask(embeddings, target_labels, tolerance=3):
         all([vector >= minimums, vector <= maximums]) for vector in vectors
     ])
 
-    return set(labels[within])
+    return set(labels[within]), within
 
 
 def get_cone_mask(embeddings, target_labels, tolerance=.5):
@@ -39,4 +39,4 @@ def get_cone_mask(embeddings, target_labels, tolerance=.5):
 
     within = asarray([cosine(central_vector, vector) <= cone_angle for vector in vectors])
 
-    return set(labels[within])
+    return set(labels[within]), within
