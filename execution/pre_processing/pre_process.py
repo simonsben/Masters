@@ -54,6 +54,11 @@ if __name__ == '__main__':
             'data_set': 'insults',
             'accessor': insults_accessor,
             'mutator': insults_mutator
+        },
+        {
+            'data_set': 'wikipedia_corpus',
+            'accessor': wikipedia_corpus_accessor,
+            'mutator': wikipedia_corpus_mutator
         }
     ]
     base_directory = make_path('data/')
@@ -132,31 +137,31 @@ if __name__ == '__main__':
 
             print(set_name, 'done.')
 
-    # Generate mixed dataset
-    print('\nGenerating mixed dataset')
-
-    datasets = ['24k-abusive-tweets', 'kaggle', '100k-abusive-tweets']
-
-    variants = ['', '_partial']
-    index_map = None
-    for variant in variants:
-        filename = dest_directory / ('mixed_redef' + variant + '.csv')
-        if filename.exists():
-            print('Skipping mixed')
-            break
-
-        mixed_dataset = concat(
-            [open_w_pandas(dest_directory / (dataset + variant + '.csv')) for dataset in datasets]
-        )
-
-        if index_map is None:
-            index_map = permutation(arange(mixed_dataset.shape[0]))
-            savetxt(dest_directory / 'mixed_redef_map.csv', index_map, delimiter=',', fmt='%d')
-        mixed_dataset = mixed_dataset.reset_index(drop=True).iloc[index_map].reset_index(drop=True)
-
-        bad_indexes = mixed_dataset.index[isna(mixed_dataset['document_content'])]
-        content = mixed_dataset['document_content']
-        for index in bad_indexes:
-            mixed_dataset.at[index, 'document_content'] = ' '
-
-        mixed_dataset.to_csv(filename)
+    # # Generate mixed dataset
+    # print('\nGenerating mixed dataset')
+    #
+    # datasets = ['24k-abusive-tweets', 'kaggle', '100k-abusive-tweets']
+    #
+    # variants = ['', '_partial']
+    # index_map = None
+    # for variant in variants:
+    #     filename = dest_directory / ('mixed_redef' + variant + '.csv')
+    #     if filename.exists():
+    #         print('Skipping mixed')
+    #         break
+    #
+    #     mixed_dataset = concat(
+    #         [open_w_pandas(dest_directory / (dataset + variant + '.csv')) for dataset in datasets]
+    #     )
+    #
+    #     if index_map is None:
+    #         index_map = permutation(arange(mixed_dataset.shape[0]))
+    #         savetxt(dest_directory / 'mixed_redef_map.csv', index_map, delimiter=',', fmt='%d')
+    #     mixed_dataset = mixed_dataset.reset_index(drop=True).iloc[index_map].reset_index(drop=True)
+    #
+    #     bad_indexes = mixed_dataset.index[isna(mixed_dataset['document_content'])]
+    #     content = mixed_dataset['document_content']
+    #     for index in bad_indexes:
+    #         mixed_dataset.at[index, 'document_content'] = ' '
+    #
+    #     mixed_dataset.to_csv(filename)
