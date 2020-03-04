@@ -6,7 +6,7 @@ base = make_path('data/prepared_data/')
 original_path = base / 'wikipedia_corpus.csv'
 reduced_path = base / 'wikipedia_corpus_reduced.csv'
 
-num_documents = 100000
+num_documents = 50000
 modifiers = ['', '_partial']
 
 check_existence(original_path)
