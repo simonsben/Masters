@@ -1,5 +1,5 @@
-from numpy import ndarray, vectorize, histogram, cumsum, argmin, sqrt
-
+from numpy import ndarray, vectorize, histogram, cumsum, argmin, sqrt, asarray
+from empath import Empath
 
 def compute_norm(value_one, value_two, norm=2):
     return (value_one ** norm + value_two ** norm) ** (1 / norm)
@@ -93,6 +93,34 @@ def get_verbs(raw_frames, column_index, unique=True):
     return verbs
 
 
+sample_categories = ['kill', 'leisure', 'exercise', 'communication']
+
+
+def get_polarizing_mask(tokens, categories=sample_categories):
+    """ Get a mask of polarizing/strong action verbs """
+    thing = Empath()
+    is_polarizing = asarray([
+        sum(thing.analyze(verb, categories=categories).values())
+        for verb in tokens
+    ]) != 0
+
+    return is_polarizing
+
+
 def intent_verb_filename(name, model_name):
     """ Generates the filename for intent verb embeddings """
     return name + '_vectors-' + model_name + '.csv.gz'
+
+
+def refine_mask(mask, tokens, document_tokens, token_index=None):
+    tokens = set(tokens).copy()
+    tokens.add('None')
+
+    if token_index is not None:
+        document_tokens = document_tokens[:, token_index]
+
+    correction_mask = asarray([token not in tokens for token in document_tokens])
+
+    mask = mask.copy()
+    mask[correction_mask] = .5
+    return mask

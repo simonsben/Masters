@@ -3,7 +3,7 @@ from numpy import zeros, column_stack
 from matplotlib.pyplot import tight_layout, subplots, savefig
 
 
-def plot_dendrogram(model, labels, title=None, filename=None):
+def plot_dendrogram(model, labels, title=None, filename=None, figsize=(10, 6)):
     """
     Plots the dendrogram of a sklearn agglomerative clustering model, based on code from the sklearn documentation
     :param model: sklearn agglomerative clustering model
@@ -28,7 +28,7 @@ def plot_dendrogram(model, labels, title=None, filename=None):
 
     linkage_matrix = column_stack([model.children_, model.distances_, counts]).astype(float)
 
-    fig, ax = subplots(figsize=(10, 6))
+    fig, ax = subplots(figsize=figsize)
     dendrogram(linkage_matrix, labels=labels, leaf_rotation=80, ax=ax)
 
     if title is not None:

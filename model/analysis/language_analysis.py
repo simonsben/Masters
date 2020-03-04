@@ -1,6 +1,5 @@
 from numpy import asarray, where, ndarray
 from pandas import DataFrame
-from sklearn.cluster import AgglomerativeClustering
 
 english_label = '__label__en'
 
@@ -54,11 +53,3 @@ def generate_word_vectors(words, model):
     )
 
     return word_vectors
-
-
-def cluster_verbs(verb_vectors, num_top_verbs=30, num_dimensions=50):
-    """ Clusters verb vectors using hierarchical clustering """
-    model = AgglomerativeClustering(distance_threshold=1, n_clusters=None, affinity='cosine', linkage='average')
-    model.fit(verb_vectors[:num_top_verbs, :num_dimensions])
-
-    return model

@@ -1,6 +1,5 @@
 from utilities.analysis import svd_embeddings, get_nearest_neighbours
 from scipy.cluster.vq import whiten, kmeans
-from scipy.spatial.distance import euclidean
 from scipy.linalg import norm
 from scipy.spatial.distance import euclidean
 from numpy import percentile, argmin
@@ -89,9 +88,8 @@ def embedding_expansion(lexicon, embeddings, simple_expand=None):
 
 
 def expand_lexicon(lexicon, embeddings=None, simple_expand=None):
-    # If no embeddings assume wordnet expansion
+    """ Expand lexicon using either wordnet expansion or word embeddings """
     if embeddings is None:
         return wordnet_expansion(lexicon, simple_expand)
-    # If embeddings supplied assume embedding expansion
     else:
         return embedding_expansion(lexicon, embeddings, simple_expand)

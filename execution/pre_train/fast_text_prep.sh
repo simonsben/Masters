@@ -7,4 +7,4 @@ fi
 
 cd "../../data/prepared_data/"
 
-cat "$1.csv" | awk -F "," '{print $NF}' > "../../../fastText/data/$1.csv"
+tail -n +2 "$1.csv" | grep -Eo "[a-zA-Z ]+" > "../../../fastText/data/$1.csv"

@@ -178,8 +178,16 @@ type_map = {
 
 
 def vector_to_file(data_vector, filename):
+    """ Saves a numpy vector to a csv without a column header """
     data_type = data_vector.dtype.kind
     if data_type not in type_map:
         raise TypeError('Unsupported type,', data_type)
 
     savetxt(filename, data_vector, delimiter=',', fmt=type_map[data_type])
+
+
+def load_vector(file_path):
+    """ Loads data from a csv with a single column and no header """
+    file_path = make_path(file_path)
+
+    return read_csv(file_path, header=None)[0].values
