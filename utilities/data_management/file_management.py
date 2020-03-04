@@ -46,7 +46,7 @@ def in_parent_dir():
     return Path('config.json').is_file()
 
 
-def load_execution_params():
+def load_execution_params(quiet=False):
     """ Loads the current execution parameters from the config file """
     path = Path('config.json')
     with path.open(mode='r') as fl:
@@ -55,7 +55,9 @@ def load_execution_params():
     # Print out key execution parameters
     dataset = params['dataset']
     fast_text_model = params['fast_text_model']
-    print('Loaded execution params with dataset', dataset, 'and fastText model', fast_text_model)
+
+    if not quiet:
+        print('Loaded execution params with dataset', dataset, 'and fastText model', fast_text_model)
 
     return params
 

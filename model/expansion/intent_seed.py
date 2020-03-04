@@ -94,12 +94,14 @@ def worker_init(*props):
     parser = load('en_core_web_md')
 
 
-def tag_intent_documents(contexts):
+def tag_intent_documents(contexts, n_threads=None):
     """ Determines whether each context contains intent, then return intent value and base verb """
-    from utilities.data_management import load_execution_params
+    if n_threads is None:
+        from utilities.data_management import load_execution_params
+        n_threads = load_execution_params()['n_threads']
 
     # Initialize worker pool
-    worker_pool = Pool(load_execution_params()['n_threads'], initializer=worker_init)
+    worker_pool = Pool(n_threads, initializer=worker_init)
 
     # Process documents
     intent_data = worker_pool.map(identify_basic_intent, contexts)
