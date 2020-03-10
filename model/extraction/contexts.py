@@ -1,4 +1,5 @@
 from utilities.pre_processing import split_pattern, clean_acronym, pre_intent_clean
+from numpy import asarray
 
 
 def split_document(document):
@@ -19,27 +20,29 @@ def split_into_contexts(documents, original_indexes=None):
     :param original_indexes: Indexes of the original documents, if not enumeration
     :return: List of contexts, Mapping of corpus index to context slice
     """
-    context_map = {}
+    document_indexes = []
     corpus_contexts = []
 
     # For each document in corpus
     for index, document in enumerate(documents):
         # Split document into non-zero length contexts
         document_contexts = list(filter(
-            lambda cont: len(cont) > 0, split_document(document)
+            lambda content: len(content) > 0 or content == ' ', split_document(document)
         ))
 
         # Compute index of contexts and get index of the original document
-        context_index = len(corpus_contexts)
+        # base_context_index = len(corpus_contexts)
         corpus_index = index if original_indexes is None else original_indexes[index]
 
         # Add context mapping to dictionary
-        context_map[corpus_index] = slice(context_index, context_index + len(document_contexts))
+        for context_index in range(len(document_contexts)):
+            document_indexes.append((corpus_index, context_index))
 
         # Add the contexts to the list
         corpus_contexts += document_contexts
 
-    return corpus_contexts, context_map
+    document_indexes = asarray(document_indexes)
+    return corpus_contexts, document_indexes
 
 
 def generate_context_matrix(contexts):

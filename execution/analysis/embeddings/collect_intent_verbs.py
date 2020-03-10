@@ -3,7 +3,7 @@ from utilities.data_management import move_to_root, make_path, check_existence, 
 from pandas import read_csv
 from model.analysis import get_verbs, intent_verb_filename, generate_word_vectors
 
-move_to_root(4)
+move_to_root()
 
 params = load_execution_params()
 dataset = params['dataset']

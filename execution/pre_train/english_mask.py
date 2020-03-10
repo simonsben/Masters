@@ -15,7 +15,7 @@ dest_path = base_dir / 'english_mask.csv'
 check_existence(model_path)
 
 language_model = load_model(str(model_path))
-contexts = open_w_pandas(base_dir / 'contexts.csv').values[:, -1]
+contexts = open_w_pandas(base_dir / 'contexts.csv')['contexts'].values
 print('Loaded model and data.')
 
 mask = get_english_indexes(contexts, language_model, boolean_mask=True)
