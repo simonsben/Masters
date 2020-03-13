@@ -31,7 +31,6 @@ def split_into_contexts(documents, original_indexes=None):
         ))
 
         # Compute index of contexts and get index of the original document
-        # base_context_index = len(corpus_contexts)
         corpus_index = index if original_indexes is None else original_indexes[index]
 
         # Add context mapping to dictionary

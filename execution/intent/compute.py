@@ -55,8 +55,10 @@ if __name__ == '__main__':
     print('Mixed data.')
 
     # Save initial mask, context mapping, and intent frame (mask values)
+    intent_frames = DataFrame(intent_frames)
+    intent_frames.to_csv(dest_dir / 'intent_frame.csv', header=False, index=False)
     savetxt(dest_dir / 'intent_mask.csv', intent_values, delimiter=',', fmt='%.1f')
-    savetxt(dest_dir / 'intent_frame.csv', intent_frames, delimiter=',', fmt='%s')
     print('Saved masks, saving contexts.')
 
     save_dataframe(document_contexts, dest_dir / 'contexts.csv')                # Save contexts
+    print('Contexts saved.')

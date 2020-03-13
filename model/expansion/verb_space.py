@@ -1,6 +1,7 @@
 from utilities.data_management import split_embeddings
-from numpy import max, min, asarray, all, mean
+from numpy import max, min, asarray, all, mean, zeros
 from scipy.spatial.distance import cosine
+from scipy.linalg import norm
 
 
 def get_cube_mask(embeddings, target_labels, tolerance=3):
@@ -25,7 +26,7 @@ def get_cube_mask(embeddings, target_labels, tolerance=3):
     return set(labels[within]), within
 
 
-def get_cone_mask(embeddings, target_labels, tolerance=.5):
+def get_cone_mask(embeddings, target_labels, tolerance=1):
     target_labels = set(target_labels)
     labels, vectors = split_embeddings(embeddings)
 
@@ -34,9 +35,27 @@ def get_cone_mask(embeddings, target_labels, tolerance=.5):
     central_vector = mean(vectors[target_mask], axis=0)
     cone_angle = max([cosine(central_vector, vector) for vector in vectors[target_mask]])
 
+    magnitudes = [norm(vector) for vector in vectors[target_mask]]
+    min_magnitude = min(magnitudes)
+    max_magnitude = max(magnitudes)
+    magnitude_range = max_magnitude - min_magnitude
+
     if tolerance is not None:
         cone_angle *= (1 + tolerance)
 
-    within = asarray([cosine(central_vector, vector) <= cone_angle for vector in vectors])
+        magnitude_range *= tolerance
+        min_magnitude -= magnitude_range
+        max_magnitude += magnitude_range
+
+        if min_magnitude < 0:
+            min_magnitude = 0
+
+    within = zeros(vectors.shape[0], bool)
+    for index, vector in enumerate(vectors):
+        magnitude = norm(vector)
+        within[index] = (
+                min_magnitude < magnitude < max_magnitude and
+                cosine(central_vector, vector) <= cone_angle
+        )
 
     return set(labels[within]), within

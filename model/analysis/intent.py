@@ -1,5 +1,6 @@
-from numpy import ndarray, vectorize, histogram, cumsum, argmin, sqrt, asarray
+from numpy import ndarray, vectorize, histogram, cumsum, argmin, sqrt, asarray, all
 from empath import Empath
+
 
 def compute_norm(value_one, value_two, norm=2):
     return (value_one ** norm + value_two ** norm) ** (1 / norm)
@@ -76,7 +77,7 @@ def estimate_joint_cumulative(data_a, data_b, resolution=.01):
 def get_verbs(raw_frames, column_index, unique=True):
     """ Extracts the verbs from an intent frame matrix """
     raw_verbs = raw_frames[:, column_index]
-    verbs = raw_verbs[raw_verbs != None]
+    verbs = raw_verbs[raw_verbs != '']
 
     if unique:
         verb_set = {}
@@ -114,7 +115,6 @@ def intent_verb_filename(name, model_name):
 
 def refine_mask(mask, tokens, document_tokens, token_index=None):
     tokens = set(tokens).copy()
-    tokens.add('None')
 
     if token_index is not None:
         document_tokens = document_tokens[:, token_index]
@@ -122,5 +122,6 @@ def refine_mask(mask, tokens, document_tokens, token_index=None):
     correction_mask = asarray([token not in tokens for token in document_tokens])
 
     mask = mask.copy()
-    mask[correction_mask] = .5
+    mask[all([correction_mask, mask == 1], axis=0)] = .5
+
     return mask

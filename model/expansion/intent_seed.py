@@ -29,7 +29,7 @@ def assemble_related_information(base, base_dependency, information_dependency):
     return None
 
 
-def identify_basic_intent(context):
+def identify_basic_intent(context, filter_third_person=False):
     """ Determines if parsed document contains a sequence of term that indicate intent """
     context = parser(context)
     
