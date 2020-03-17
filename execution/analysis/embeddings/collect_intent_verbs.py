@@ -27,8 +27,7 @@ check_existence(english_mask)
 print('Config complete.')
 
 english_mask = read_csv(english_mask, header=None)[0].values.astype(bool)
-intent_frames = read_csv(frame_info_path, header=None).values[english_mask]
-intent_frames[intent_frames == 'None'] = None
+intent_frames = read_csv(frame_info_path, header=None, keep_default_na=False).values[english_mask]
 print('Loaded data with shape', intent_frames.shape)
 
 desire_verbs = get_verbs(intent_frames, desire_index)

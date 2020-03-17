@@ -78,11 +78,11 @@ savetxt(intent_dir / 'tree_mask.csv', refined_tree_desire_mask, fmt='%.1f')
 savetxt(intent_dir / 'cube_mask.csv', refined_cube_desire_mask, fmt='%.1f')
 savetxt(intent_dir / 'cone_mask.csv', refined_cone_desire_mask, fmt='%.1f')
 
-sub_dimensions = 100
-sub_action_model, sub_action_mask = get_sub_tree(action_leaves, action_tokens, action_vectors)
-sub_desire_model, sub_desire_mask = get_sub_tree(desire_leaves, desire_tokens, desire_vectors)
-
-plot_dendrogram(sub_action_model, action_tokens[sub_action_mask][:sub_dimensions], 'Action sub-tree dendrogram', figsize=(15, 8))
-plot_dendrogram(sub_desire_model, desire_tokens[sub_desire_mask][:sub_dimensions], 'Desire sub-tree dendrogram', figsize=(15, 8))
-
-show()
+# sub_dimensions = 100
+# sub_action_model, sub_action_mask = get_sub_tree(action_leaves, action_tokens, action_vectors)
+# sub_desire_model, sub_desire_mask = get_sub_tree(desire_leaves, desire_tokens, desire_vectors)
+#
+# plot_dendrogram(sub_action_model, action_tokens[sub_action_mask][:sub_dimensions], 'Action sub-tree dendrogram', figsize=(15, 8))
+# plot_dendrogram(sub_desire_model, desire_tokens[sub_desire_mask][:sub_dimensions], 'Desire sub-tree dendrogram', figsize=(15, 8))
+#
+# show()
