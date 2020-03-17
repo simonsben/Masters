@@ -2,7 +2,7 @@ from utilities.data_management import move_to_root, make_path, load_execution_pa
     check_existence, read_csv
 from model.analysis import intent_verb_filename, refine_mask
 from numpy import asarray, logical_not, all, sum, savetxt
-from utilities.plotting import plot_dendrogram, show
+from utilities.plotting import plot_dendrogram, show, hist_plot
 from model.expansion.verb_tree import build_tree_and_collect_leaves, get_sub_tree
 from model.expansion.verb_space import get_cube_mask, get_cone_mask
 
@@ -63,11 +63,13 @@ print(1 - sum(refined_cube_desire_mask != initial_mask) / sum(initial_mask == 1)
 
 
 print('Cone')
-cone_action_tokens, cone_action_mask = get_cone_mask(action, target_action_labels)
+cone_action_tokens, cone_action_mask, _ = get_cone_mask(action, target_action_labels)
 print(cone_action_tokens)
 
-cone_desire_tokens, cone_desire_mask = get_cone_mask(desire, target_desire_labels)
+cone_desire_tokens, cone_desire_mask, distances = get_cone_mask(desire, target_desire_labels)
 print(cone_desire_tokens)
+
+hist_plot(distances, 'Histogram of distances to central desire vector')
 
 refined_cone_desire_mask = refine_mask(initial_mask, cone_desire_tokens, intent_frames, desire_verb_index)
 print(1 - sum(refined_cone_desire_mask != initial_mask) / sum(initial_mask == 1))

@@ -21,7 +21,7 @@ abuse = rescale_data(abuse)
 print('Content prepared.')
 
 # Compute the euclidean norm of the (abuse, intent) vectors for each context
-hybrid = compute_abusive_intent(intent, abuse, True)
+hybrid = compute_abusive_intent(intent, abuse)
 hybrid = rescale_data(hybrid)
 hybrid_indexes = argsort(hybrid)
 print('Finished computations.')
@@ -43,7 +43,7 @@ for index in range(num_zones):
     [indexes_in_range] = where(all([hybrid >= base, hybrid <= (base + zone_size)], axis=0))
 
     index_selection = indexes_in_range[
-        choice(indexes_in_range.shape[0], num_records, replace=False)
+        choice(indexes_in_range.shape[0], min(num_records, indexes_in_range.shape[0]), replace=False)
     ]
 
     print('\nZone from', base, 'to', base + zone_size)

@@ -4,6 +4,7 @@ from scipy.spatial.distance import cosine
 
 
 def get_cube_mask(embeddings, target_labels, tolerance=3):
+    """ Returns the labels whose vectors are within the hyper-cube formed by the target labels """
     target_labels = set(target_labels)
     labels, vectors = split_embeddings(embeddings)
 
@@ -26,6 +27,7 @@ def get_cube_mask(embeddings, target_labels, tolerance=3):
 
 
 def get_cone_mask(embeddings, target_labels, tolerance=.5):
+    """ Returns labels whose vectors are within the hyper-cone formed by the target labels """
     target_labels = set(target_labels)
     labels, vectors = split_embeddings(embeddings)
 
@@ -37,6 +39,8 @@ def get_cone_mask(embeddings, target_labels, tolerance=.5):
     if tolerance is not None:
         cone_angle *= (1 + tolerance)
 
+    distances = [cosine(central_vector, vector) for vector in vectors]
     within = asarray([cosine(central_vector, vector) <= cone_angle for vector in vectors])
+    print('cone angle', cone_angle)
 
-    return set(labels[within]), within
+    return set(labels[within]), within, distances

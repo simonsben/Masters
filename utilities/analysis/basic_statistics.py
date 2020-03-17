@@ -41,6 +41,7 @@ def list_mins(values):
 
 
 def apply_vectorizer(values, function):
+    """ Vectorizes a function and applies it to a numpy array for faster execution """
     if not isinstance(values, list):
         raise TypeError('Expected list of values.')
     if not callable(function):

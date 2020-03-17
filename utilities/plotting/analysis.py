@@ -88,20 +88,20 @@ def feature_significance(feature_weights, figure_title, filename=None, max_featu
         savefig(filename)
 
 
-def shap_feature_significance(model, dataset, figure_title, features=None, filename=None):
+def shap_feature_significance(model, document_matrix, figure_title, features=None, filename=None):
     """
     Generates a bar plot of the SHAP feature weights
     :param model: Trained XGBoost model
-    :param dataset: Pandas dataframe with predicted values -> (documents x features)
+    :param document_matrix: Pandas SparseDataFrame with predicted values -> (documents x features)
     :param figure_title: Figure title
     :param features: Feature names, (default dataset column names)
     :param filename: File path to save figure to, (default doesn't save)
     """
     shap_values = abs(
-        TreeExplainer(model).shap_values(dataset)
+        TreeExplainer(model).shap_values(document_matrix)
     ).mean(0)
 
-    features = dataset.columns.values if features is None else features
+    features = document_matrix.columns.values if features is None else features
     feature_shaps = sorted(
         [(features[ind], shap_value) for ind, shap_value in enumerate(shap_values)],
         key=lambda shap: shap[1],

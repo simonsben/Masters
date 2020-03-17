@@ -1,11 +1,13 @@
 from numpy import ndarray, vectorize, histogram, cumsum, argmin, sqrt, asarray
 from empath import Empath
 
+
 def compute_norm(value_one, value_two, norm=2):
+    """ Vector norm, euclidean norm by default """
     return (value_one ** norm + value_two ** norm) ** (1 / norm)
 
 
-def compute_abusive_intent(intent_predictions, abuse_predictions, use_distribution=True):
+def compute_abusive_intent(intent_predictions, abuse_predictions, method='product'):
     """ Compute a 'score' for abusive intent from intent and abuse predictions """
     if not isinstance(intent_predictions, ndarray):
         raise TypeError('Expected intent predictions to be a numpy array.')
@@ -16,15 +18,18 @@ def compute_abusive_intent(intent_predictions, abuse_predictions, use_distributi
     if len(intent_predictions.shape) > 1:
         raise TypeError('Predictions should be a vector, not an array')
 
-    if use_distribution:
+    if method == 'cdf':
         cumulative_function = vectorize(estimate_cumulative(intent_predictions))
-
         return abuse_predictions * cumulative_function(intent_predictions)
+    elif method == 'euclidean':
+        norm = vectorize(compute_norm)
+        return norm(intent_predictions, abuse_predictions)
+    elif method == 'product':
+        pass
+    else:
+        UserWarning('Invalid method choice, using product')
 
-    norm = vectorize(compute_norm)
-    abusive_intent = norm(intent_predictions, abuse_predictions)
-
-    return abusive_intent
+    return intent_predictions * abuse_predictions
 
 
 # TODO correct to space bins based on distribution
