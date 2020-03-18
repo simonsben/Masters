@@ -173,7 +173,8 @@ def output_abusive_intent(index_set, predictions, contexts, filename=None):
 
 
 type_map = {
-    'O': '%s'
+    'O': '%s',
+    'i': '%d'
 }
 
 
