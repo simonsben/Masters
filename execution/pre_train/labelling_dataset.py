@@ -1,5 +1,6 @@
 from utilities.data_management import read_csv, move_to_root, make_path, load_execution_params, output_abusive_intent
-from numpy import argsort, sum
+from numpy import argsort, sum, any, where, zeros, all
+from numpy.random import choice
 from utilities.analysis import rescale_data
 from model.analysis import compute_abusive_intent
 
@@ -34,14 +35,28 @@ hybrid = compute_abusive_intent(intent, abuse)
 hybrid_indexes = argsort(hybrid)
 print('Finished computations.')
 
-gen_filename = lambda name: analysis_base / (name + '.csv')
-predictions = (hybrid, intent, abuse)
+limit = .25
+zone_width = .025
+total_samples = 5000
+num_zones = int(limit * 2 / zone_width)
 
-# Print records
-num_records = 50
+abusive_intent = hybrid[hybrid_indexes]
+# [strong_indexes] = where(any([abusive_intent <= limit, abusive_intent >= (1 - limit)], axis=0))
+samples_per_zone = int(total_samples / num_zones)
 
-print('\nHigh')
-output_abusive_intent(reversed(hybrid_indexes[-num_records:]), predictions, contexts, gen_filename('high_indexes'))
+zone_indexes = zeros((num_zones, samples_per_zone), dtype=int)
+zone_indexes[:] = -1
+for zone_number in range(num_zones):
+    base = zone_number * zone_width + ((1 - limit * 2) if zone_number >= num_zones / 2 else 0)
+    top = base + zone_width
+    [indexes] = where(all([abusive_intent > base, abusive_intent <= top], axis=0))
 
-print('\nLow')
-output_abusive_intent(hybrid_indexes[:num_records], predictions, contexts, gen_filename('low_indexes'))
+    print(base, top, 'zone size', indexes.shape[0])
+    chosen = choice(indexes.shape[0], min(samples_per_zone, indexes.shape[0]), replace=False)
+
+    sample = indexes[chosen]
+    zone_indexes[zone_number, :sample.shape[0]] = sample
+
+print(zone_indexes)
+
+print('samples per zone', samples_per_zone)

@@ -11,10 +11,11 @@ analysis_base = base / 'intent_abuse'
 
 intent = read_csv(analysis_base / 'intent_predictions.csv', header=None)[0].values
 abuse = read_csv(analysis_base / 'abuse_predictions.csv', header=None)[0].values
-hybrid = compute_abusive_intent(intent, abuse)
 
 intent = rescale_data(intent)
 abuse = rescale_data(abuse)
+
+hybrid = compute_abusive_intent(intent, abuse)
 
 ax_titles = ('Predicted abuse', 'Predicted intent')
 hist_plot([abuse, intent], 'Prediction comparison histogram', ax_titles=ax_titles, c_bar_title='Document density')
