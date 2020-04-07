@@ -3,10 +3,12 @@ from numpy import asarray, squeeze, logical_not, add, percentile, sum
 from itertools import compress
 from multiprocessing import Pool
 from model.extraction import generate_context_matrix
+from collections.abc import Iterable
 
 # Token and dependency sets for detecting basic intent
 desire_verb_tags = {'VB', 'VBG', 'VBP', 'VBZ'}
 non_active_desire_tags = {'VBD', 'VBN'}
+special_auxiliaries = {'will', 'must', 'll'}
 
 first_person_pronouns = {'i', 'we', 'me', 'us', 'em', 'mine', 'myself', 'ourselves'}
 
@@ -29,35 +31,49 @@ def assemble_related_information(base, base_dependency, information_dependency):
     return None
 
 
-def identify_basic_intent(context, filter_third_person=False):
+def identify_basic_intent(context, index=-1):
     """ Determines if parsed document contains a sequence of term that indicate intent """
-    context = parser(context)
-    
-    source, target, timing, desire_verb, action_verb = None, None, None, None, None
+    if isinstance(context, str):
+        context = parser(context)
+    if not isinstance(context, Iterable):
+        context = []
+
+    source, target, timing, desire_verb, action_verb, short_desire = None, None, None, None, None, None
     intent_score = .5
 
     for token in context:
         if intent_score == .5:
-            source, target, timing, desire_verb, action_verb = None, None, None, None, None
+            source, target, timing, desire_verb, action_verb, short_desire = None, None, None, None, None, None
 
-        if token.tag_ != 'TO': continue                                         # Check for TO
-        if token.head is None or token.head.pos_ != 'VERB': continue            # Check for action verb
-        if token.head.head is None or token.head.head.pos_ != 'VERB': continue  # Check for desire verb
+        # Define base verb for check
+        if token.pos_ != 'VERB': continue
+        action_verb = token
 
-        # Check if the verb tense is correct
-        desire_verb = token.head.head
-        action_verb = token.head
-        if desire_verb.tag_ not in desire_verb_tags: continue
-        elif desire_verb.tag_ in non_active_desire_tags:
-            intent_score = 0 if intent_score == .5 else intent_score
+        # Check auxiliaries of base verb to see if its a short or long intent case
+        auxiliaries = [child for child in action_verb.children if child.dep_ == 'aux']
+        if len(auxiliaries) != 1: continue                                                  # No auxiliaries
+        elif auxiliaries[0].pos_ == 'VERB' and auxiliaries[0].text in special_auxiliaries:  # Short case
+            desire_verb = action_verb
+            short_desire = auxiliaries[0]
 
-        # Check if statement is personal
-        pronouns = list(filter(
-            lambda _token: _token.pos_ == 'PRON' and _token.text in first_person_pronouns,
-            desire_verb.children
-        ))
+            if short_desire.tag_ != 'MD': continue
+
+        elif auxiliaries[0].pos_ != 'PART': continue                                        # Not long case
+        elif auxiliaries[0].pos_ == 'PART' and action_verb.head is not None:                # Long case
+            if action_verb.head.pos_ != 'VERB': continue
+            desire_verb = action_verb.head
+
+        # Check for first person pronouns
+        pronouns = [
+            child for child in desire_verb.children
+            if child.pos_ == 'PRON' and child.text in first_person_pronouns
+        ]
         if len(pronouns) < 1: continue
         source = pronouns[0].text
+
+        # Check tense of desire verb
+        if desire_verb.tag_ not in desire_verb_tags:
+            continue
 
         # Get action target
         target = assemble_related_information(action_verb, target_dependencies, target_relations)
@@ -71,21 +87,29 @@ def identify_basic_intent(context, filter_third_person=False):
             desire_verb.children
         )))
 
-        if negations % 2 != 0:
-            intent_score = 0 if intent_score == .5 else intent_score
+        # Check for non active desire, negations, or questions
+        if desire_verb.tag_ in non_active_desire_tags:
+            intent_score = 0
+            continue
+        elif negations % 2 != 0:
+            intent_score = 0
             continue
         elif questions > 0:
-            intent_score = 0 if intent_score == .5 else intent_score
+            intent_score = 0
             continue
 
         # Contains positive intent
         intent_score = 1
         break
 
+    # If short case, move desire verb for export
+    if short_desire is not None:
+        desire_verb = short_desire
+
     desire_verb = desire_verb.text if desire_verb is not None else None
     action_verb = action_verb.text if action_verb is not None else None
 
-    return intent_score, source, desire_verb, action_verb, target, timing
+    return intent_score, source, desire_verb, action_verb, target, timing, index
 
 
 def worker_init(*props):
