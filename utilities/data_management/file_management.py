@@ -46,20 +46,21 @@ def in_parent_dir():
     return Path('config.json').is_file()
 
 
+# TODO rework code to use global variable instead of distinct loads
 def load_execution_params(quiet=False):
     """ Loads the current execution parameters from the config file """
     path = Path('config.json')
     with path.open(mode='r') as fl:
-        params = load(fl)['execution']
-
-    # Print out key execution parameters
-    dataset = params['dataset']
-    fast_text_model = params['fast_text_model']
+        parameters = load(fl)['execution']
 
     if not quiet:
+        # Print out key execution parameters
+        dataset = parameters['dataset']
+        fast_text_model = parameters['fast_text_model']
+
         print('Loaded execution params with dataset', dataset, 'and fastText model', fast_text_model)
 
-    return params
+    return parameters
 
 
 def load_dataset_params(dataset=None):
