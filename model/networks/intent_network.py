@@ -7,7 +7,7 @@ def get_core_layers(max_tokens, embedding_dimension):
     """
     Generates core layers for intent network
     :param max_tokens: Maximum tokens for input sequence
-    :param embedding_dimension: Dimension of the word embeddings
+     :param embedding_dimension: Dimension of the word embeddings
     :return: Core model layers
     """
     attention_size = int(max_tokens / 2)
