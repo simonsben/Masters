@@ -1,11 +1,9 @@
-from utilities.data_management import move_to_root, open_w_pandas, make_path, check_existence, check_writable, \
-    load_execution_params
+from utilities.data_management import move_to_root, open_w_pandas, make_path, check_existence, check_writable
 from model.training import train_xg_boost
-
-move_to_root()
+import config
 
 # Define file paths
-dataset_name = load_execution_params()['dataset']
+dataset_name = config.dataset
 dataset_path = make_path('data/prepared_data/') / (dataset_name + '.csv')
 predictions_dir = make_path('data/predictions') / dataset_name
 train_path, test_path = predictions_dir / 'train.csv', predictions_dir / 'test.csv'

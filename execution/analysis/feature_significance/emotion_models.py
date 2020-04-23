@@ -1,4 +1,4 @@
-from utilities.data_management import move_to_root, open_w_pandas, make_path, check_existence, \
+from utilities.data_management import open_w_pandas, make_path, check_existence, \
     get_path_maps, load_xgboost_model, match_feature_weights
 from utilities.analysis import get_feature_values
 from matplotlib.pyplot import show, close
@@ -7,8 +7,6 @@ from os import mkdir
 from numpy import logical_not, isnan
 from scipy.sparse import load_npz
 import config
-
-move_to_root(4)
 
 # Define file paths
 dataset_name = config.dataset

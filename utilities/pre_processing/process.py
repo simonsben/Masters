@@ -1,7 +1,7 @@
-from utilities.data_management import load_execution_params
 from multiprocessing import Pool
 from pandas import DataFrame, read_csv
 from functools import partial
+import config
 
 
 def apply_process(packed_data, processes, get_content, save_content):
@@ -46,7 +46,7 @@ def process_documents(source_filename, dest_filename, processes, get_content, sa
     max_documents = options['max_documents'] if 'max_documents' in options else -1
     encoding = options['encoding'] if 'encoding' in options else None
 
-    n_threads = load_execution_params()['n_threads']
+    n_threads = config.n_threads
 
     dataset = read_csv(source_filename, delimiter=delimiter, encoding=encoding, index_col=0).values
     if max_documents is not None:

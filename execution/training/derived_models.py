@@ -1,15 +1,13 @@
 if __name__ == '__main__':
-    from utilities.data_management import open_w_pandas, make_path, check_existence, check_writable, save_prepared, \
-        move_to_root, load_execution_params
+    from utilities.data_management import open_w_pandas, make_path, check_existence, check_writable, save_prepared
     from model.extraction import n_gram_matrix, othering_matrix, adverb_matrix, document_statistics
     from model.training import train_xg_boost
     from numpy import save, array
     from time import time
-
-    move_to_root()
+    import config
 
     # Define source files
-    dataset_name = load_execution_params()['dataset']
+    dataset_name = config.dataset
     data_base = make_path('data/prepared_data/')
     pre_filename = data_base / (dataset_name + '.csv')
     partial_filename = data_base / (dataset_name + '_partial.csv')

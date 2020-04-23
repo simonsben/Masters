@@ -1,4 +1,4 @@
-from utilities.data_management import move_to_root, make_path, open_w_pandas, load_dataset_params, check_writable
+from utilities.data_management import make_path, open_w_pandas, load_dataset_params, check_writable
 from os import mkdir
 from matplotlib.pyplot import show
 from model.training import load_attention
@@ -6,8 +6,6 @@ from fastText import load_model
 from utilities.plotting import plot_token_importance
 from numpy import zeros
 import config
-
-move_to_root(4)
 
 # Define file paths
 max_tokens = load_dataset_params()['max_document_tokens']

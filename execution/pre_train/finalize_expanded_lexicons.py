@@ -1,13 +1,11 @@
-from utilities.data_management import move_to_root, make_path, check_existence, check_writable, open_exp_lexicon, \
-    load_execution_params, check_readable
+from utilities.data_management import make_path, check_existence, check_writable, open_exp_lexicon, \
+    check_readable
 from os import listdir
 from re import compile, match
-
-move_to_root()
+import config
 
 name_regex = compile(r'[\w\-]+')
-params = load_execution_params()
-dataset_name = params['dataset']
+dataset_name = config.dataset
 
 source_dir = make_path('data/processed_data') / dataset_name / 'analysis' / 'lexicon_expansion'
 dest_dir = make_path('data/prepared_lexicon/')

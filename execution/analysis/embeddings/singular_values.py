@@ -1,11 +1,10 @@
 from dask.dataframe import read_csv
 from dask.array.linalg import svd
-from utilities.data_management import make_path, move_to_root, check_existence
+from utilities.data_management import make_path, check_existence
 from matplotlib.pyplot import show, subplots
 import config
 
 # Define paths
-move_to_root(4)
 embed_name = config.fast_text_model
 embed_path = make_path('data/prepared_lexicon/') / (embed_name + '.csv')
 check_existence(embed_path)

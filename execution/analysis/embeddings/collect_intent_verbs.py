@@ -1,10 +1,8 @@
 from fasttext import load_model
-from utilities.data_management import move_to_root, make_path, check_existence, make_dir
+from utilities.data_management import make_path, check_existence, make_dir
 from pandas import read_csv
 from model.analysis import get_verbs, intent_verb_filename, generate_word_vectors
 import config
-
-move_to_root()
 
 dataset = config.dataset
 model_name = config.fast_text_model

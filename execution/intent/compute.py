@@ -1,6 +1,6 @@
 if __name__ == '__main__':
-    from utilities.data_management import move_to_root, make_path, open_w_pandas, check_existence, \
-        load_execution_params, make_dir, write_context_map, save_dataframe
+    from utilities.data_management import make_path, open_w_pandas, check_existence, make_dir, write_context_map, \
+        save_dataframe
     from model.extraction import split_into_contexts
     from model.expansion.intent_seed import tag_intent_documents
     from utilities.pre_processing import final_clean
@@ -8,8 +8,6 @@ if __name__ == '__main__':
     from numpy import savetxt, zeros, hstack, arange
     from numpy.random import choice
     import config
-
-    move_to_root(5)
 
     data_name = config.dataset
     base_path = make_path('data/prepared_data/')

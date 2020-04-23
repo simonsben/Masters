@@ -1,12 +1,9 @@
-from utilities.data_management import make_path, open_w_pandas, move_to_root, load_execution_params, check_writable, \
-    check_existence
+from utilities.data_management import make_path, open_w_pandas, check_writable, check_existence
 from pandas import concat
 from matplotlib.pyplot import show, tight_layout, savefig, gcf, close
+import config
 
-move_to_root()
-
-params = load_execution_params()
-dataset_name = params['dataset']
+dataset_name = config.dataset
 files = ['test', 'train']
 data_base = make_path('data/predictions/') / dataset_name
 fig_path = make_path('figures/') / dataset_name / 'analysis/prediction_hist.png'

@@ -1,6 +1,6 @@
-from utilities.data_management import prepare_doc_matrix, load_execution_params
+from utilities.data_management import prepare_doc_matrix
 from scipy.sparse import csr_matrix
-
+import config
 
 # TODO run optimization over hyper-parameters
 def train_xg_boost(document_matrix, is_abusive, return_data=False, prepared=False, verb=0):
@@ -17,7 +17,7 @@ def train_xg_boost(document_matrix, is_abusive, return_data=False, prepared=Fals
         sparse_test, test_label = None, None
 
     # Initialize and train XGBoost model
-    n_threads = load_execution_params()['n_threads']
+    n_threads = config.n_threads
     classifier = XGBClassifier(objective='binary:logistic', n_estimators=600, verbosity=verb, n_jobs=n_threads)
     classifier.fit(sparse_train, train_label, verbose=(verb > 0))
 

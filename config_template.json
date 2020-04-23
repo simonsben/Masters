@@ -1,8 +1,0 @@
-{
-  "execution": {
-    "dataset": "",
-    "n_threads": 4,
-    "fast_text_model": "",
-    "max_tokens": 250
-  }
-}

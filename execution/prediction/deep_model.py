@@ -1,16 +1,13 @@
-from utilities.data_management import open_w_pandas, make_path, move_to_root, check_existence, split_sets, \
-    to_numpy_array, load_execution_params
+from utilities.data_management import open_w_pandas, make_path, check_existence, split_sets, to_numpy_array
 from fastText import load_model as load_fast
 from model.extraction import vectorize_data
 from model.training import load_attention
 from pandas import read_csv
-
-move_to_root()
+import config
 
 # Define dataset paths
-params = load_execution_params()
-dataset_name = params['dataset']
-fast_text_name = params['fast_text_model']
+dataset_name = config.dataset
+fast_text_name = config.fast_text_model
 source_path = make_path('data/prepared_data/') / (dataset_name + '.csv')
 pred_dir = make_path('data/predictions') / dataset_name
 fast_text_filename = make_path('data/lexicons/fast_text/') / (fast_text_name + '.bin')

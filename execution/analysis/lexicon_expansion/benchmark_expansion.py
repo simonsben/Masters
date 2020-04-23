@@ -1,5 +1,5 @@
-from utilities.data_management import make_path, move_to_root, check_existence, check_readable, open_w_pandas, \
-    open_exp_lexicon, make_dir
+from utilities.data_management import make_path, check_existence, check_readable, open_w_pandas, open_exp_lexicon, \
+    make_dir
 from os import listdir
 from sklearn.feature_extraction.text import CountVectorizer
 from model.training import train_xg_boost
@@ -10,8 +10,6 @@ from matplotlib.pyplot import show, savefig
 import config
 
 name_regex = compile(r'[\w\-]+')
-
-move_to_root(4)
 
 # Load execution parameters
 dataset_name = config.dataset

@@ -36,7 +36,7 @@ To generate custom FastText embeddings for a given corpus simply do the followin
     * `$1` is the source filename (ex. `mixed_dataset.csv`)
     * `$2` is the destination name (ex. `embeddings`) (NOTE: no file extension)
     * `-dim 300` will give you embeddings with a dimension of 300 (same as pre-trained), can be changed
-4. Move the `.bin` file into `data/models/` and change the FastText model in [`config.json`](../config.json)
+4. Move the `.bin` file into `data/models/` and change the FastText model in [`config.py`](../config.py)
     
 ### SpaCy
 

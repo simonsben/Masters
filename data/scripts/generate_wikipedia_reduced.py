@@ -1,6 +1,4 @@
-from utilities.data_management import move_to_root, make_path, open_w_pandas, check_existence
-
-move_to_root()
+from utilities.data_management import make_path, open_w_pandas, check_existence
 
 base = make_path('data/prepared_data/')
 original_path = base / 'wikipedia_corpus.csv'

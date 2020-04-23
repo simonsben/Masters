@@ -1,13 +1,11 @@
 from sklearn.feature_extraction.text import CountVectorizer
-from utilities.data_management import make_path, move_to_root, load_execution_params, open_w_pandas
+from utilities.data_management import make_path, open_w_pandas
 from scipy.sparse import save_npz
 from numpy import savetxt
-
-move_to_root()
+import config
 
 # Load execution parameters
-params = load_execution_params()
-dataset = params['dataset']
+dataset = config.dataset
 
 # Define paths
 base = make_path('data/processed_data/') / dataset / 'analysis' / 'intent'

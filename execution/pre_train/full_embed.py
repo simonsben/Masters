@@ -1,14 +1,12 @@
-from utilities.data_management import load_execution_params, check_existence, move_to_root, make_path, open_w_pandas, \
+from utilities.data_management import check_existence, make_path, open_w_pandas, \
     check_writable, generate_embeddings
 from fasttext import load_model
 from utilities.pre_processing import simulated_runtime_clean
-
-move_to_root()
+import config
 
 # Load execution parameters
-params = load_execution_params()
-lex_name = params['fast_text_model']
-data_name = params['dataset']
+lex_name = config.fast_text_model
+data_name = config.dataset
 
 # Define paths
 lexicon_base = make_path('data/lexicons/fast_text')

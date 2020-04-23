@@ -1,16 +1,11 @@
-from utilities.data_management import open_w_pandas, move_to_root, split_sets, make_path, check_existence, \
-    check_writable, load_execution_params
+from utilities.data_management import open_w_pandas, split_sets, make_path, check_existence, check_writable
 from numpy import linspace, argmin, abs, argmax
 from pandas import DataFrame
 from sklearn.metrics import roc_curve
-
-move_to_root()
-
-# Load execution parameters
-params = load_execution_params()
-dataset_name = params['dataset']
+import config
 
 # Define paths
+dataset_name = config.dataset
 prediction_path = make_path('data/predictions/') / dataset_name / 'train.csv'
 label_path = make_path('data/prepared_data/') / (dataset_name + '.csv')
 dest_path = make_path('data/predictions/') / dataset_name / 'thresholds.csv'

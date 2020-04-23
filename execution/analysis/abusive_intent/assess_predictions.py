@@ -1,10 +1,8 @@
-from utilities.data_management import read_csv, move_to_root, make_path, output_abusive_intent
+from utilities.data_management import read_csv, make_path, output_abusive_intent
 from numpy import argsort, sum
 from utilities.analysis import rescale_data
 from model.analysis import compute_abusive_intent
 import config
-
-move_to_root(4)
 
 base = make_path('data/processed_data/') / config.dataset / 'analysis'
 analysis_base = base / 'intent_abuse'

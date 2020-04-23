@@ -1,13 +1,11 @@
 from os import listdir
 from re import compile, search
-from utilities.data_management import make_path, move_to_root
+from utilities.data_management import make_path
 
 
 file_regex = compile(r'\.py$')
 files = listdir('.')
 layer_base = make_path('execution/training/')
-
-move_to_root()
 
 exclusions = [
     'train.py',

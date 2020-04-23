@@ -1,5 +1,5 @@
 from fasttext import load_model
-from utilities.data_management import make_path, check_existence, move_to_root
+from utilities.data_management import make_path, check_existence
 from utilities.plotting import scatter_3_plot, show
 from pandas import read_csv, DataFrame, read_hdf
 from numpy import any, mean, std, log, asarray, percentile, sum, argsort
@@ -8,8 +8,6 @@ from scipy.linalg import svd
 from sklearn.decomposition import PCA
 from scipy.stats import pearsonr
 import config
-
-move_to_root(4)
 
 dataset_name = config.dataset
 embedding_model = config.fast_text_model

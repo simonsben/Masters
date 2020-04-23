@@ -1,12 +1,8 @@
-from utilities.data_management import move_to_root, open_w_pandas, make_path, check_existence, check_writable, \
-    get_path_maps
+from utilities.data_management import open_w_pandas, make_path, check_existence, check_writable, get_path_maps
 from utilities.plotting import confusion_matrix
 from matplotlib.pyplot import show, close
 from os import mkdir
 import config
-
-
-move_to_root()
 
 # Define file paths
 dataset_name = config.dataset

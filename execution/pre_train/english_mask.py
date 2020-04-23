@@ -1,12 +1,10 @@
-from utilities.data_management import move_to_root, make_path, check_existence, load_execution_params, open_w_pandas
+from utilities.data_management import make_path, check_existence, open_w_pandas
 from model.analysis import get_english_indexes
 from fasttext import load_model
 from numpy import savetxt
+import config
 
-move_to_root()
-
-params = load_execution_params()
-dataset = params['dataset']
+dataset = config.dataset
 
 model_path = make_path('data/lexicons/fast_text/language_classification.bin')
 base_dir = make_path('data/processed_data/') / dataset / 'analysis' / 'intent'

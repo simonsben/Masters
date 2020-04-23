@@ -1,13 +1,11 @@
 from shap import DeepExplainer
-from utilities.data_management import move_to_root, make_path, split_sets, open_w_pandas, to_numpy_array
+from utilities.data_management import make_path, split_sets, open_w_pandas, to_numpy_array
 from utilities.plotting import feature_significance
 from os import mkdir
 from pandas import read_pickle
 # from matplotlib.pyplot import show
 from model.training import load_attention
 import config
-
-move_to_root(4)
 
 # Define file paths
 dataset_name = config.dataset

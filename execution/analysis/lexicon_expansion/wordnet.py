@@ -1,6 +1,5 @@
 from model.analysis.expand_lexicon import expand_lexicon
-from utilities.data_management import move_to_root, make_path, check_existence, prepare_csv_writer, make_dir, \
-    open_w_pandas
+from utilities.data_management import make_path, check_existence, prepare_csv_writer, make_dir, open_w_pandas
 from model.extraction import get_emotion_indexes
 import config
 
@@ -9,7 +8,6 @@ import config
 # Exported as a .csv with the first row as the original lexicon, and the second being the expanded one
 
 # Define paths
-move_to_root(4)
 embed_name = config.fast_text_model
 data_name = config.dataset
 lexicon_name = 'mpqa_subjectivity_lexicon'

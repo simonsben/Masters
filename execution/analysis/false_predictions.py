@@ -1,12 +1,9 @@
-from utilities.data_management import open_w_pandas, move_to_root, make_path, split_sets, check_existence
+from utilities.data_management import open_w_pandas, make_path, split_sets, check_existence
 from utilities.plotting import bar_plot
 from numpy import all, sum, concatenate
 from pandas import concat
 # from matplotlib.pyplot import show
 import config
-
-# Change working directory to project root
-move_to_root()
 
 # Define data paths
 dataset_name = config.dataset

@@ -1,14 +1,11 @@
-from utilities.data_management import prepare_csv_reader, make_path, check_existence, load_execution_params, \
-    move_to_root
+from utilities.data_management import prepare_csv_reader, make_path, check_existence
 from pandas import read_csv
 from numpy import array, vstack
-
-move_to_root()
+import config
 
 # Define params
-params = load_execution_params()
-dataset_name = params['dataset']
-lexicon_name = params['fast_text_model']
+dataset_name = config.dataset
+lexicon_name = config.fast_text_model
 expansion_name = 'emotions_mixed_redef'
 
 # Define file paths

@@ -1,8 +1,6 @@
-from utilities.data_management import open_w_pandas, move_to_root, make_path, check_existence, split_sets
+from utilities.data_management import open_w_pandas, make_path, check_existence, split_sets
 from numpy import sum, equal
 import config
-
-move_to_root()
 
 # Load execution parameters
 dataset_name = config.dataset

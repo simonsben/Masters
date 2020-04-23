@@ -1,11 +1,9 @@
 from dask.dataframe import read_csv
 from matplotlib.pyplot import subplots, title, show, tight_layout, savefig, close
-from utilities.data_management import move_to_root, make_path, check_existence, check_writable
+from utilities.data_management import make_path, check_existence, check_writable
 from pandas import read_csv as p_read, DataFrame
 from csv import QUOTE_NONE
 import config
-
-move_to_root()
 
 dataset_name = config.dataset
 lex_name = config.fast_text_model

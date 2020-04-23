@@ -1,5 +1,4 @@
-from utilities.data_management import move_to_root, make_path, load_execution_params, load_vector, open_w_pandas, \
-    check_existence, read_csv
+from utilities.data_management import make_path, load_vector, open_w_pandas, check_existence, read_csv
 from model.analysis import intent_verb_filename, refine_mask
 from numpy import asarray, logical_not, all, sum, savetxt
 from utilities.plotting import plot_dendrogram, show, hist_plot
@@ -10,7 +9,6 @@ import config
 target_action_labels = ['kill', 'fight', 'act', 'take']
 target_desire_labels = ['want', 'need', 'going', 'have', 'about', 'planning']
 
-move_to_root()
 model_name = config.fast_text_model
 dataset = config.dataset
 

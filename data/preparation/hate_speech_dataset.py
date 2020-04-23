@@ -1,8 +1,6 @@
 from os import listdir
 from pandas import read_csv, DataFrame
-from utilities.data_management import move_to_root, make_path, check_existence
-
-move_to_root()
+from utilities.data_management import make_path, check_existence
 
 base_dir = make_path('data/datasets/hate_speech_dataset')
 data_dir = base_dir / 'all_files'

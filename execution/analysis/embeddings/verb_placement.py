@@ -1,12 +1,10 @@
-from utilities.data_management import move_to_root, make_path, check_existence, open_w_pandas, vector_to_file, \
+from utilities.data_management import make_path, check_existence, open_w_pandas, vector_to_file, \
     split_embeddings
 from model.analysis import intent_verb_filename, get_polarizing_mask
 from model.analysis.clustering import reduce_and_cluster
 from utilities.analysis import normalize_embeddings
 from utilities.plotting import show, plot_dendrogram
 import config
-
-move_to_root(4)
 
 dataset = config.dataset
 model_name = config.fast_text_model

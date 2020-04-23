@@ -1,15 +1,13 @@
-from utilities.data_management import open_w_pandas, make_path, check_writable, move_to_root, load_execution_params, \
-    save_prepared
+from utilities.data_management import open_w_pandas, make_path, check_writable, save_prepared
 from model.extraction import empath_matrix
 from model.training import train_xg_boost
 from pandas import DataFrame
 from empath import Empath
+import config
 
 if __name__ == '__main__':
-    move_to_root()  # Change PWD to root project directory
-
     # Define source files
-    dataset_name = load_execution_params()['dataset']
+    dataset_name = config.dataset
     data_filename = make_path('data/prepared_data/') / (dataset_name + '.csv')
     processed_base = make_path('data/processed_data/') / dataset_name / 'lexicon'
     model_dir = make_path('data/models/' + dataset_name + '/lexicon/')

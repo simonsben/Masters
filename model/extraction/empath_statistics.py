@@ -3,7 +3,7 @@ from pandas import DataFrame
 from scipy.sparse import coo_matrix, vstack
 from numpy import zeros
 from multiprocessing import Pool
-from utilities.data_management import load_execution_params
+import config
 
 # Initialize empath lexicon
 lexicon = Empath()
@@ -25,7 +25,7 @@ def empath_matrix(dataset):
     if not isinstance(dataset, DataFrame):
         raise TypeError('Dataset must be a (Pandas) DataFrame')
 
-    n_threads = load_execution_params()['n_threads']
+    n_threads = config.n_threads
     workers = Pool(n_threads)
 
     document_matrix = workers.map(compute_statistic, dataset['document_content'].values)

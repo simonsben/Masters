@@ -1,10 +1,8 @@
 from dask.dataframe import read_csv
-from utilities.data_management import make_path, move_to_root, check_existence, make_dir, \
-    prepare_csv_writer
+from utilities.data_management import make_path, check_existence, make_dir, prepare_csv_writer
 from utilities.analysis import get_nearest_neighbours, svd_embeddings
 from model.analysis import cluster_neighbours
 import config
-
 
 # Define parameters
 seed_terms = ['bitch']
@@ -14,7 +12,6 @@ closure_set = set(seed_terms)
 to_be_closed = seed_terms.copy()
 
 # Define paths
-move_to_root(4)
 embed_name = config.fast_text_model
 data_name = config.dataset
 embed_path = make_path('data/prepared_lexicon/') / (embed_name + '.csv')
@@ -22,7 +19,6 @@ dest_dir = make_path('data/processed_data/') / data_name / 'analysis' / 'closure
 
 check_existence(embed_path)
 make_dir(dest_dir, 3)
-
 
 # Define dataset-specific constants
 dtypes = {str(ind): float for ind in range(1, 301)}

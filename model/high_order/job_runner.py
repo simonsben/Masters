@@ -68,9 +68,6 @@ class job_runner:
 
     def get_default_params(self):
         """ Loads default parameters from config file """
-        if not in_parent_dir():
-            move_to_root()
-
         self.n_threads = config.n_threads
         self.dataset_name = config.dataset
 

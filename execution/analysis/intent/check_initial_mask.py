@@ -1,9 +1,7 @@
-from utilities.data_management import move_to_root, make_path, load_vector, open_w_pandas
+from utilities.data_management import make_path, load_vector, open_w_pandas
 from numpy.random import choice
 from numpy import sum, where
 import config
-
-move_to_root(4)
 
 base = make_path('data/processed_data/') / config.dataset / 'analysis' / 'intent'
 

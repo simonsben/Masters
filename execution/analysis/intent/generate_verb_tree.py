@@ -1,4 +1,4 @@
-from utilities.data_management import move_to_root, make_path, load_vector, open_w_pandas, check_existence
+from utilities.data_management import make_path, load_vector, open_w_pandas, check_existence
 from model.analysis import intent_verb_filename
 from model.expansion.verb_tree import build_tree_and_collect_leaves
 from utilities.plotting import plot_dendrogram, show
@@ -7,7 +7,6 @@ import config
 target_action_labels = ['kill', 'fight', 'eliminate']
 target_desire_labels = ['wish', 'hope', 'try']
 
-move_to_root()
 model_name = config.fast_text_model
 dataset = config.dataset
 

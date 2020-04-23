@@ -1,10 +1,8 @@
-from utilities.data_management import make_path, check_existence, open_w_pandas, load_execution_params, move_to_root, split_sets
+from utilities.data_management import make_path, check_existence, open_w_pandas, split_sets
 from pandas import read_csv
+import config
 
-move_to_root()
-
-params = load_execution_params()
-dataset_name = params['dataset']
+dataset_name = config.dataset
 
 prediction_dir = make_path('data/predictions') / dataset_name
 train_path, test_path = prediction_dir / 'train.csv', prediction_dir / 'test.csv'

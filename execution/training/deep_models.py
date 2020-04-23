@@ -1,14 +1,12 @@
 from utilities.data_management import open_w_pandas, check_existence,  make_path, check_writable, split_sets, \
-    to_numpy_array, move_to_root, load_execution_params
+    to_numpy_array
 from model.extraction import vectorize_data
 from model.training import generate_deep_model, train_deep_model, generate_attention_model
 from fastText import load_model
+import config
 
-move_to_root()
-
-params = load_execution_params()
-dataset_name = params['dataset']
-model_name = params['fast_text_model']
+dataset_name = config.dataset
+model_name = config.fast_text_model
 filename = make_path('data/prepared_data/') / (dataset_name + '.csv')
 fast_text_filename = make_path('data/lexicons/fast_text/') / (model_name + '.bin')
 vectorized_path = make_path('data/processed_data/') / dataset_name / 'derived/' / 'fast_text.pkl'

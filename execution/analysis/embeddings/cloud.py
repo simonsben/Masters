@@ -1,12 +1,11 @@
 from dask.dataframe import read_csv
-from utilities.data_management import make_path, move_to_root, check_existence, make_dir
+from utilities.data_management import make_path, check_existence, make_dir
 from matplotlib.pyplot import show, savefig, tight_layout, subplots
 from utilities.analysis import svd_embeddings
 from utilities.plotting import  scatter_3_plot
 import config
 
 # Define paths
-move_to_root(4)
 embed_name = config.fast_text_model
 data_name = config.dataset
 

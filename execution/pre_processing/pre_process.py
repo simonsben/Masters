@@ -1,14 +1,11 @@
 from data.accessors import *
 from utilities.pre_processing import *
-from utilities.data_management import make_path, check_existence, check_writable, open_w_pandas, expand_csv_row_size, \
-    move_to_root
+from utilities.data_management import make_path, check_existence, check_writable, open_w_pandas, expand_csv_row_size
 from pandas import concat, isna
 from numpy.random import permutation
 from numpy import arange, savetxt
 
 if __name__ == '__main__':
-    move_to_root()
-
     runs = [False, True]
     expand_csv_row_size()
 

@@ -1,12 +1,12 @@
-from utilities.data_management import read_csv, move_to_root, make_path, load_execution_params, open_w_pandas
+from utilities.data_management import read_csv, make_path, open_w_pandas
 from numpy import argsort, sum, any, where, zeros, all, asarray
 from numpy.random import choice
 from utilities.analysis import rescale_data
 from model.analysis import compute_abusive_intent, estimate_cumulative
 from utilities.plotting import hist_plot, show
+import config
 
-move_to_root(4)
-dataset = load_execution_params()['dataset']
+dataset = config.dataset
 
 base = make_path('data/processed_data/') / dataset / 'analysis'
 analysis_base = base / 'intent_abuse'

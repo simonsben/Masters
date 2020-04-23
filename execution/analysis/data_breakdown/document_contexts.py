@@ -1,8 +1,6 @@
-from utilities.data_management import move_to_root, make_path, open_w_pandas, load_vector
+from utilities.data_management import make_path, open_w_pandas, load_vector
 from utilities.plotting import hist_plot, show, scatter_plot
 import config
-
-move_to_root()
 
 dataset = config.dataset
 

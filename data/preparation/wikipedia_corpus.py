@@ -1,4 +1,4 @@
-from utilities.data_management import make_path, move_to_root
+from utilities.data_management import make_path
 from os import rename
 from multiprocessing import Pool
 from itertools import compress
@@ -13,7 +13,6 @@ def long_enough(document, threshold=10):
 
 
 if __name__ == '__main__':
-    move_to_root()
     directory = make_path('data/datasets/wikipedia_corpus')
     file_path = directory / 'wikipedia_corpus.csv'
     backup_path = directory / 'wikipedia_corpus_backup.csv'

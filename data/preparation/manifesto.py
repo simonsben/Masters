@@ -1,11 +1,8 @@
-from pathlib import Path
 from re import compile
-from utilities.data_management import move_to_root
+from utilities.data_management import make_path
 from os import rename
 
-move_to_root()
-
-base_dir = Path('data/datasets/manifesto/')
+base_dir = make_path('data/datasets/manifesto/')
 filename = base_dir / 'manifesto.csv'
 backup_filename = base_dir / 'manifesto_backup.csv'
 

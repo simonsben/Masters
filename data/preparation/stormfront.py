@@ -25,7 +25,6 @@ def apply_processing(line):
 
 
 if __name__ == '__main__':
-    move_to_root()
     expand_csv_row_size()
     n_threads = config.n_threads
 

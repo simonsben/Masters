@@ -1,11 +1,11 @@
-from utilities.data_management import read_csv, move_to_root, make_path
+from utilities.data_management import read_csv, make_path
 from numpy import argsort, log2, sqrt, power
 from utilities.plotting import scatter_plot, show, hist_plot
 from utilities.analysis import rescale_data, list_means, list_variances, list_lengths, list_mins, list_maxes
 from pandas import DataFrame
-from scipy.spatial.distance import euclidean
+# from scipy.spatial.distance import euclidean
 import config
-move_to_root(4)
+
 base = make_path('data/processed_data/') / config.dataset / 'analysis'
 analysis_base = base / 'intent_abuse'
 

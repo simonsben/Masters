@@ -1,4 +1,4 @@
-from utilities.data_management import move_to_root, make_path, load_tsv
+from utilities.data_management import make_path, load_tsv
 from utilities.analysis import svd_embeddings
 from dask.dataframe import read_csv
 from numpy import asarray, vstack, min, max
@@ -7,8 +7,6 @@ from scipy.spatial.distance import euclidean
 from matplotlib.pyplot import subplots, show
 from pandas import read_csv as panda_read
 import config
-
-move_to_root(4)
 
 # Load execution parameters
 dataset = config.dataset

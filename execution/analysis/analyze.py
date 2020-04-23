@@ -1,6 +1,5 @@
-from utilities.data_management import move_to_root, make_path
+from utilities.data_management import make_path
 
-move_to_root()
 folder_base = make_path('execution/analysis')
 
 # Generate confusion matrices

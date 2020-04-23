@@ -1,13 +1,14 @@
 from model.high_order.job_runner import job_runner
-from utilities.data_management import move_to_root, make_path, load_execution_params, expand_csv_row_size
+from utilities.data_management import make_path, expand_csv_row_size
 from model.expansion.intent_seed import worker_init, identify_basic_intent
-from model.extraction import context_breaks
+from utilities.pre_processing import split_pattern
+import config
 
 
 def process(document):
     if not isinstance(document[0], str):
         return []
-    return [[identify_basic_intent(context), context] for context in context_breaks.split(document[0])]
+    return [[identify_basic_intent(context), context] for context in split_pattern.split(document[0])]
 
 
 def data_modifier(document, making_header=False):
@@ -17,11 +18,8 @@ def data_modifier(document, making_header=False):
 
 
 if __name__ == '__main__':
-    move_to_root()
     expand_csv_row_size()
-
-    params = load_execution_params()
-    dataset_name = params['dataset']
+    dataset_name = config.dataset
 
     source = make_path('data/prepared_data/') / (dataset_name + '_partial.csv')
     dest = make_path('data/processed_data/') / dataset_name / 'analysis' / 'intent' / 'alt_intent_mask.csv'

@@ -2,9 +2,9 @@ from spacy import load
 from pandas import DataFrame
 from time import time
 from multiprocessing import Pool
-from utilities.data_management.file_management import load_execution_params
 from sklearn.feature_extraction.text import CountVectorizer
 from itertools import compress
+import config
 
 othering_pos = {
     'NOUN',
@@ -73,7 +73,7 @@ def init_workers():
 
 def parse_documents(documents, document_filter):
     # Initialize processing pool and content
-    workers = Pool(load_execution_params()['n_threads'], initializer=init_workers)
+    workers = Pool(config.n_threads, initializer=init_workers)
     document_filter = document_filter if document_filter is not None else filter_tokens
 
     # Parse content and close pool

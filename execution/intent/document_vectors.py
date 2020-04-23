@@ -1,14 +1,12 @@
-from utilities.data_management import make_path, move_to_root, load_execution_params, check_existence
+from utilities.data_management import make_path, check_existence
 from pandas import read_csv
 from sklearn.decomposition import PCA
 from utilities.plotting import scatter_3_plot, show
 from numpy import log, any, where
+import config
 
-move_to_root(4)
 max_points = 5000
-
-params = load_execution_params()
-dataset = params['dataset']
+dataset = config.dataset
 
 base_dir = make_path('data/processed_data') / dataset / 'analysis'
 embeddings_path = base_dir / 'intent' / 'encoded_documents.csv'

@@ -5,6 +5,7 @@ from json import load
 from numbers import Number
 from csv import field_size_limit
 from sys import maxsize
+import config
 
 prediction_filename = Path('data/processed_data/predictions.csv')
 root_dir_file = '.gitignore'
@@ -46,26 +47,9 @@ def in_parent_dir():
     return Path('config.json').is_file()
 
 
-# TODO rework code to use global variable instead of distinct loads
-def load_execution_params(quiet=False):
-    """ Loads the current execution parameters from the config file """
-    path = Path('config.json')
-    with path.open(mode='r') as fl:
-        parameters = load(fl)['execution']
-
-    if not quiet:
-        # Print out key execution parameters
-        dataset = parameters['dataset']
-        fast_text_model = parameters['fast_text_model']
-
-        print('Loaded execution params with dataset', dataset, 'and fastText model', fast_text_model)
-
-    return parameters
-
-
 def load_dataset_params(dataset=None):
     """ Loads the dataset specific parameters """
-    dataset = load_execution_params()['dataset'] if dataset is None else dataset
+    dataset = config.dataset if dataset is None else dataset
 
     tmp = get_path_maps()['dataset_parameters']
     params = {

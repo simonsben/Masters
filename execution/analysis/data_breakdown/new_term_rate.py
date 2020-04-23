@@ -49,16 +49,14 @@ def corpus_term_rate(documents, index):
 
 
 if __name__ == '__main__':
-    from utilities.data_management import make_path, move_to_root, check_existence, prepare_csv_reader, \
-        expand_csv_row_size
+    from utilities.data_management import make_path, check_existence, prepare_csv_reader, expand_csv_row_size
     from utilities.plotting import scatter_plot
     import config
 
-    move_to_root(4)
     expand_csv_row_size()
 
     n_thread = config.n_threads
-    dataset_name = params['dataset']
+    dataset_name = config.dataset
     dataset_path = make_path('data/prepared_data/') / (dataset_name + '.csv')
     fig_path = make_path('figures') / dataset_name / 'analysis' / 'term_rate.png'
 

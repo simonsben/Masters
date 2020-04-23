@@ -1,7 +1,5 @@
 from os import listdir
-from utilities.data_management import move_to_root, make_path
-
-move_to_root(4)
+from utilities.data_management import make_path
 
 base = make_path('execution/analysis/feature_significance')
 files = listdir(base)

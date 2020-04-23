@@ -2,12 +2,10 @@ from data.accessors import stormfront
 from utilities.pre_processing import count_upper, dask_process_documents, original_length, count_emojis, \
     pull_hyperlinks, split_hashtags, manage_special_characters, count_express, count_punctuation, count_digits, \
     remove_spaces, run_partial_clean, count_images, count_handles, count_repeat_instances, count_tags
-from utilities.data_management import make_path, check_existence, check_writable, open_w_pandas, move_to_root, make_dir
+from utilities.data_management import make_path, check_existence, check_writable, open_w_pandas, make_dir
 from pandas import concat, isna
 from csv import field_size_limit
 from sys import maxsize
-
-move_to_root()
 
 runs = [False, True]
 

@@ -1,7 +1,8 @@
 from empath import Empath
 from multiprocessing import Pool
-from utilities.data_management import move_to_root, make_path, load_execution_params, open_w_pandas, check_existence
+from utilities.data_management import make_path, open_w_pandas, check_existence
 from scipy.sparse import csr_matrix, save_npz
+import config
 
 
 def init_function():
@@ -14,11 +15,8 @@ def get_empath_val(document):
 
 
 if __name__ == '__main__':
-    move_to_root()
-
-    params = load_execution_params()
-    dataset_name = params['dataset']
-    n_threads = params['n_threads']
+    dataset_name = config.dataset
+    n_threads = config.n_threads
 
     base_dir = make_path('data/processed_data/') / dataset_name / 'analysis' / 'intent'
     data_path = base_dir / 'contexts.csv'

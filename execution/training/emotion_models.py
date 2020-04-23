@@ -1,12 +1,11 @@
 from utilities.data_management import open_w_pandas, make_path, check_existence, check_writable, move_to_root, \
-    save_prepared, load_execution_params
+    save_prepared
 from model.extraction import emotions
 from model.training import train_xg_boost
-
-move_to_root()  # Change PWD to root project directory
+import config
 
 # Define source files
-dataset_name = load_execution_params()['dataset']
+dataset_name = config.dataset
 data_filename = make_path('data/prepared_data/') / (dataset_name + '.csv')
 lexicon_path = make_path('data/prepared_lexicon/nrc_emotion_lexicon.csv')
 processed_base = make_path('data/processed_data/') / dataset_name / 'emotion'

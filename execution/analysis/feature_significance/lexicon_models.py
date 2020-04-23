@@ -1,4 +1,4 @@
-from utilities.data_management import move_to_root, open_w_pandas, make_path, check_existence, get_path_maps, \
+from utilities.data_management import open_w_pandas, make_path, check_existence, get_path_maps, \
     load_xgboost_model, match_feature_weights
 from utilities.analysis import get_feature_values
 from matplotlib.pyplot import show, close
@@ -6,8 +6,6 @@ from utilities.plotting import feature_significance, shap_feature_significance
 from os import mkdir
 from scipy.sparse import load_npz
 import config
-
-move_to_root(4)
 
 layer_names = ['hurtlex', 'subjectivity', 'empath']
 

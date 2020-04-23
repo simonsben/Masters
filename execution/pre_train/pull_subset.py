@@ -1,8 +1,6 @@
-from utilities.data_management import make_path, move_to_root
+from utilities.data_management import make_path
 from pandas import read_csv
 from numpy.random import choice
-
-move_to_root()
 
 base = make_path('data/prepared_data/')
 source_name = 'storm-front-full'
