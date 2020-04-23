@@ -1,5 +1,5 @@
-from utilities.data_management import make_path, move_to_root, check_existence, load_execution_params, check_readable, \
-    open_w_pandas, open_exp_lexicon, make_dir
+from utilities.data_management import make_path, move_to_root, check_existence, check_readable, open_w_pandas, \
+    open_exp_lexicon, make_dir
 from os import listdir
 from sklearn.feature_extraction.text import CountVectorizer
 from model.training import train_xg_boost
@@ -7,14 +7,14 @@ from numpy import sum
 from utilities.plotting import scatter_plot
 from re import compile, match
 from matplotlib.pyplot import show, savefig
+import config
 
 name_regex = compile(r'[\w\-]+')
 
 move_to_root(4)
 
 # Load execution parameters
-params = load_execution_params()
-dataset_name = params['dataset']
+dataset_name = config.dataset
 
 # Define file paths
 expanded_dir = make_path('data/processed_data') / dataset_name / 'analysis' / 'lexicon_expansion'

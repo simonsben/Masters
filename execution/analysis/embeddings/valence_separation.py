@@ -1,4 +1,4 @@
-from utilities.data_management import move_to_root, make_path, load_execution_params, load_tsv
+from utilities.data_management import move_to_root, make_path, load_tsv
 from utilities.analysis import svd_embeddings
 from dask.dataframe import read_csv
 from numpy import asarray, vstack, min, max
@@ -6,13 +6,13 @@ from scipy.cluster.vq import whiten, kmeans
 from scipy.spatial.distance import euclidean
 from matplotlib.pyplot import subplots, show
 from pandas import read_csv as panda_read
+import config
 
 move_to_root(4)
 
 # Load execution parameters
-params = load_execution_params()
-dataset = params['dataset']
-lexicon = params['fast_text_model']
+dataset = config.dataset
+lexicon = config.fast_text_model
 
 # Define paths
 source = make_path('data/prepared_lexicon/') / (dataset + '-' + lexicon + '.csv')

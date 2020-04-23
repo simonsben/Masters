@@ -1,8 +1,9 @@
 from model.analysis.expand_lexicon import expand_lexicon
-from utilities.data_management import move_to_root, make_path, check_existence, load_execution_params, \
-    prepare_csv_writer, make_dir, open_w_pandas
+from utilities.data_management import move_to_root, make_path, check_existence, prepare_csv_writer, make_dir, \
+    open_w_pandas
 from dask.dataframe import read_csv
 from model.extraction import get_emotion_indexes
+import config
 
 # Lexicon expansion
 # Takes a initial lexicon and expands it using word embeddings
@@ -11,9 +12,8 @@ from model.extraction import get_emotion_indexes
 # Define paths
 move_to_root(4)
 
-params = load_execution_params()
-embed_name = params['fast_text_model']
-data_name = params['dataset']
+embed_name = config.fast_text_model
+data_name = config.dataset
 lexicon_name = 'nrc_emotion_lexicon'
 emotions = ['anger', 'disgust', 'fear', 'negative', 'positive', 'sadness']
 

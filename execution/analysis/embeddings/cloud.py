@@ -1,15 +1,14 @@
 from dask.dataframe import read_csv
-from utilities.data_management import load_execution_params, make_path, move_to_root, check_existence, make_dir
+from utilities.data_management import make_path, move_to_root, check_existence, make_dir
 from matplotlib.pyplot import show, savefig, tight_layout, subplots
 from utilities.analysis import svd_embeddings
 from utilities.plotting import  scatter_3_plot
+import config
 
 # Define paths
 move_to_root(4)
-
-params = load_execution_params()
-embed_name = params['fast_text_model']
-data_name = params['dataset']
+embed_name = config.fast_text_model
+data_name = config.dataset
 
 embed_path = make_path('data/prepared_lexicon/') / (embed_name + '.csv')
 dest_dir = make_path('figures/') / data_name / 'analysis' / 'clouds'

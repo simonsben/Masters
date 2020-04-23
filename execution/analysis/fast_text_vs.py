@@ -1,14 +1,14 @@
 from dask.dataframe import read_csv
 from matplotlib.pyplot import subplots, title, show, tight_layout, savefig, close
-from utilities.data_management import move_to_root, make_path, check_existence, check_writable, load_execution_params
+from utilities.data_management import move_to_root, make_path, check_existence, check_writable
 from pandas import read_csv as p_read, DataFrame
 from csv import QUOTE_NONE
+import config
 
 move_to_root()
 
-params = load_execution_params()
-dataset_name = params['dataset']
-lex_name = params['fast_text_model']
+dataset_name = config.dataset
+lex_name = config.fast_text_model
 base = make_path('data/lexicons/fast_text/')
 raw_path = base / (lex_name + '.vec')
 dest_path = base / (lex_name + '_desc.csv')

@@ -1,15 +1,15 @@
-from utilities.data_management import open_w_pandas, move_to_root, make_path, load_execution_params, split_sets, \
-    check_existence
+from utilities.data_management import open_w_pandas, move_to_root, make_path, split_sets, check_existence
 from utilities.plotting import bar_plot
 from numpy import all, sum, concatenate
 from pandas import concat
-from matplotlib.pyplot import show
+# from matplotlib.pyplot import show
+import config
 
 # Change working directory to project root
 move_to_root()
 
 # Define data paths
-dataset_name = load_execution_params()['dataset']
+dataset_name = config.dataset
 dataset_path = make_path('data/prepared_data/') / (dataset_name + '_partial.csv')
 prediction_path = make_path('data/predictions/') / dataset_name / 'test.csv'
 analysis_dir = make_path('data/processed_data/') / dataset_name / 'analysis'

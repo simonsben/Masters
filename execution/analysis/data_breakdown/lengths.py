@@ -1,14 +1,13 @@
-from utilities.data_management import make_path, check_existence, move_to_root, open_w_dask, check_writable, \
-    load_execution_params
+from utilities.data_management import make_path, check_existence, move_to_root, open_w_dask, check_writable
 from numpy import min, max, mean, std
 from matplotlib.pyplot import show, figure, savefig
 from utilities.plotting import hist_plot
+import config
 
 move_to_root(4)
 context_run = True
 
-params = load_execution_params()
-dataset_name = params['dataset']
+dataset_name = config.dataset
 
 fig_dir = make_path('figures/') / dataset_name / 'analysis'
 check_writable(fig_dir)

@@ -5,14 +5,14 @@ from numpy import asarray, logical_not, all, sum, savetxt
 from utilities.plotting import plot_dendrogram, show, hist_plot
 from model.expansion.verb_tree import build_tree_and_collect_leaves, get_sub_tree
 from model.expansion.verb_space import get_cube_mask, get_cone_mask
+import config
 
 target_action_labels = ['kill', 'fight', 'act', 'take']
 target_desire_labels = ['want', 'need', 'going', 'have', 'about', 'planning']
 
 move_to_root()
-params = load_execution_params()
-model_name = params['fast_text_model']
-dataset = params['dataset']
+model_name = config.fast_text_model
+dataset = config.dataset
 
 base = make_path('data/processed_data/') / dataset / 'analysis'
 embedding_dir = base / 'embeddings'

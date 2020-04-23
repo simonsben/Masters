@@ -7,11 +7,11 @@ if __name__ == '__main__':
     from pandas import DataFrame
     from numpy import savetxt, zeros, hstack, arange
     from numpy.random import choice
+    import config
 
     move_to_root(5)
 
-    params = load_execution_params()
-    data_name = params['dataset']
+    data_name = config.dataset
     base_path = make_path('data/prepared_data/')
     data_path = base_path / (data_name + '_partial.csv')
     objective_path = base_path / 'wikipedia_corpus_reduced_partial.csv'
@@ -37,7 +37,7 @@ if __name__ == '__main__':
     document_contexts, context_map = split_into_contexts(documents, original_indexes)
     print('Contexts extracted, expanded', len(documents), 'to', len(document_contexts))
 
-    intent_values, intent_frames = tag_intent_documents(document_contexts, params['n_threads'])
+    intent_values, intent_frames = tag_intent_documents(document_contexts, config.n_threads)
     print('Initial intent mask computed.')
 
     document_contexts = list(map(final_clean, document_contexts))

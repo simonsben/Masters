@@ -1,18 +1,18 @@
-from utilities.data_management import move_to_root, make_path, load_execution_params, open_w_pandas, load_dataset_params, check_writable
+from utilities.data_management import move_to_root, make_path, open_w_pandas, load_dataset_params, check_writable
 from os import mkdir
 from matplotlib.pyplot import show
 from model.training import load_attention
 from fastText import load_model
 from utilities.plotting import plot_token_importance
 from numpy import zeros
+import config
 
 move_to_root(4)
 
 # Define file paths
-params = load_execution_params()
 max_tokens = load_dataset_params()['max_document_tokens']
-dataset_name = params['dataset']
-ft_name = params['fast_text_model']
+dataset_name = config.dataset
+ft_name = config.fast_text_model
 
 shap_dir = make_path('figures/') / dataset_name / 'derived' / 'shap' / 'shap_words'
 data_path = make_path('data/prepared_data/') / (dataset_name + '.csv')

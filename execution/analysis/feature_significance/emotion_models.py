@@ -1,16 +1,17 @@
 from utilities.data_management import move_to_root, open_w_pandas, make_path, check_existence, \
-    get_path_maps, load_xgboost_model, match_feature_weights, load_execution_params
+    get_path_maps, load_xgboost_model, match_feature_weights
 from utilities.analysis import get_feature_values
 from matplotlib.pyplot import show, close
 from utilities.plotting import feature_significance, shap_feature_significance
 from os import mkdir
 from numpy import logical_not, isnan
 from scipy.sparse import load_npz
+import config
 
 move_to_root(4)
 
 # Define file paths
-dataset_name = load_execution_params()['dataset']
+dataset_name = config.dataset
 model_dir = make_path('data/models/') / dataset_name
 figure_base = make_path('figures/') / dataset_name / 'emotion'
 fig_dir = figure_base / 'feature_significance/'

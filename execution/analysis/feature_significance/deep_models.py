@@ -1,16 +1,16 @@
 from shap import DeepExplainer
-from utilities.data_management import move_to_root, make_path, load_execution_params, split_sets, open_w_pandas, \
-    to_numpy_array
+from utilities.data_management import move_to_root, make_path, split_sets, open_w_pandas, to_numpy_array
 from utilities.plotting import feature_significance
 from os import mkdir
 from pandas import read_pickle
-from matplotlib.pyplot import show
+# from matplotlib.pyplot import show
 from model.training import load_attention
+import config
 
 move_to_root(4)
 
 # Define file paths
-dataset_name = load_execution_params()['dataset']
+dataset_name = config.dataset
 figure_base = make_path('figures/') / dataset_name / 'derived'
 shap_dir = figure_base / 'shap'
 data_path = make_path('data/prepared_data/') / (dataset_name + '.csv')

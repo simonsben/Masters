@@ -1,17 +1,16 @@
-from utilities.data_management import read_csv, move_to_root, make_path, load_execution_params, check_existence, \
-    make_dir
+from utilities.data_management import read_csv, move_to_root, make_path, check_existence, make_dir
 from model.networks import generate_abuse_network, generate_intent_network
 from utilities.plotting import plot_token_importance, show
 from utilities.pre_processing import runtime_clean, token_to_index
+import config
 
 move_to_root(4)
 
 abuse_run = True
 run_name = 'abuse' if abuse_run else 'intent'
 
-params = load_execution_params()
-max_tokens = params['max_tokens']
-training_set = params['fast_text_model']
+max_tokens = config.max_tokens
+training_set = config.fast_text_model
 
 embedding_model = ('abusive_data-' if abuse_run else 'intent_dataset-') + training_set
 

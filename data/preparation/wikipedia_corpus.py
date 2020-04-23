@@ -1,8 +1,9 @@
-from utilities.data_management import make_path, move_to_root, load_execution_params
+from utilities.data_management import make_path, move_to_root
 from os import rename
 from multiprocessing import Pool
 from itertools import compress
 from pandas import DataFrame
+import config
 
 
 def long_enough(document, threshold=10):
@@ -28,7 +29,7 @@ if __name__ == '__main__':
         content = fl.readlines()
     print('Content loaded')
 
-    n_thread = load_execution_params()['n_threads']
+    n_thread = config.n_threads
     pool = Pool(n_thread)
 
     non_header_mask = pool.map(long_enough, content)

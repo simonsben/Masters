@@ -1,5 +1,5 @@
 from fasttext import load_model
-from utilities.data_management import load_execution_params, make_path, check_existence, move_to_root
+from utilities.data_management import make_path, check_existence, move_to_root
 from utilities.plotting import scatter_3_plot, show
 from pandas import read_csv, DataFrame, read_hdf
 from numpy import any, mean, std, log, asarray, percentile, sum, argsort
@@ -7,12 +7,12 @@ from os import remove
 from scipy.linalg import svd
 from sklearn.decomposition import PCA
 from scipy.stats import pearsonr
+import config
 
 move_to_root(4)
 
-params = load_execution_params()
-dataset_name = params['dataset']
-embedding_model = params['fast_text_model']
+dataset_name = config.dataset
+embedding_model = config.fast_text_model
 
 base_dir = make_path('data/processed_data') / dataset_name / 'analysis' / 'intent'
 prediction_dir = base_dir.parent / 'intent_abuse'

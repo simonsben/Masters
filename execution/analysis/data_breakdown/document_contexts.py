@@ -1,9 +1,10 @@
-from utilities.data_management import move_to_root, make_path, open_w_pandas, load_execution_params, load_vector
+from utilities.data_management import move_to_root, make_path, open_w_pandas, load_vector
 from utilities.plotting import hist_plot, show, scatter_plot
+import config
 
 move_to_root()
 
-dataset = load_execution_params()['dataset']
+dataset = config.dataset
 
 base = make_path('data/processed_data/') / dataset / 'analysis'
 prediction_base = base / 'abusive_intent'

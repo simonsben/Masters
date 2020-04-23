@@ -4,6 +4,7 @@ from itertools import compress
 from multiprocessing import Pool
 from model.extraction import generate_context_matrix
 from collections.abc import Iterable
+import config
 
 # Token and dependency sets for detecting basic intent
 desire_verb_tags = {'VB', 'VBG', 'VBP', 'VBZ'}
@@ -121,8 +122,7 @@ def worker_init(*props):
 def tag_intent_documents(contexts, n_threads=None):
     """ Determines whether each context contains intent, then return intent value and base verb """
     if n_threads is None:
-        from utilities.data_management import load_execution_params
-        n_threads = load_execution_params()['n_threads']
+        n_threads = config.n_threads
 
     # Initialize worker pool
     worker_pool = Pool(n_threads, initializer=worker_init)

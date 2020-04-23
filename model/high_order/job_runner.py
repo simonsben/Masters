@@ -1,9 +1,9 @@
-from utilities.data_management import in_parent_dir, load_execution_params, move_to_root, prepare_csv_reader, \
-    prepare_csv_writer
+from utilities.data_management import in_parent_dir, move_to_root, prepare_csv_reader, prepare_csv_writer
 from multiprocessing import Pool
 from pathlib import Path
 from time import time
 from functools import partial
+import config
 
 
 def generate_data_modifier(header_list, data_header):
@@ -71,9 +71,8 @@ class job_runner:
         if not in_parent_dir():
             move_to_root()
 
-        params = load_execution_params()
-        self.n_threads = params['n_threads']
-        self.dataset_name = params['dataset']
+        self.n_threads = config.n_threads
+        self.dataset_name = config.dataset
 
     def start_workers(self):
         """ Starts worker threads """

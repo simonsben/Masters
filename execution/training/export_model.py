@@ -6,14 +6,12 @@ import config
 # Load config
 dataset = config.dataset
 max_tokens = config.max_tokens
+embedding_dimension = config.embedding_dimension
 
 # Define file paths
 intent_weights_path = get_model_path('intent')
 abuse_weights_path = get_model_path('abuse')
 production_dir = make_path('data/models') / dataset / 'analysis'
-
-# TODO fix this
-embedding_dimension = 200
 
 # Generate intent model and load trained weights
 production_network = generate_intent_network(max_tokens, embedding_dimension=embedding_dimension)

@@ -1,10 +1,10 @@
-from utilities.data_management import make_path, check_readable, rename_file, expand_csv_row_size, \
-    load_execution_params, move_to_root
+from utilities.data_management import make_path, check_readable, rename_file, expand_csv_row_size, move_to_root
 from re import compile
 from unidecode import unidecode
 from multiprocessing import Pool
 from pandas import read_csv, DataFrame, to_datetime, concat
 from numpy import ndarray, sum
+import config
 
 newline_regex = compile(r'(<br />)[\n\r]?n|[\n\r]n')
 full_run = True
@@ -27,7 +27,7 @@ def apply_processing(line):
 if __name__ == '__main__':
     move_to_root()
     expand_csv_row_size()
-    n_threads = load_execution_params()['n_threads']
+    n_threads = config.n_threads
 
     # Generate and check path
     filename = 'storm-front' + ('-full' if full_run else '')

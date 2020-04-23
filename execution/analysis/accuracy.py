@@ -1,12 +1,11 @@
-from utilities.data_management import open_w_pandas, move_to_root, make_path, check_existence, load_execution_params, \
-    split_sets
+from utilities.data_management import open_w_pandas, move_to_root, make_path, check_existence, split_sets
 from numpy import sum, equal
+import config
 
 move_to_root()
 
 # Load execution parameters
-params = load_execution_params()
-dataset_name = params['dataset']
+dataset_name = config.dataset
 
 # Define file paths
 pred_base = make_path('data/predictions/') / dataset_name
