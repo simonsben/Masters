@@ -26,9 +26,7 @@ def load_model_weights(model, weights_path):
     if not weights_path.exists():
         raise FileNotFoundError('Specified weights file does not exist.')
 
-    model.load_weights(str(weights_path))
-
-    return model
+    model.load_weights(str(weights_path), by_name=True)
 
 
 def freeze_session(model, clear_devices=True):

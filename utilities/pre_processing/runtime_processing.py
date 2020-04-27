@@ -1,5 +1,6 @@
 from re import compile
 from numpy import zeros
+import config
 
 # Run clean on contexts
 non_char = compile(r'[^a-zA-Z ]')    # Replace non-alphabetic characters
@@ -52,27 +53,28 @@ def runtime_clean(documents):
     return documents
 
 
-def token_to_index(raw_documents, raw_words, max_tokens):
+def token_to_index(raw_documents, embedding_tokens, return_tokens=False):
     """ Takes documents and replaces their tokens with the index within the word embeddings """
-    words = {term: index for index, term in enumerate(raw_words)}
-    indexed_documents = []
+    # Enumerate embedding tokens
+    tokens = {token: index for index, token in enumerate(embedding_tokens)}
+    max_tokens = config.max_tokens
 
-    for document in raw_documents:
+    # Convert documents to arrays of token indexes
+    doc_arrays = zeros((len(raw_documents), max_tokens), dtype=int)    # Allocate matrix
+    for index, document in enumerate(raw_documents):
         if not isinstance(document, str): continue
 
-        indexed_document = []
-        for token_index, token in enumerate(document.split(' ')):
-            if token_index > max_tokens: break
-            if len(token) == 0:
-                continue
-            elif token in words:
-                indexed_document.append(words[token])
+        indexed_document = []                                           # Temp list of enumerated indexes
+        for token_index, token in enumerate(document.split(' ')):       # Split document into tokens
+            if token_index > max_tokens: break                          # Don't translate past max document length
+            if len(token) == 0: continue                                # Don't convert null strings
+            elif token in tokens:                                       # Add token index to temp list
+                indexed_document.append(tokens[token])
 
-        indexed_documents.append(indexed_document)
+        # Push indexes to matrix
+        num_tokens = min([max_tokens, len(indexed_document)])
+        doc_arrays[index, :num_tokens] = indexed_document[:num_tokens]
 
-    doc_arrays = zeros((len(indexed_documents), max_tokens))
-    for ind, document in enumerate(indexed_documents):
-        num_tokens = min([max_tokens, len(document)])
-        doc_arrays[ind, :num_tokens] = document[:num_tokens]
-
+    if return_tokens:
+        return doc_arrays, tokens
     return doc_arrays

@@ -14,10 +14,16 @@ def make_path(filename):
     return Path(filename) if type(filename) is str else filename
 
 
-def check_existence(path):
+def check_existence(paths):
     """ Checks whether the file exists """
-    if not path.exists():   # Check if file exists
-        raise FileExistsError(path, 'does not exist')
+    if not isinstance(paths, list):
+        paths = [paths]
+
+    for path in paths:
+        if not isinstance(path, Path):
+            raise TypeError('Provided path', path, 'is not of type Path.')
+        if not path.exists():   # Check if file exists
+            raise FileExistsError(path, 'does not exist.')
 
 
 def check_writable(path):
@@ -103,8 +109,8 @@ def open_embeddings(path):
     path = make_path(path)
     raw_embeddings = read_csv(path)
 
-    embeddings = raw_embeddings.values[:, 1:]
-    tokens = raw_embeddings['words'].values
+    tokens = raw_embeddings.values[:, 0]
+    embeddings = raw_embeddings.values[:, 1:].astype(float)
 
     return tokens, embeddings
 
@@ -174,7 +180,8 @@ def output_abusive_intent(index_set, predictions, contexts, filename=None):
 
 type_map = {
     'O': '%s',
-    'i': '%d'
+    'i': '%d',
+    'f': '%.6f'
 }
 
 

@@ -43,7 +43,7 @@ low_labels = read_csv(analysis_base / 'low_indexes.csv', header=None)[0].values
 raw_contexts = read_csv(data_base / 'intent' / 'contexts.csv')['contexts'].values
 
 contexts = runtime_clean(raw_contexts)
-indexed_contexts = token_to_index(contexts, tokens, max_tokens)
+indexed_contexts = token_to_index(contexts, tokens)
 print('Data loaded and processed.')
 
 path_function = lambda index: figure_base / (run_name + '_token_shap_' + str(index) + '.png')
