@@ -8,9 +8,9 @@ from pandas import DataFrame
 def token_counts(document_matrix, mask):
     """ Get count of each token in document matrix under a specific mask """
     target_documents = document_matrix[mask]
-    token_sums = target_documents.sum(axis=0)
+    [token_sums] = asarray(target_documents.sum(axis=0))
 
-    return squeeze(token_sums)
+    return token_sums
 
 
 def compute_token_frequency(token_info, num_positive_documents, num_negative_documents, num_total_documents):
@@ -32,6 +32,9 @@ def get_significant_tokens(token_frequencies, target_column, threshold):
     # Get potential tokens
     relevant_mask = token_frequencies.values[:, target_column] > 1
     frequencies = token_frequencies.values[relevant_mask][:, target_column]
+
+    if len(frequencies) <= 0:
+        return []
 
     # Get indexes of significant tokens
     threshold_mask = frequencies > percentile(frequencies, threshold)
@@ -82,7 +85,8 @@ def train_term_learner(current_labels, tokens, token_mapping, document_matrix, s
         num_negative_documents=num_negative_documents, num_total_documents=total_documents
     )
 
-    token_frequencies = [frequency_function(token_info) for token_info in significant_info]
+    # token_frequencies = [frequency_function(token_info) for token_info in significant_info]
+    token_frequencies = list(map(frequency_function, significant_info))
     token_frequencies = DataFrame(token_frequencies, columns=('token', 'positive', 'negative', 'total'))
 
     # Get significant tokens
@@ -91,8 +95,8 @@ def train_term_learner(current_labels, tokens, token_mapping, document_matrix, s
     total_tokens = get_significant_tokens(token_frequencies, 3, significant_threshold)
 
     # Get column masks of significant tokens
-    positive_mask = [token_mapping[feature] for feature, _ in positive_tokens]
-    negative_mask = [token_mapping[feature] for feature, _ in negative_tokens]
+    positive_mask = [token_mapping[feature] for feature in positive_tokens]
+    negative_mask = [token_mapping[feature] for feature in negative_tokens]
 
     # Count how many positive tokens are present in each document
     positive_token_count = asarray(document_matrix[:, positive_mask].sum(axis=1)).reshape(-1)

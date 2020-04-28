@@ -1,10 +1,11 @@
-from model.networks import generate_intent_network
+from model.networks import generate_intent_network, generate_convolution_network
 from utilities.data_management import make_dir, make_path, open_w_pandas, open_embeddings, check_existence, \
     get_model_path, load_vector, vector_to_file
 from utilities.pre_processing import runtime_clean, token_to_index
 from model.training import train_term_learner, train_deep_learner
 from config import dataset, fast_text_model, max_tokens, mask_refinement_method
 from scipy.sparse import load_npz
+from os import environ
 
 # Define paths
 intent_weights_path = get_model_path('intent')
@@ -33,7 +34,7 @@ enumerated_contexts, token_mapping = token_to_index(contexts, tokens, return_map
 print('Prepared data')
 
 # Generate fresh (untrained model)
-model = generate_intent_network(max_tokens, embedding_matrix=embeddings)
+model = generate_convolution_network(max_tokens, embedding_matrix=embeddings)
 labels = initial_labels.copy()
 print('Generated model\n', model.summary())
 
@@ -44,7 +45,7 @@ for round_num in range(rounds):
     print('Starting full round', round_num + 1, 'of', rounds)
 
     # Train deep model
-    model, labels, round_prediction = train_deep_learner(model, labels, enumerated_contexts)
+    # model, labels, round_prediction = train_deep_learner(model, labels, enumerated_contexts, rounds=1, sub_rounds=)
 
     # Run term learner
     token_labels = labels.copy()
