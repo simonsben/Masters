@@ -1,8 +1,8 @@
 from pathlib import Path
 import config
 from keras import backend
-from tensorflow import global_variables
-from tensorflow.graph_util import convert_variables_to_constants
+from tensorflow.compat.v1 import global_variables
+from tensorflow.compat.v1.graph_util import convert_variables_to_constants
 
 model_types = {'abuse', 'intent'}
 

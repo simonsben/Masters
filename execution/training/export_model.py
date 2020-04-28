@@ -1,6 +1,6 @@
 from model.networks import generate_intent_network, generate_abuse_network
 from utilities.data_management import get_model_path, make_path, freeze_session
-from tensorflow.train import write_graph
+from tensorflow import io
 import config
 
 # Load config
@@ -20,7 +20,7 @@ print(production_network.summary())
 
 # Convert Keras model to Tensorflow graph and save
 graph = freeze_session(production_network)
-write_graph(graph, str(production_dir), 'intent.pb')
+io.write_graph(graph, str(production_dir), 'intent.pb')
 print('Intent model exported.')
 
 
@@ -31,5 +31,5 @@ print(production_network.summary())
 
 # Convert Keras model to Tensorflow graph and save
 graph = freeze_session(production_network)
-write_graph(graph, str(production_dir), 'abuse.pb')
+io.write_graph(graph, str(production_dir), 'abuse.pb')
 print('Intent model exported.')

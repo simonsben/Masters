@@ -53,10 +53,10 @@ def runtime_clean(documents):
     return documents
 
 
-def token_to_index(raw_documents, embedding_tokens, return_tokens=False):
+def token_to_index(raw_documents, embedding_tokens, return_mapping=False):
     """ Takes documents and replaces their tokens with the index within the word embeddings """
     # Enumerate embedding tokens
-    tokens = {token: index for index, token in enumerate(embedding_tokens)}
+    token_mapping = {token: index for index, token in enumerate(embedding_tokens)}
     max_tokens = config.max_tokens
 
     # Convert documents to arrays of token indexes
@@ -68,13 +68,13 @@ def token_to_index(raw_documents, embedding_tokens, return_tokens=False):
         for token_index, token in enumerate(document.split(' ')):       # Split document into tokens
             if token_index > max_tokens: break                          # Don't translate past max document length
             if len(token) == 0: continue                                # Don't convert null strings
-            elif token in tokens:                                       # Add token index to temp list
-                indexed_document.append(tokens[token])
+            elif token in token_mapping:                                       # Add token index to temp list
+                indexed_document.append(token_mapping[token])
 
         # Push indexes to matrix
         num_tokens = min([max_tokens, len(indexed_document)])
         doc_arrays[index, :num_tokens] = indexed_document[:num_tokens]
 
-    if return_tokens:
-        return doc_arrays, tokens
+    if return_mapping:
+        return doc_arrays, token_mapping
     return doc_arrays
