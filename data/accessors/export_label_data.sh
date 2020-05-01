@@ -11,7 +11,7 @@ if [ ! -d $LABEL_DIR ]; then
 fi
 
 # Get labelling contexts
-sqlite3 -header -csv $DATABASE "SELECT * FROM context;" > $LABEL_DIR"label_contexts.csv"
+sqlite3 -header -csv $DATABASE "SELECT * FROM context;" > $LABEL_DIR"contexts.csv"
 
 # Get labels
 sqlite3 -header -csv $DATABASE "SELECT * FROM label;" > $LABEL_DIR"labels.csv"
