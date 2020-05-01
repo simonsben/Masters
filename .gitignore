@@ -6,6 +6,7 @@ data/*/*.pkl
 data/*/*.csv
 data/*.mod
 *.gz
+*.sdb
 figures/*
 .idea/
 venv/
