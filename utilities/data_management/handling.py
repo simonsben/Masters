@@ -5,6 +5,8 @@ from numpy import float64, array, ndarray, asarray
 from sklearn.preprocessing import LabelEncoder
 from utilities.analysis import normalize_embeddings
 
+# TODO remove use of sparse DataFrame
+
 
 def parse_data(data, data_formats):
     """ Function to parse 2D list data """
