@@ -52,7 +52,7 @@ def identify_basic_intent(context, index=-1):
 
         # Check auxiliaries of base verb to see if its a short or long intent case
         auxiliaries = [child for child in action_verb.children if child.dep_ == 'aux']
-        if len(auxiliaries) != 1: continue                                                  # No auxiliaries
+        if len(auxiliaries) <= 1: continue                                                  # No auxiliaries
         elif auxiliaries[0].pos_ == 'VERB' and auxiliaries[0].text in special_auxiliaries:  # Short case
             desire_verb = action_verb
             short_desire = auxiliaries[0]

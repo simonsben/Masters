@@ -9,6 +9,7 @@ class RealtimeEmbedding(Sequence):
     def __init__(self, embedding_model, data_source, labels=None, batch_size=b_size):
         """
         Implements Keras data sequence for on-the-fly embedding generation
+
         :param _FastText embedding_model: FastText embedding model
         :param list data_source: List of documents to embed on the fly
         :param ndarray labels: Array of data labels

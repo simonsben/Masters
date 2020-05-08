@@ -10,13 +10,15 @@ def get_core_abuse_layers(max_tokens):
     :param max_tokens: Maximum tokens for input sequence
     :return: Core model layers
     """
+    attention_size = int(max_tokens / 2)
+
     core_layers = [
         Bidirectional(
-            LSTM(max_tokens, dropout=.5, recurrent_dropout=.5, return_sequences=True, name='abuse_bi_lstm'),
+            LSTM(max_tokens, dropout=.5, recurrent_dropout=.5, name='abuse_bi_lstm'),
             name='abuse_bi'
         ),
         TimeDistributed(
-            Dense(150, name='abuse_time_dense'),
+            Dense(attention_size, name='abuse_time_dense'),
             name='abuse_time'
         ),
         AttentionWithContext(name='abuse_attention'),

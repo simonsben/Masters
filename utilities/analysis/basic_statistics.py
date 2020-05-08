@@ -14,7 +14,7 @@ def rescale_data(values):
 
     min_value = min(values)
     max_value = max(values)
-    values += -min_value if min_value < 0 else min_value
+    values -= min_value
     values /= (max_value - min_value)
 
     return values
