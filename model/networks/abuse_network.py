@@ -14,7 +14,7 @@ def get_core_abuse_layers(max_tokens):
 
     core_layers = [
         Bidirectional(
-            LSTM(max_tokens, dropout=.5, recurrent_dropout=.5, name='abuse_bi_lstm'),
+            LSTM(max_tokens, dropout=.5, recurrent_dropout=.5, return_sequences=True, name='abuse_bi_lstm'),
             name='abuse_bi'
         ),
         TimeDistributed(
