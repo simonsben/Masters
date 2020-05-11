@@ -8,19 +8,20 @@ from numpy import argsort
 
 
 embedding_path = make_path('data/lexicons/fast_text/') / (embedding_name + '.bin')
-base_path = make_path('data/processed_data/') / dataset / 'analysis'
+base_path = make_path('data/processed_data/') / 'data_labelling' / 'analysis'
 data_path = base_path / 'intent' / 'contexts.csv'
 get_weights_path = lambda target: make_path('data/models/') / dataset / 'analysis/' / (target + '_model_weights.h5')
 get_prediction_path = lambda name: base_path / 'intent_abuse' / (name + '_predictions.csv')
 
 check_existence([embedding_path, data_path, get_weights_path('intent'), get_weights_path('abuse')])
 
-data = open_w_pandas(data_path)['contexts'].values
+raw_data = open_w_pandas(data_path)
+data = raw_data['contexts'].values
 data = simulated_runtime_clean(data)
 print('Loaded and cleaned data')
 
 embeddings_model = load_model(str(embedding_path))
-realtime_data = RealtimeEmbedding(embeddings_model, data)
+realtime_data = RealtimeEmbedding(embeddings_model, data[raw_data.index.values >= 0])
 print('Loaded model')
 
 abuse_intent_network = generate_abusive_intent_network(max_tokens, embedding_dimension=embedding_dimension)
@@ -38,9 +39,8 @@ for name, prediction_vector in zip(vector_names, predictions):
     vector_to_file(prediction_vector, get_prediction_path(name))
 print('Complete.')
 
+_, _, abusive_intent_predictions = predictions
 
-abuse, intent, abusive_intent = predictions
-
-s_indexes = argsort(abusive_intent)
+s_indexes = argsort(abusive_intent_predictions)
 num = 25
-output_abusive_intent(reversed(s_indexes[-num:]), (abusive_intent, abuse, intent), data)
+output_abusive_intent(reversed(s_indexes[-num:]), predictions, data)

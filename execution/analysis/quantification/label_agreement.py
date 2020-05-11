@@ -16,7 +16,7 @@ qualifying_answers = [True, True, True, False, False]
 source_path = make_path('data/datasets/data_labelling/')
 context_path = source_path / 'contexts.csv'
 label_path = source_path / 'labels.csv'
-dest_path = make_path('data/processed_data/') / dataset / 'analysis' / 'intent_abuse' / 'labels.csv'
+dest_path = make_path('data/processed_data/data_labelling/analysis/intent_abuse/labels.csv')
 
 check_existence([context_path, label_path])
 print('Config complete.')

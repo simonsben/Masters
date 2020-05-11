@@ -47,7 +47,7 @@ realtime = RealtimeEmbedding(embedding_model, contexts, labels)
 model = generate_intent_network(max_tokens, embedding_dimension=realtime.embedding_dimension)
 print('Generated model\n', model.summary())
 
-rounds = 4  # Number of rounds of training to perform
+rounds = 5  # Number of rounds of training to perform
 
 # Run training rounds
 for round_num in range(rounds):

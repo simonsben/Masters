@@ -1,5 +1,4 @@
 from model.analysis import compute_abusive_intent
-from numpy import vectorize, zeros, asarray
 from keras.layers import Input, Bidirectional, LSTM, Dense, TimeDistributed, Embedding
 from model.layers.attention import AttentionWithContext
 from model.layers.realtime_embedding import RealtimeEmbedding
@@ -8,53 +7,24 @@ from keras.initializers import Constant
 from config import execute_verbosity
 
 
-def predict_abusive_intent(realtime_documents, abuse_network, intent_network, method='product'):
+def predict_abusive_intent(realtime_documents, abusive_intent_network, method='product'):
     """
     Makes abusive intent predictions for a list of pre-processed documents
 
     :param RealtimeEmbedding realtime_documents: list or array of pre-processed documents
-    :param Model abuse_network: keras network trained to predict abuse
-    :param Model intent_network: keras network trained to predict intent
+    :param Model abusive_intent_network: keras network trained to predict abuse and intent
     :param str method: method used to make abusive intent predictions
     :return tuple: tuple of abuse, intent, and abusive-intent predictions
     """
-    intent_predictions = intent_network.predict_generator(realtime_documents, verbose=execute_verbosity).reshape(-1)
-    abuse_predictions = abuse_network.predict_generator(realtime_documents, verbose=execute_verbosity).reshape(-1)
+    abuse_predictions, intent_predictions = [
+        predictions.reshape(-1) for predictions in abusive_intent_network.predict_generator(
+            realtime_documents, verbose=execute_verbosity
+        )
+     ]
 
     abusive_intent_predictions = compute_abusive_intent(intent_predictions, abuse_predictions, method)
 
     return abuse_predictions, intent_predictions, abusive_intent_predictions
-
-
-def abuse_intent_predictor(embedding_model, abuse_network, intent_network, max_tokens):
-    """
-    Generates a function that computes abusive intent predictions for documents
-
-    :param embedding_model: fastText embedding model
-    :param abuse_network: keras network trained to predict abuse
-    :param intent_network: keras network trained to predict intent
-    :param max_tokens: maximum document length
-    :return: function that predicts abuse and intent from pre-processed text
-    """
-    token_cache = {}
-    embedding_dim = embedding_model.get_dimension()
-
-    def make_predictions(document):
-        tokens = document.split(' ')
-        token_vectors = zeros((max_tokens, embedding_dim))
-
-        for index, token in enumerate(tokens):
-            if token not in token_cache:
-                token_cache[token] = embedding_model.get_word_vector(token)
-
-            token_vectors[index] = token_cache[token]
-
-        abuse_prediction = abuse_network.predict(token_vectors)
-        intent_prediction = intent_network.predict(token_vectors)
-
-        return asarray([abuse_prediction, intent_prediction])
-
-    return vectorize(make_predictions)
 
 
 def generate_abusive_intent_network(max_tokens, embedding_dimension=None, embedding_matrix=None):
@@ -86,7 +56,7 @@ def generate_abusive_intent_network(max_tokens, embedding_dimension=None, embedd
         name='abuse_bi'
     )(core_input)
     abuse_time = TimeDistributed(
-        Dense(150, name='abuse_time_dense'),
+        Dense(attention_size, name='abuse_time_dense'),
         name='abuse_time'
     )(abuse_bi)
     abuse_attention = AttentionWithContext(name='abuse_attention')(abuse_time)

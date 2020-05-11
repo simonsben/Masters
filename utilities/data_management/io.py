@@ -5,6 +5,7 @@ from pandas import read_csv, DataFrame
 from re import search, compile
 from dask.dataframe import read_csv as dask_read
 from numpy import asarray, savetxt, object
+from sys import argv
 
 file_regex = compile(r'\w+\.\w+$')
 
@@ -168,14 +169,14 @@ def write_context_map(filename, context_map):
 def output_abusive_intent(index_set, predictions, contexts, filename=None):
     """ Prints abusive intent results to console and saves to disk """
     index_set = asarray(list(index_set))
-    hybrid, intent, abuse = predictions
+    abuse, intent, abusive_intent = predictions
 
     if filename is not None:
         savetxt(filename, index_set, delimiter=',', fmt='%d')
 
     print('%10s %8s %8s %8s  %s' % ('index', 'hybrid', 'intent', 'abuse', 'context'))
     for index in index_set:
-        print('%10d %8.4f %8.4f %8.4f  %s' % (index, hybrid[index], intent[index], abuse[index], contexts[index]))
+        print('%10d %8.4f %8.4f %8.4f  %s' % (index, abusive_intent[index], intent[index], abuse[index], contexts[index]))
 
 
 type_map = {
@@ -199,3 +200,14 @@ def load_vector(file_path):
     file_path = make_path(file_path)
 
     return read_csv(file_path, header=None)[0].values
+
+
+def check_execution_targets():
+    """ Checks if the python arguments specify valid file paths for consumption """
+    targets = [Path(target) for target in argv[1:]] if len(argv) > 1 else [None]
+
+    for target in targets:
+        if target is None or not target.exists():
+            print('Specified data does not exist, using environment target.')
+            return False
+    return True
