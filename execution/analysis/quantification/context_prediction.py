@@ -6,7 +6,7 @@ from model.layers.realtime_embedding import RealtimeEmbedding
 from config import dataset, embedding_dimension, max_tokens, fast_text_model as embedding_name
 from numpy import argsort
 
-
+# Define paths
 embedding_path = make_path('data/lexicons/fast_text/') / (embedding_name + '.bin')
 base_path = make_path('data/processed_data/') / 'data_labelling' / 'analysis'
 data_path = base_path / 'intent' / 'contexts.csv'
@@ -14,14 +14,16 @@ get_weights_path = lambda target: make_path('data/models/') / dataset / 'analysi
 get_prediction_path = lambda name: base_path / 'intent_abuse' / (name + '_predictions.csv')
 
 check_existence([embedding_path, data_path, get_weights_path('intent'), get_weights_path('abuse')])
+print('Config complete.')
 
 raw_data = open_w_pandas(data_path)
-data = raw_data['contexts'].values
+data = raw_data['contexts'].values[raw_data.index.values >= 0]
 data = simulated_runtime_clean(data)
 print('Loaded and cleaned data')
 
+
 embeddings_model = load_model(str(embedding_path))
-realtime_data = RealtimeEmbedding(embeddings_model, data[raw_data.index.values >= 0])
+realtime_data = RealtimeEmbedding(embeddings_model, data)
 print('Loaded model')
 
 abuse_intent_network = generate_abusive_intent_network(max_tokens, embedding_dimension=embedding_dimension)

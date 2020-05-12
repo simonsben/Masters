@@ -64,13 +64,19 @@ def identify_basic_intent(context, index=-1):
             if action_verb.head.pos_ != 'VERB': continue
             desire_verb = action_verb.head
 
-        # Check for first person pronouns
+        # Check for pronouns
         pronouns = [
             child for child in desire_verb.children
-            if child.pos_ == 'PRON' and child.text in first_person_pronouns
+            if child.pos_ == 'PRON'
         ]
         if len(pronouns) < 1: continue
+
+        # Check for first person pronouns
+        valid_pronouns = [pronoun for pronoun in pronouns if pronoun.text in first_person_pronouns]
         source = pronouns[0].text
+        if len(valid_pronouns) < 1:
+            intent_score = 0
+            continue
 
         # Check tense of desire verb
         if desire_verb.tag_ not in desire_verb_tags:
