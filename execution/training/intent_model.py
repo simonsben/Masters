@@ -54,11 +54,11 @@ for round_num in range(rounds):
     print('Starting full round', round_num + 1, 'of', rounds)
 
     # Train deep model
-    model, labels, round_prediction = train_deep_learner(model, labels, realtime)
+    model, labels, round_prediction = train_deep_learner(model, labels, realtime, rounds=1)
 
     # Run term learner
     token_labels = labels.copy()
-    positive_terms, negative_terms, total_terms, token_labels = train_term_learner(token_labels, tokens, token_mapping, document_matrix)
+    positive_terms, negative_terms, token_labels = train_term_learner(token_labels, tokens, token_mapping, document_matrix)
 
     # Count number of documents identified by term learner
     labels = token_labels
@@ -66,8 +66,6 @@ for round_num in range(rounds):
     print('Round features')
     print(positive_terms)
     print(negative_terms)
-    print(total_terms)
 
 vector_to_file(labels, label_path)
 model.save_weights(str(intent_weights_path))
-

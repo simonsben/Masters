@@ -22,9 +22,8 @@ def compute_token_frequency(token_info, num_positive_documents, num_negative_doc
 
     positive_frequency = (positive_count / num_positive_documents) / (negative_count / num_negative_documents)
     negative_frequency = (negative_count / num_negative_documents) / (positive_count / num_positive_documents)
-    overall_frequency = (positive_count / num_positive_documents) / (total_count / num_total_documents)
 
-    return token, positive_frequency, negative_frequency, overall_frequency
+    return token, positive_frequency, negative_frequency
 
 
 def get_significant_tokens(token_frequencies, target_column, threshold):
@@ -46,7 +45,7 @@ def get_significant_tokens(token_frequencies, target_column, threshold):
 
 
 def train_term_learner(current_labels, tokens, token_mapping, document_matrix, significant_threshold=99.5,
-                       label_modifier=.2, frozen_threshold=.95):
+                       label_modifier=.2, frozen_threshold=.95, return_tokens=False):
     """
     Identifies significant token n-grams to current labels and computes a new set of labels
     :param ndarray current_labels: Array of current intent labels
@@ -56,7 +55,8 @@ def train_term_learner(current_labels, tokens, token_mapping, document_matrix, s
     :param float significant_threshold: Percentile threshold for token to be considered significant
     :param float label_modifier: Amount to modify the document label by
     :param float frozen_threshold: Current label threshold for being *frozen* to term-learner modification
-    :return intent tokens, non-intent tokens tokens, overall-intent tokens, updated labels
+    :param bool return_tokens: Whether to return the positive and negative tokens
+    :return: intent tokens, non-intent tokens tokens, updated labels
     """
 
     # Get subset of non uncertain data to use for training
@@ -89,12 +89,11 @@ def train_term_learner(current_labels, tokens, token_mapping, document_matrix, s
 
     # token_frequencies = [frequency_function(token_info) for token_info in significant_info]
     token_frequencies = list(map(frequency_function, significant_info))
-    token_frequencies = DataFrame(token_frequencies, columns=('token', 'positive', 'negative', 'total'))
+    token_frequencies = DataFrame(token_frequencies, columns=('token', 'positive', 'negative'))
 
     # Get significant tokens
     positive_tokens = get_significant_tokens(token_frequencies, 1, significant_threshold)
     negative_tokens = get_significant_tokens(token_frequencies, 2, significant_threshold)
-    total_tokens = get_significant_tokens(token_frequencies, 3, significant_threshold)
 
     # Get column masks of significant tokens
     positive_mask = [token_mapping[feature] for feature in positive_tokens]
@@ -131,4 +130,4 @@ def train_term_learner(current_labels, tokens, token_mapping, document_matrix, s
     return_mask[return_mask < 0] = 0
     return_mask[return_mask > 1] = 1
 
-    return positive_tokens, negative_tokens, total_tokens, return_mask
+    return positive_tokens, negative_tokens, return_mask
