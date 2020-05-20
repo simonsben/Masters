@@ -57,6 +57,6 @@ def generate_intent_network(max_tokens, embedding_dimension=None, embedding_matr
 
     # Generate and compile intent model
     intent_model = Sequential(model_layers, name='intent_network')
-    intent_model.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
+    intent_model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
     return intent_model

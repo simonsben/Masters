@@ -33,7 +33,7 @@ valid_labels = boolean_labels[valid_label_mask]
 
 # Convert predictions to a boolean array
 truncated_predictions = predictions[:num_labels]
-boolean_predictions = truncated_predictions > .6
+boolean_predictions = truncated_predictions > .5
 valid_predictions = boolean_predictions[valid_label_mask]
 
 # Get array of correct predictions

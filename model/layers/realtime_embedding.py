@@ -1,6 +1,6 @@
 from fasttext.FastText import _FastText
 from tensorflow.keras.utils import Sequence
-from numpy import zeros
+from numpy import zeros, zeros_like, around
 from config import batch_size as b_size, max_tokens
 
 
@@ -35,6 +35,7 @@ class RealtimeEmbedding(Sequence):
         """ Updates the labels being fed """
         self.labels = new_labels.copy()
 
+    # TODO add line to automatically mask uncertain values when training
     def set_usage_mode(self, is_training):
         """ Changes usage mode """
         if is_training is True and self.raw_labels is None:
@@ -54,6 +55,41 @@ class RealtimeEmbedding(Sequence):
 
         self.data_length = int(len(self.data_source) / self.batch_size) + 1
 
+    def get_sample_weights(self, batch_start, batch_end, center=.5):
+        """
+        Returns sample weights for data samples.
+        Weights are computed using the function w = 2(x - .5) when x = (.5, 1], and the negation when x = [0, .5)
+        """
+        labels = self.labels[batch_start:batch_end]
+        positive = labels > .5
+        negative = labels < .5
+
+        weights = zeros_like(labels, dtype=float)
+        weights[positive] = 2 * (labels[positive] - center)
+        weights[negative] = -2 * (labels[negative] - center)
+
+        return weights
+
+    def embed_data(self, data_subset):
+        """ Computes word embeddings for provided data subset """
+        # Initialize embedding of data
+        embedded_data = zeros((data_subset.shape[0], max_tokens, self.embedding_dimension), float)
+
+        # Embed all documents
+        for doc_index, document in enumerate(data_subset):
+            document_tokens = document.split(' ')[:max_tokens]  # Split document into tokens and limit
+
+            # For each token in document
+            for token_index, token in enumerate(document_tokens):
+                # If token embedding is not already cached, compute it and store
+                if token not in self.embedding_cache:
+                    self.embedding_cache[token] = self.embedding_model.get_word_vector(token)
+
+                # Add embedding to array
+                embedded_data[doc_index, token_index] = self.embedding_cache[token]
+
+        return embedded_data
+
     def __len__(self):
         """ Overrides length method """
         if self.is_training:
@@ -69,24 +105,13 @@ class RealtimeEmbedding(Sequence):
         source = self.data_source if self.is_training else self.raw_data_source
         data_subset = source[batch_start:batch_end]
 
-        # Initialize embedding of data
-        embedded_data = zeros((data_subset.shape[0], max_tokens, self.embedding_dimension), float)
-
-        # Embed all documents
-        for doc_index, document in enumerate(data_subset):
-            document_tokens = document.split(' ')[:max_tokens]      # Split document into tokens and limit
-
-            # For each token in document
-            for token_index, token in enumerate(document_tokens):
-                # If token embedding is not already cached, compute it and store
-                if token not in self.embedding_cache:
-                    self.embedding_cache[token] = self.embedding_model.get_word_vector(token)
-
-                # Add embedding to array
-                embedded_data[doc_index, token_index] = self.embedding_cache[token]
+        embedded_data = self.embed_data(data_subset)
 
         # If training also return labels
         if self.is_training:
             label_subset = self.labels[batch_start:batch_end]
-            return embedded_data, label_subset
+
+            label_subset = around(label_subset).astype(bool)
+
+            return embedded_data, label_subset, self.get_sample_weights(batch_start, batch_end)
         return embedded_data

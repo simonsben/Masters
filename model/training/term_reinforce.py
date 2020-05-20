@@ -44,8 +44,8 @@ def get_significant_tokens(token_frequencies, target_column, threshold):
     return token_frequencies.values[significance_mask][sorted_indexes, 0]   # Get significant tokens
 
 
-def train_term_learner(current_labels, tokens, token_mapping, document_matrix, significant_threshold=99.5,
-                       label_modifier=.2, frozen_threshold=.95, return_tokens=False):
+def train_term_learner(current_labels, tokens, token_mapping, document_matrix, significant_threshold=99.6,
+                       label_modifier=.2, frozen_threshold=.95, return_tokens=True):
     """
     Identifies significant token n-grams to current labels and computes a new set of labels
     :param ndarray current_labels: Array of current intent labels
@@ -64,7 +64,7 @@ def train_term_learner(current_labels, tokens, token_mapping, document_matrix, s
     training_matrix = document_matrix[useful_mask]
 
     positive_mask = around(current_labels[useful_mask]).astype(bool)  # Get mask for examples of positive intent
-    negative_mask = logical_not(positive_mask)                          # Get mask for examples of negative intent
+    negative_mask = logical_not(positive_mask)                        # Get mask for examples of negative intent
 
     # Get number of occurrences of tokens in positive, negative, and uncertain documents
     positive_count = token_counts(training_matrix, positive_mask)
@@ -117,7 +117,7 @@ def train_term_learner(current_labels, tokens, token_mapping, document_matrix, s
         current_labels < frozen_threshold], axis=0
     )
 
-    # Get mask of documents that have supporting and no unsupporting tokens and are unfrozen
+    # Get mask of documents that have supporting and no contradicting tokens and are unfrozen
     has_intent = all([has_intent_terms, no_non_intent_terms, unfrozen_labels], axis=0)
     has_non_intent = all([no_intent_terms, has_non_intent_terms, unfrozen_labels], axis=0)
 
@@ -130,4 +130,6 @@ def train_term_learner(current_labels, tokens, token_mapping, document_matrix, s
     return_mask[return_mask < 0] = 0
     return_mask[return_mask > 1] = 1
 
-    return positive_tokens, negative_tokens, return_mask
+    if return_tokens:
+        return positive_tokens, negative_tokens, return_mask
+    return return_mask
