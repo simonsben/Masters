@@ -44,7 +44,7 @@ def get_significant_tokens(token_frequencies, target_column, threshold):
     return token_frequencies.values[significance_mask][sorted_indexes, 0]   # Get significant tokens
 
 
-def train_term_learner(current_labels, tokens, token_mapping, document_matrix, significant_threshold=99.6,
+def train_term_learner(current_labels, tokens, token_mapping, document_matrix, significant_threshold=99.7,
                        label_modifier=.2, frozen_threshold=.95, return_tokens=True):
     """
     Identifies significant token n-grams to current labels and computes a new set of labels

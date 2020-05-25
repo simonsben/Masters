@@ -88,6 +88,7 @@ def identify_basic_intent(context, index=-1):
         timing = assemble_related_information(action_verb, timing_dependencies, timing_relations)
 
         # Check for negations
+        # TODO ?only mark negation if between pronoun and desire?
         negations = len(list(filter(lambda _token: _token.dep_ == 'neg', desire_verb.children)))
         questions = len(list(filter(
             lambda _token: _token.tag_ in question_tags or _token.text in question_indicators,

@@ -1,5 +1,5 @@
 from pathlib import Path
-import config
+from config import dataset, fast_text_model
 from keras import backend
 from tensorflow.compat.v1 import global_variables
 from tensorflow.compat.v1.graph_util import convert_variables_to_constants
@@ -12,12 +12,12 @@ def get_model_path(model_type, weights=True):
     if model_type not in model_types:
         raise AttributeError('Supplied model type is invalid.')
 
-    dataset = config.dataset
     base = Path('data/models') / dataset / 'analysis'
 
+    core_name = model_type + '-' + fast_text_model
     if weights:
-        return base / (model_type + '_model_weights.h5')
-    return base / (model_type + '_model')
+        return base / (core_name + '_weights.h5')
+    return base / (core_name + '_model')
 
 
 def load_model_weights(model, weights_path):

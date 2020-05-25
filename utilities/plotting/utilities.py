@@ -1,4 +1,4 @@
-from numpy import linspace, pi, outer, sin, cos, ones_like, meshgrid, arctan
+from numpy import linspace, pi, outer, sin, cos, ones_like, meshgrid, arctan, sqrt, sum
 from matplotlib.pyplot import figure
 from mpl_toolkits.mplot3d import Axes3D
 

@@ -1,5 +1,5 @@
 from utilities.data_management import make_path, check_existence, open_w_pandas, load_vector
-from numpy import any, zeros, sum, where, all
+from numpy import any, sum, where, all
 from utilities.plotting import confusion_matrix, show, scatter_plot
 
 # Define import paths
