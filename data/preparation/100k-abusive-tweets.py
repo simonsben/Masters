@@ -3,14 +3,13 @@ from re import compile, match
 from unidecode import unidecode
 
 # Generate and check path
-directory_filename = '../datasets/100k-abusive-tweets/'
+base = make_path('data/datasets/100k-abusive-tweets/')
 filename = '100k-abusive-tweets'
 
-directory = make_path(directory_filename)
-source_path = directory / (filename + '_backup.csv')
-dest_path = directory / (filename + '.csv')
+source_path = base / (filename + '_backup.csv')
+dest_path = base / (filename + '.csv')
 
-file_header = ['label', 'content']
+file_header = ['index', 'label', 'content']
 
 if not source_path.exists():
     check_readable(dest_path)
@@ -21,14 +20,17 @@ csv_writer, dest_file = prepare_csv_writer(dest_path, file_header)
 
 regex = compile(r'(.+)\s(\w+)\s(\d+)[\n\r]')
 
-
+index = 0
 for doc in source_file:
     if doc == '\n':
         continue
+
     line = match(regex, doc)
     content = unidecode(line.group(1))
-    document = [line.group(3), content]
+    document = [index, line.group(2), content]
 
     csv_writer.writerow(document)
+
+    index += 1
 
 dest_file.close()

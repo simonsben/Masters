@@ -37,7 +37,6 @@ def train_deep_learner(model, current_labels, data_source, training_documents=25
     negative_threshold = (1 - min_confidence)
     steps_per = int(training_documents / data_source.batch_size)  # Compute number of batches to train each round
 
-    current_labels = current_labels.copy()
     data_source.update_labels(current_labels)
 
     # Get subset of non uncertain data to use for training

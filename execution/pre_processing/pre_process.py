@@ -27,11 +27,11 @@ if __name__ == '__main__':
             'accessor': kaggle_accessor,
             'mutator': kaggle_mutator
         },
-        # {
-        #     'data_set': 'storm-front-full',
-        #     'accessor': stormfront_accessor,
-        #     'mutator': stormfront_mutator
-        # },
+        {
+            'data_set': 'storm-front-full',
+            'accessor': stormfront_accessor,
+            'mutator': stormfront_mutator
+        },
         {
             'data_set': 'hannah_data',
             'accessor': hannah_data_accessor,
@@ -82,6 +82,7 @@ if __name__ == '__main__':
         count_acronym,
         count_digits,
         count_repeat_instances,
+        count_repeat_words,
         run_partial_clean,
     ]
     # Defined pre-processing to be applied
@@ -102,6 +103,7 @@ if __name__ == '__main__':
         count_punctuation,
         count_digits,
         count_repeat_instances,
+        count_repeat_words,
         remove_spaces,
     ]
 

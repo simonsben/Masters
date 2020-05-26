@@ -8,6 +8,7 @@ digit_regex = compile(r'[0-9]+(\.[0-9]+)?([a-z]{2})?')
 space_regex = compile(r'[\n\r]|[ ]{2,}')
 image_regex = compile(r'Image:\w[\w\s]+.\w{3}')
 repeat_regex = compile(r'(\w)\1{2,}')
+repeat_word_regex = compile(r'((\b\w+\b) )(\1){2,}(\2)?')
 tag_regex = compile(r'(?<!<)<[\w\d/\'"=;:,.&#%?!@+()\[\]{}\-\n ]+>(n(?= ))?')
 bracket_regex = compile(r'(?<=\S)[\(\[](\w)[\)\]]')
 acronym = compile(r'([a-zA-Z]\.){2,}')
@@ -85,6 +86,14 @@ def count_repeat_instances(document, get_header=False):
     if get_header: return 'repeat_count'
 
     document, count = subn(repeat_regex, lambda pattern: pattern.group(1), document)
+    return count, document
+
+
+def count_repeat_words(document, get_header=False):
+    """ Counts the number of sequentially repeated words and removes all but one """
+    if get_header: return 'repeat_word_count'
+
+    document, count = subn(repeat_word_regex, lambda pattern: pattern.group(1), document)
     return count, document
 
 

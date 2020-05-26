@@ -41,11 +41,10 @@ class RealtimeEmbedding(Sequence):
         self.raw_labels = new_labels.copy()
 
         if self.initial_labels is not None:
-            definite_mask = self.initial_labels != .5
-            self.raw_labels[definite_mask] = self.initial_labels[definite_mask]
+            definite_mask = self.raw_initial_labels != .5
+            self.raw_labels[definite_mask] = self.raw_initial_labels[definite_mask]
 
         self.set_mask(self.mask)
-
 
     # TODO add line to automatically mask uncertain values when training
     def set_usage_mode(self, is_training):
