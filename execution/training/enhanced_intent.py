@@ -41,7 +41,8 @@ print('Prepared data')
 
 # Generate fresh (untrained model)
 labels = initial_labels.copy()
-realtime = RealtimeEmbedding(embedding_model, contexts, labels)
+
+realtime = RealtimeEmbedding(embedding_model, contexts, labels, mark_initial_labels=True)
 model = generate_intent_network(max_tokens, embedding_dimension=realtime.embedding_dimension)
 print('Generated model\n', model.summary())
 

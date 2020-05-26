@@ -1,6 +1,6 @@
 from matplotlib.pyplot import subplots, show, savefig
 from matplotlib import rcParams
-from numpy import sin, cos, arctan, asarray, min, max, sqrt, linspace
+from numpy import sin, cos, arctan, asarray, min, max, sqrt, linspace, mean
 from utilities.data_management import make_dir, make_path
 
 rcParams.update({'font.size': 14})
@@ -24,12 +24,16 @@ slopes = [y / x for x, y in example_points]
 angles = arctan(slopes)
 
 # Compute point magnitudes
+m_x, m_y = mean(example_points, axis=0)
 x, y = example_points.transpose()
 radius = sqrt(x ** 2 + y ** 2)
 
 # Plot points
 fig, ax = subplots()
 ax.scatter(x, y)
+ax.scatter(m_x, m_y), 'r'
+
+ax.legend(['Word vectors', 'Mean word vector'])
 
 # Get min and max x and y values
 min_x, min_y = min(x), min(y)
@@ -40,7 +44,11 @@ ax.plot((min_x, min_x, max_x, max_x, min_x), (min_y, max_y, max_y, min_y, min_y)
 
 # Get min and max angle and radius values
 min_r, max_r = min(radius), max(radius)
-min_a, max_a = min(angles), max(angles)
+# min_a, max_a = min(angles), max(angles)
+center = arctan(m_y / m_x)
+center_dists = [abs(center - arctan(y / x)) for x, y in example_points]
+angle = max(center_dists)
+min_a, max_a = center - angle, center + angle
 
 # Generate angle array
 theta = linspace(min_a, max_a)
