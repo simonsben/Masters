@@ -1,6 +1,5 @@
 if __name__ == '__main__':
-    from utilities.data_management import make_path, open_w_pandas, check_existence, make_dir, write_context_map, \
-        save_dataframe
+    from utilities.data_management import make_path, open_w_pandas, check_existence, make_dir, save_dataframe
     from model.extraction import split_into_contexts
     from model.expansion.intent_seed import tag_intent_documents
     from utilities.pre_processing import final_clean
