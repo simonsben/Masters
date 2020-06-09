@@ -1,14 +1,19 @@
 from scipy.cluster.hierarchy import dendrogram
-from numpy import zeros, column_stack
-from matplotlib.pyplot import tight_layout, subplots, savefig
+from numpy import zeros, column_stack, ndarray
+from matplotlib.pyplot import tight_layout, subplots, savefig, rcParams
+from utilities.plotting.utilities import generate_3d_figure, set_labels
+from config import font_size
+
+rcParams.update({'font.size': font_size})
 
 
 def plot_dendrogram(model, labels, title=None, filename=None, figsize=(10, 6)):
     """
     Plots the dendrogram of a sklearn agglomerative clustering model, based on code from the sklearn documentation
+
     :param model: sklearn agglomerative clustering model
-    :param labels: list of sample labels (that the model was trained on)
-    :param title: figure title
+    :param list labels: list of sample labels (that the model was trained on)
+    :param str title: figure title
     :return: axis
     """
 
@@ -36,6 +41,46 @@ def plot_dendrogram(model, labels, title=None, filename=None, figsize=(10, 6)):
 
     tight_layout()
 
+    if filename is not None:
+        savefig(filename)
+
+    return ax
+
+
+def plot_surface(x, y, z, title, filename=None, ax_labels=None, figsize=None, c_bar_title=None, azim=None, **args):
+    """
+    Plots a 3D surface
+
+    :param ndarray x: Array of x values
+    :param ndarray y: Array of y values
+    :param ndarray z: Array of z values
+    :param str title: Figure title
+    :param Path filename: Path to save figure to [optional]
+    :param tuple ax_labels: Tuple with axis titles
+    :param tuple figsize: Custom figure size
+    :param str c_bar_title: Colourbar title
+    :param int azim: Default azimuth angle for 3d plot
+    :return: Axis
+    """
+
+    # Generate figure
+    fig, ax = generate_3d_figure(figsize=figsize)
+
+    # Plot figure and set labels
+    img = ax.plot_surface(x, y, z, **args)
+    set_labels(ax, title, ax_labels)
+
+    if 'cmap' in args:
+        c_bar = fig.colorbar(img, ax=ax)
+        if c_bar_title is not None:
+            c_bar.ax.set_ylabel(c_bar_title)
+
+    # Set default viewing angle
+    if azim is not None:
+        ax.azim = azim
+
+    # Remove margin and save figure
+    tight_layout()
     if filename is not None:
         savefig(filename)
 

@@ -3,9 +3,9 @@ from matplotlib.pyplot import figure
 from mpl_toolkits.mplot3d import Axes3D
 
 
-def generate_3d_figure():
+def generate_3d_figure(**args):
     """ Generates a figure with a 3D plot """
-    fig = figure()
+    fig = figure(**args)
     axis = fig.add_subplot(111, projection='3d')
 
     return fig, axis

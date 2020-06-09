@@ -2,16 +2,18 @@ from matplotlib.pyplot import subplots, tight_layout, savefig, show
 from numpy import arange, ndarray, asarray
 from utilities.plotting.utilities import generate_3d_figure, set_labels
 from matplotlib.colors import LogNorm
+from pathlib import Path
 
 
 def bar_plot(values, features, fig_title, filename=None, horizontal=False):
     """
     Generates a bar plot
-    :param values: List of values
-    :param features: List of features
-    :param fig_title: Figure title
-    :param filename: File path to save figure to, (default doesn't save)
-    :param horizontal: Whether to use a horizontal bar plot, (default False)
+
+    :param list values: List of values
+    :param list features: List of features
+    :param str fig_title: Figure title
+    :param Path filename: File path to save figure to, (default doesn't save)
+    :param bool horizontal: Whether to use a horizontal bar plot, (default False)
     :return: (figure, axis) to allow further modification of plot
     """
     fig, ax = subplots()
@@ -30,16 +32,38 @@ def bar_plot(values, features, fig_title, filename=None, horizontal=False):
     return fig, ax
 
 
+def plot_line(values, fig_title, filename=None, ax_titles=None):
+    """
+    Makes a 2D line plot
+
+    :param list values: List of values to be plotted
+    :param str fig_title: Title of figure
+    :param Path filename: Filename for the figure, (default, doesn't save)
+    :param tuple ax_titles: Tuple containing the axis labels
+    :return: Axis
+    """
+    fig, ax = subplots()
+    ax.plot(values)
+
+    set_labels(ax, fig_title, ax_titles)
+
+    if filename is not None:
+        savefig(filename)
+
+    return ax
+
+
 def scatter_plot(values, fig_title, weights=None, filename=None, ax_titles=None, pre_split=True, c_bar_title=None, cmap='Blues', size=20):
     """
     Makes a 2D scatter plot
-    :param values: List of values to be plotted
-    :param fig_title: Title of figure
-    :param weights: Weight of each point, (default uniform)
-    :param filename: Filename for the figure, (default, doesn't save)
-    :param pre_split: Whether the data is given in the shape 2,N or N,2, (default 2,N)
-    :param c_bar_title: Title for the colourbar
-    :param cmap: Colourmap color to use
+
+    :param list values: List of values to be plotted
+    :param str fig_title: Title of figure
+    :param list weights: Weight of each point, (default uniform)
+    :param Path filename: Filename for the figure, (default, doesn't save)
+    :param bool pre_split: Whether the data is given in the shape 2,N or N,2, (default 2,N)
+    :param str c_bar_title: Title for the colourbar
+    :param str cmap: Colourmap color to use
     :return: Axis
     """
     fig, ax = subplots()
@@ -73,13 +97,14 @@ def scatter_plot(values, fig_title, weights=None, filename=None, ax_titles=None,
 def scatter_3_plot(values, fig_title, weights=None, filename=None, ax_titles=None, cmap='Blues', c_bar_title=None, size=15):
     """
     Generates a 3D scatter plot
-    :param values: Values to be plotted
-    :param fig_title: Figure title
-    :param weights: Weights of the data points, (default, uniform)
-    :param filename: Filename for the figure
-    :param ax_titles: Axis title
-    :param cmap: Colourmap/colour scheme to use for weights
-    :param c_bar_title: Colourbar title
+
+    :param list values: Values to be plotted
+    :param str fig_title: Figure title
+    :param list weights: Weights of the data points, (default, uniform)
+    :param Path filename: Filename for the figure
+    :param tuple ax_titles: Axis title
+    :param str cmap: Colourmap/colour scheme to use for weights
+    :param str c_bar_title: Colourbar title
     :return: Axis
     """
     fig, ax = generate_3d_figure()
