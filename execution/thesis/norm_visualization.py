@@ -9,6 +9,7 @@ make_dir(figure_dir)
 one_path = figure_dir / 'one_norm.png'
 two_path = figure_dir / 'two_norm.png'
 infinity_path = figure_dir / 'infinity_norm.png'
+product_path = figure_dir / 'product.png'
 
 # Generate meshed points
 x = linspace(0, 1)
@@ -19,11 +20,13 @@ X, Y = meshgrid(x, y)
 Z_one = abs(X) + abs(Y)
 Z_two = sqrt(X ** 2 + Y ** 2)
 Z_infty = max([X, Y], axis=0)
+Z_prod = X * Y
 
 # Normalize norms
 Z_one /= max(Z_one)
 Z_two /= max(Z_two)
 Z_infty /= max(Z_infty)
+Z_prod /= max(Z_prod)
 
 # Define figure arguments
 axis_labels = ('Abuse prediction', 'Intent prediction', 'Calculated abusive intent value')
@@ -40,6 +43,9 @@ plot_surface(X, Y, Z_two, 'Visualization of two-norm', two_path, axis_labels, fi
              cmap=colormap, edgecolor='k', linewidth=.5)
 
 plot_surface(X, Y, Z_infty, 'Visualization of infinity-norm', infinity_path, axis_labels, figure_size, colorbar_title,
+             azim, cmap=colormap, edgecolor='k', linewidth=.5)
+
+plot_surface(X, Y, Z_prod, 'Visualization of product', product_path, axis_labels, figure_size, colorbar_title,
              azim, cmap=colormap, edgecolor='k', linewidth=.5)
 
 show()
