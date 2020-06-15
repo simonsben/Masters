@@ -1,7 +1,7 @@
-from numpy import all, sum, where, argmax, percentile, abs, min, max, ndarray, around
+from numpy import percentile, min, max, ndarray
 from keras.models import Model
 from model.layers.realtime_embedding import RealtimeEmbedding
-from config import training_verbosity, batch_size
+from config import training_verbosity, confidence_increment
 
 
 def rescale(values):
@@ -20,8 +20,7 @@ def print_bits(values):
     )
 
 
-def train_deep_learner(model, current_labels, data_source, training_documents=250000, min_confidence=.985,
-                       label_modifier=.2):
+def train_deep_learner(model, current_labels, data_source, training_documents=250000, min_confidence=.985):
     """
     Performs X rounds of training on deep network to learn from then update the current labels
 
@@ -30,7 +29,6 @@ def train_deep_learner(model, current_labels, data_source, training_documents=25
     :param RealtimeEmbedding data_source: Array of documents with each token enumerated corresponding to word embeddings
     :param int training_documents: Number of documents to train with between rounds [default 250,000]
     :param float min_confidence: Min predicted value for document to *contain intent* [default .985]
-    :param float label_modifier: Modifier applied to current labels [default .4]
     :return model, current labels, new_predictions
     """
     positive_threshold = min_confidence
@@ -57,8 +55,8 @@ def train_deep_learner(model, current_labels, data_source, training_documents=25
     new_negatives = predictions < negative_threshold
 
     # Apply confidence modifications to new labels
-    current_labels[new_positives] += label_modifier
-    current_labels[new_negatives] -= label_modifier
+    current_labels[new_positives] += confidence_increment
+    current_labels[new_negatives] -= confidence_increment
 
     # Restrict label value range to [0, 1]
     current_labels[current_labels < 0] = 0

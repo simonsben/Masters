@@ -1,33 +1,38 @@
 from numpy import all, asarray, logical_not, ndarray, any
+from config import confidence_increment
 
 
-def get_consensus(current_labels, *labels, confidence=.2):
+def get_consensus(current_labels, *label_deltas):
     """
     Ensures consensus between label sources and produces new array of labels
 
     :param ndarray current_labels: Current array of labels
-    :param float confidence: Amount to change the modification [default .2]
     :return ndarray: New array of labels with changes applied
     """
-    if len(labels) < 1:
+    if len(label_deltas) < 1:
         raise AttributeError('No labels provided to get consensus.')
-    elif len(labels) < 2:
+    elif len(label_deltas) < 2:
         ResourceWarning('Only provided a single list of labels, so consensus has no function.')
-        return labels[0]
+        return label_deltas[0]
 
-    labels = asarray(labels)
+    # Get mask of documents with requested shifts
+    label_deltas = asarray([label_set - current_labels for label_set in label_deltas])
 
-    has_positive = any(labels > .5, axis=0)
-    has_negative = any(labels < .5, axis=0)
+    positive_shift = any(label_deltas > 0, axis=0)
+    negative_shift = any(label_deltas < 0, axis=0)
 
+    # Checks whether a document has both a positive and negative shift
     no_conflict = logical_not(
-        all([has_positive, has_negative], axis=0)
+        all([positive_shift, negative_shift], axis=0)
     )
-    positive = all([no_conflict, has_positive], axis=0)
-    negative = all([no_conflict, has_negative], axis=0)
 
+    # Gets mask of documents to be shifted positive and negatively (only if there is no conflict)
+    positive = all([no_conflict, positive_shift], axis=0)
+    negative = all([no_conflict, negative_shift], axis=0)
+
+    # Apply shift in labels (based on confidence)
     current_labels = current_labels.copy()
-    current_labels[positive] += confidence
-    current_labels[negative] -= confidence
+    current_labels[positive] += confidence_increment
+    current_labels[negative] -= confidence_increment
 
     return current_labels

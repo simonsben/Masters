@@ -4,7 +4,7 @@ from matplotlib.pyplot import show, figure, savefig
 from utilities.plotting import hist_plot
 import config
 
-context_run = True
+context_run = False
 dataset_name = config.dataset
 
 fig_dir = make_path('figures/') / dataset_name / 'analysis'

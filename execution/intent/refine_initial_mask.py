@@ -9,6 +9,8 @@ import config
 target_action_labels = ['kill', 'fight', 'act', 'take']
 target_desire_labels = ['want', 'need', 'going', 'have', 'about', 'planning']
 
+token_mappings = {'gon': 'going', 'll': 'will'}
+
 model_name = config.fast_text_model
 dataset = config.dataset
 
@@ -38,6 +40,19 @@ max_verbs = None
 desire_verb_index = 1
 action_verb_index = 2
 
+# Map terms truncated by spaCy
+desire_mods = 0
+for index, tokens in enumerate(intent_frames):
+    desire_verb = tokens[desire_verb_index]
+    action_verb = tokens[action_verb_index]
+    if desire_verb in token_mappings:
+        intent_frames[index, desire_verb_index] = token_mappings[desire_verb]
+        desire_mods += 1
+    if action_verb in token_mappings:
+        intent_frames[index, action_verb_index] = token_mappings[action_verb]
+
+print('desire mods', desire_mods)
+
 print('Tree')
 action_model, action_leaves, action_tokens, action_vectors = build_tree_and_collect_leaves(action, target_action_labels, max_labels=max_verbs)
 print(action_leaves)
@@ -66,6 +81,9 @@ print(cone_action_tokens)
 
 cone_desire_tokens, cone_desire_mask, distances = get_cone_mask(desire, target_desire_labels)
 print(cone_desire_tokens)
+print('cone didnt keep', set(desire[:, 0]) - set(cone_desire_tokens))
+
+print(contexts[intent_frames[:, 1] == 'estimated'])
 
 hist_plot(distances, 'Histogram of distances to central desire vector')
 

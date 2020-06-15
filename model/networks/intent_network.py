@@ -1,6 +1,7 @@
-from keras.layers import Embedding, Bidirectional, LSTM, Dense, InputLayer
+from keras.layers import Embedding, Bidirectional, LSTM, Dense, InputLayer, TimeDistributed
 from keras.initializers import Constant
 from keras.models import Sequential
+from model.layers.attention import AttentionWithContext
 
 
 def get_core_intent_layers(max_tokens):
@@ -11,12 +12,25 @@ def get_core_intent_layers(max_tokens):
     """
     attention_size = int(max_tokens / 2)
 
+    # core_layers = [
+    #     Bidirectional(
+    #         LSTM(max_tokens, dropout=.4, recurrent_dropout=.4, name='intent_bi_lstm'),
+    #         name='intent_bi'
+    #     ),
+    #     Dense(attention_size, name='intent_hidden_dense'),
+    #     Dense(1, activation='sigmoid', name='intent_prediction_dense')
+    # ]
     core_layers = [
         Bidirectional(
-            LSTM(max_tokens, dropout=.4, recurrent_dropout=.4, name='intent_bi_lstm'),
+            LSTM(max_tokens, dropout=.5, recurrent_dropout=.5, return_sequences=True, name='intent_bi_lstm'),
             name='intent_bi'
         ),
-        Dense(attention_size, name='intent_hidden_dense'),
+        TimeDistributed(
+            Dense(attention_size, name='intent_time_dense'),
+            name='intent_time'
+        ),
+        AttentionWithContext(name='intent_attention'),
+        Dense(50, name='intent_hidden_dense'),
         Dense(1, activation='sigmoid', name='intent_prediction_dense')
     ]
 
