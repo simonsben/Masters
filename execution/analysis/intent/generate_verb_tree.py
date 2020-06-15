@@ -1,5 +1,4 @@
-from utilities.data_management import make_path, load_vector, open_w_pandas, check_existence
-from model.analysis import intent_verb_filename
+from utilities.data_management import make_path, load_vector, open_w_pandas, check_existence, intent_verb_filename
 from model.expansion.verb_tree import build_tree_and_collect_leaves
 from utilities.plotting import plot_dendrogram, show
 import config

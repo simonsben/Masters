@@ -2,13 +2,23 @@ from numpy import ndarray, vectorize, histogram, cumsum, argmin, sqrt, asarray, 
 from empath import Empath
 
 
-def compute_norm(value_one, value_two, norm=2):
+sample_categories = ['kill', 'leisure', 'exercise', 'communication']
+
+
+def compute_norm(component_one, component_two, norm=2):
     """ Vector norm, euclidean norm by default """
-    return (value_one ** norm + value_two ** norm) ** (1 / norm)
+    return (component_one ** norm + component_two ** norm) ** (1 / norm)
 
 
 def compute_abusive_intent(intent_predictions, abuse_predictions, method='product'):
-    """ Compute a 'score' for abusive intent from intent and abuse predictions """
+    """
+    Compute a 'score' for abusive intent from intent and abuse predictions
+
+    :param ndarray intent_predictions: Array of intent predictions
+    :param ndarray abuse_predictions: Array of abuse predictions
+    :param str method: Choice of abusive intent computation
+    :return ndarray: Array of abusive intent predictions
+    """
     if not isinstance(intent_predictions, ndarray):
         raise TypeError('Expected intent predictions to be a numpy array.')
     if not isinstance(abuse_predictions, ndarray):
@@ -33,11 +43,12 @@ def compute_abusive_intent(intent_predictions, abuse_predictions, method='produc
 
 
 # TODO correct to space bins based on distribution
-def estimate_cumulative(data, num_bins=150):
+def estimate_cumulative(data, num_bins=250):
     """
     Estimates the cumulative distribution of a dataset
-    :param data: Data vector, numpy array
-    :param num_bins: Number of bins to use in the estimation, int
+
+    :param ndarray data: Data vector, numpy array
+    :param int num_bins: Number of bins to use in the estimation, int
     :return: Estimated function
     """
     distribution, bin_edges = histogram(data, bins=num_bins)
@@ -61,9 +72,10 @@ def estimate_cumulative(data, num_bins=150):
 def estimate_joint_cumulative(data_a, data_b, resolution=.01):
     """
     Estimates an (independent) joint distribution of two datasets
-    :param data_a: Data vector, numpy array
-    :param data_b: Data vector, numpy array
-    :param resolution: Resolution of estimation
+
+    :param ndarray data_a: Data vector, numpy array
+    :param ndarray data_b: Data vector, numpy array
+    :param float resolution: Resolution of estimation
     :return: Estimated function
     """
     cumulative_function_a = estimate_cumulative(data_a, num_bins=int(1 / resolution * 2))
@@ -79,53 +91,73 @@ def estimate_joint_cumulative(data_a, data_b, resolution=.01):
 
 
 def get_verbs(raw_frames, column_index, unique=True):
-    """ Extracts the verbs from an intent frame matrix """
-    raw_verbs = raw_frames[:, column_index]
-    verbs = raw_verbs[raw_verbs != '']
+    """
+    Extracts the verbs from an intent frame matrix
 
+    :param ndarray raw_frames: Array containing intent frames
+    :param int column_index: Index of verb column
+    :param bool unique: Whether to return verbs or unique verbs
+    """
+    raw_verbs = raw_frames[:, column_index]     # Get verbs
+    verbs = raw_verbs[raw_verbs != '']          # Remove zero length verbs, if present
+
+    # If unique verbs are requested
     if unique:
+        # Collect set of verbs with usage counts in dictionary
         verb_set = {}
         for verb in verbs:
             verb_set[verb] = 1 + (verb_set[verb] if verb in verb_set else 0)
+
+        # Sort terms by decreasing frequency
         verb_set = sorted(
             [(verb, verb_set[verb]) for verb in verb_set],
             key=lambda _set: _set[1],
             reverse=True
         )
-        verb_set = list(map(lambda _set: _set[0], verb_set))
-
-        return verb_set
+        verbs = list(map(lambda _set: _set[0], verb_set))
     return verbs
 
 
-sample_categories = ['kill', 'leisure', 'exercise', 'communication']
+def get_polarizing_mask(tokens, categories=None):
+    """ Compute mask of tokens present in *polarizing* Empath categories """
+    if categories is None:
+        categories = sample_categories
 
+    # Initialize empath
+    empath = Empath()
 
-def get_polarizing_mask(tokens, categories=sample_categories):
-    """ Get a mask of polarizing/strong action verbs """
-    thing = Empath()
+    # Construct mask of tokens present in polarizing *categories* within Empath
     is_polarizing = asarray([
-        sum(thing.analyze(verb, categories=categories).values())
-        for verb in tokens
-    ]) != 0
+        sum(                                                        # Take sum of presence over categories
+            empath.analyze(token, categories=categories).values()   # Check whether token is in polarizing categories
+        ) for token in tokens
+    ]) != 0                                                         # Mask of non-zero presence in polarizing categories
 
     return is_polarizing
 
 
-def intent_verb_filename(name, model_name):
-    """ Generates the filename for intent verb embeddings """
-    return name + '_vectors-' + model_name + '.csv.gz'
+def refine_rough_labels(rough_labels, refined_tokens, document_tokens, token_index=None):
+    """
+    Refine positive rough labels based on refined set of intent tokens
 
+    :param ndarray rough_labels: Array of rough labels
+    :param list refined_tokens: List of refined tokens (that indicate *strong* intent)
+    :param ndarray document_tokens: Array of tokens for each document
+    :param int token_index: Index of tokens within document_tokens array [optional]
+    """
+    refined_tokens = set(refined_tokens).copy()     # Compute set of unique tokens
 
-def refine_mask(mask, tokens, document_tokens, token_index=None):
-    tokens = set(tokens).copy()
-
+    # If token index is present, use to select column from document tokens array
     if token_index is not None:
         document_tokens = document_tokens[:, token_index]
+    elif len(document_tokens.shape) > 1:
+        raise TypeError('Document token array is multi-dimensional, but no token index was passed.')
 
-    correction_mask = asarray([token not in tokens for token in document_tokens])
+    # Check whether the document token is in the refined set
+    correction_mask = asarray([token not in refined_tokens for token in document_tokens])
 
-    mask = mask.copy()
-    mask[all([correction_mask, mask == 1], axis=0)] = .5
+    # Apply refinements to labels where current label is positive
+    rough_labels = rough_labels.copy()
+    rough_labels[all([correction_mask, rough_labels == 1], axis=0)] = .5
 
-    return mask
+    return rough_labels

@@ -1,5 +1,6 @@
-from utilities.data_management import make_path, load_vector, open_w_pandas, check_existence, read_csv
-from model.analysis import intent_verb_filename, refine_mask
+from utilities.data_management import make_path, load_vector, open_w_pandas, check_existence, read_csv, \
+    intent_verb_filename
+from model.analysis import refine_rough_labels
 from numpy import asarray, logical_not, all, sum, savetxt
 from utilities.plotting import plot_dendrogram, show, hist_plot
 from model.expansion.verb_tree import build_tree_and_collect_leaves, get_sub_tree
@@ -31,7 +32,7 @@ action = open_w_pandas(action_path).values
 desire = open_w_pandas(desire_path).values
 print('Loaded data.')
 
-initial_mask = load_vector(intent_dir / 'intent_mask.csv')
+rough_labels = load_vector(intent_dir / 'intent_mask.csv')
 contexts = open_w_pandas(intent_dir / 'contexts.csv')['contexts'].values
 intent_frames = read_csv(intent_dir / 'intent_frame.csv', header=None).values
 print('Content loaded.')
@@ -60,8 +61,8 @@ print(action_leaves)
 desire_model, desire_leaves, desire_tokens, desire_vectors = build_tree_and_collect_leaves(desire, target_desire_labels, max_labels=max_verbs)
 print(desire_leaves)
 
-refined_tree_desire_mask = refine_mask(initial_mask, desire_leaves, intent_frames, desire_verb_index)
-print(1 - sum(refined_tree_desire_mask != initial_mask) / sum(initial_mask == 1))
+refined_tree_desire_mask = refine_rough_labels(rough_labels, desire_leaves, intent_frames, desire_verb_index)
+print(1 - sum(refined_tree_desire_mask != rough_labels) / sum(rough_labels == 1))
 
 
 print('Cube')
@@ -71,8 +72,8 @@ print(cube_action_tokens)
 cube_desire_tokens, cube_desire_mask = get_cube_mask(desire, target_desire_labels)
 print(cube_desire_tokens)
 
-refined_cube_desire_mask = refine_mask(initial_mask, cube_desire_tokens, intent_frames, desire_verb_index)
-print(1 - sum(refined_cube_desire_mask != initial_mask) / sum(initial_mask == 1))
+refined_cube_desire_mask = refine_rough_labels(rough_labels, cube_desire_tokens, intent_frames, desire_verb_index)
+print(1 - sum(refined_cube_desire_mask != rough_labels) / sum(rough_labels == 1))
 
 
 print('Cone')
@@ -87,8 +88,8 @@ print(contexts[intent_frames[:, 1] == 'estimated'])
 
 hist_plot(distances, 'Histogram of distances to central desire vector')
 
-refined_cone_desire_mask = refine_mask(initial_mask, cone_desire_tokens, intent_frames, desire_verb_index)
-print(1 - sum(refined_cone_desire_mask != initial_mask) / sum(initial_mask == 1))
+refined_cone_desire_mask = refine_rough_labels(rough_labels, cone_desire_tokens, intent_frames, desire_verb_index)
+print(1 - sum(refined_cone_desire_mask != rough_labels) / sum(rough_labels == 1))
 
 savetxt(intent_dir / 'tree_mask.csv', refined_tree_desire_mask, fmt='%.1f')
 savetxt(intent_dir / 'cube_mask.csv', refined_cube_desire_mask, fmt='%.1f')

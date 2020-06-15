@@ -1,5 +1,5 @@
 from pandas import DataFrame, SparseDataFrame, Series
-from scipy.special import digamma
+# from scipy.special import digamma
 from scipy.sparse import csr_matrix
 from numpy import float64, array, ndarray, asarray
 from sklearn.preprocessing import LabelEncoder

@@ -1,7 +1,7 @@
 from fasttext import load_model
-from utilities.data_management import make_path, check_existence, make_dir
+from utilities.data_management import make_path, check_existence, make_dir, intent_verb_filename
 from pandas import read_csv
-from model.analysis import get_verbs, intent_verb_filename, generate_word_vectors
+from model.analysis import get_verbs, generate_word_vectors
 import config
 
 dataset = config.dataset

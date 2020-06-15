@@ -2,7 +2,7 @@ from model.networks import generate_intent_network
 from utilities.data_management import make_dir, make_path, open_w_pandas, check_existence, \
     get_model_path, load_vector, vector_to_file
 from utilities.pre_processing import runtime_clean
-from model.training import train_term_learner, train_deep_learner, get_consensus
+from model.training import train_sequence_learner, train_deep_learner, get_consensus
 from config import dataset, max_tokens, mask_refinement_method
 from scipy.sparse import load_npz
 from fasttext import load_model
@@ -19,6 +19,7 @@ initial_label_path = intent_path / (mask_refinement_method + '_mask.csv')
 document_matrix_path = intent_path / 'document_matrix.npz'
 label_path = intent_path / 'intent_training_labels.csv'
 token_path = intent_path / 'ngrams.csv'
+midway_mask_generator = lambda info: intent_path / ('midway_mask_' + str(info[0]) + '_of_' + str(info[1]) + '.csv')
 
 # Check for files and make directories
 check_existence([embedding_path, context_path, initial_label_path, document_matrix_path, token_path])
@@ -52,11 +53,11 @@ rounds = 10  # Number of rounds of training to perform
 for round_num in range(rounds):
     print('Starting full round', round_num + 1, 'of', rounds)
 
+    # Run term learner
+    positive_terms, negative_terms, token_labels = train_sequence_learner(labels, tokens, token_mapping, document_matrix)
+
     # Train deep model
     deep_labels = train_deep_learner(model, labels, realtime)
-
-    # Run term learner
-    positive_terms, negative_terms, token_labels = train_term_learner(labels, tokens, token_mapping, document_matrix)
 
     # Count number of documents identified by term learner
     new_labels = get_consensus(labels, deep_labels, token_labels)
@@ -64,9 +65,7 @@ for round_num in range(rounds):
     print(sum(labels != new_labels), 'classification changes.')
     labels = new_labels
 
-    print('Round features')
-    print(positive_terms)
-    print(negative_terms)
+    vector_to_file(labels, midway_mask_generator((round_num, rounds)))
 
 vector_to_file(labels, label_path)
 model.save_weights(str(intent_weights_path))

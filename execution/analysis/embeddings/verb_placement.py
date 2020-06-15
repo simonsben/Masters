@@ -1,6 +1,6 @@
 from utilities.data_management import make_path, check_existence, open_w_pandas, vector_to_file, \
-    split_embeddings
-from model.analysis import intent_verb_filename, get_polarizing_mask
+    split_embeddings, intent_verb_filename
+from model.analysis import get_polarizing_mask
 from model.analysis.clustering import reduce_and_cluster
 from utilities.analysis import normalize_embeddings
 from utilities.plotting import show, plot_dendrogram

@@ -28,7 +28,13 @@ def get_cube_mask(embeddings, target_labels, tolerance=3):
 
 
 def get_cone_mask(embeddings, target_labels, tolerance=1):
-    """ Returns labels whose vectors are within the hyper-cone formed by the target labels """
+    """
+    Returns labels whose vectors are within the hyper-cone formed by the target labels
+
+    :param ndarray embeddings: Numpy array with the first column containing tokens and remainder containing vectors
+    :param list target_labels: List of labels to expand with the provided embeddings
+    :param float tolerance: Percentage to increase bounding area parameters (percentage as decimal, default 1)
+    """
     target_labels = set(target_labels)
     labels, vectors = split_embeddings(embeddings)
 

@@ -25,8 +25,8 @@ question_indicators = {'if', 'do'}
 def assemble_related_information(base, base_dependency, information_dependency):
     potentials = list(filter(lambda _token: _token.dep_ in base_dependency, base.children))
     if len(potentials) > 0:
-        information_indexes = [_token.i for _token in potentials[0].children if _token.dep_ in information_dependency]
-        information = '"' + ','.join((str(index) for index in information_indexes + [potentials[0].i])) + '"'
+        information_indexes = [_token.index for _token in potentials[0].children if _token.dep_ in information_dependency]
+        information = '"' + ','.join((str(index) for index in information_indexes + [potentials[0].index])) + '"'
 
         return information
     return None

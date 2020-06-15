@@ -59,3 +59,8 @@ def freeze_session(model, clear_devices=True):
                 node.device = ""
 
         return convert_variables_to_constants(session, input_graph_def, output_names, variables_to_freeze)
+
+
+def intent_verb_filename(name, model_name):
+    """ Generates the filename for intent verb embeddings """
+    return name + '_vectors-' + model_name + '.csv.gz'
