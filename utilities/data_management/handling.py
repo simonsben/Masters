@@ -27,14 +27,15 @@ def print_data(data):
 def split_sets(dataset, test_frac=.15, labels=None):
     """
     Splits the dataset into a training and test set.
+
     :param dataset: Full dataset, dataframe
-    :param test_frac: Fraction of dataset to be used as the test set, (default 20%)
-    :param labels: Data labels for dataset, (default None)
+    :param float test_frac: Fraction of dataset to be used as the test set, (default 20%)
+    :param ndarray labels: Data labels for dataset, (default None)
     :return: (train_feat, train_label), (test_feat, test_labels)
     """
 
-    if type(dataset) not in [DataFrame, SparseDataFrame, Series, csr_matrix]:
-        raise TypeError('Dataset must be a (Pandas) DataFrame')
+    if type(dataset) not in [DataFrame, SparseDataFrame, Series, csr_matrix, ndarray]:
+        raise TypeError('Dataset must be a DataFrame, Series, sparse matrix, or array')
     if test_frac < 0 or test_frac > 1:
         raise ValueError('test_frac is out of range, must be in [0, 1]')
     if labels is not None and type(labels) not in [Series, ndarray]:
@@ -45,18 +46,18 @@ def split_sets(dataset, test_frac=.15, labels=None):
     pivot_index = int(num_rows * (1 - test_frac))
 
     # If pandas datatype expose iloc
-    if type(dataset) is not csr_matrix:
+    if isinstance(dataset, DataFrame):
         dataset = dataset.iloc
 
     # Split sets
-    train_set, test_set = dataset[:pivot_index], dataset[pivot_index:]
+    training, testing = dataset[:pivot_index], dataset[pivot_index:]
 
     # Split labels (if applicable)
     if labels is not None:
-        train_label, test_label = labels[:pivot_index],  labels[pivot_index:]
-        return (train_set, test_set), (train_label, test_label)
+        training_labels, testing_labels = labels[:pivot_index],  labels[pivot_index:]
+        return training, testing, training_labels, testing_labels
 
-    return train_set, test_set
+    return training, testing
 
 
 # TODO double check function

@@ -1,12 +1,13 @@
 from fasttext.FastText import _FastText
 from tensorflow.keras.utils import Sequence
-from numpy import zeros, zeros_like, around
+from numpy import zeros, zeros_like, around, ones
 from config import batch_size as b_size, max_tokens
 
 
 class RealtimeEmbedding(Sequence):
     """ Extends TensorFlow Sequence to provide on-the-fly fastText token embedding """
-    def __init__(self, embedding_model, data_source, labels=None, mark_initial_labels=False, batch_size=b_size):
+    def __init__(self, embedding_model, data_source, labels=None, mark_initial_labels=False, batch_size=b_size,
+                 uniform_weights=False):
         """
         Implements Keras data sequence for on-the-fly embedding generation
 
@@ -15,6 +16,7 @@ class RealtimeEmbedding(Sequence):
         :param ndarray labels: Array of data labels
         :param ndarray mark_initial_labels: Whether passed labels should be taken as initial labels and marked
         :param int batch_size: Batch size when documents are requested
+        :param bool uniform_weights: Whether weights should be uniform (i.e. 1)
         """
 
         self.embedding_model = embedding_model
@@ -34,6 +36,7 @@ class RealtimeEmbedding(Sequence):
 
         self.batch_size = batch_size
         self.concrete_weight = 2
+        self.uniform_weights = uniform_weights
         self.data_length = int(len(self.data_source) / self.batch_size) + 1
 
     def update_labels(self, new_labels):
@@ -75,6 +78,9 @@ class RealtimeEmbedding(Sequence):
         Returns sample weights for data samples.
         Weights are computed using the function w = 2(x - .5) when x = (.5, 1], and the negation when x = [0, .5)
         """
+        if self.uniform_weights:
+            return ones(batch_end - batch_start)
+
         labels = self.labels[batch_start:batch_end]
         positive = labels > .5
         negative = labels < .5
@@ -124,6 +130,9 @@ class RealtimeEmbedding(Sequence):
         # Get batch of data
         source = self.data_source if self.is_training else self.raw_data_source
         data_subset = source[batch_start:batch_end]
+
+        if batch_end > len(source):
+            batch_end = len(source)
 
         embedded_data = self.embed_data(data_subset)
 

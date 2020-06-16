@@ -12,14 +12,6 @@ def get_core_intent_layers(max_tokens):
     """
     attention_size = int(max_tokens / 2)
 
-    # core_layers = [
-    #     Bidirectional(
-    #         LSTM(max_tokens, dropout=.4, recurrent_dropout=.4, name='intent_bi_lstm'),
-    #         name='intent_bi'
-    #     ),
-    #     Dense(attention_size, name='intent_hidden_dense'),
-    #     Dense(1, activation='sigmoid', name='intent_prediction_dense')
-    # ]
     core_layers = [
         Bidirectional(
             LSTM(max_tokens, dropout=.5, recurrent_dropout=.5, return_sequences=True, name='intent_bi_lstm'),
