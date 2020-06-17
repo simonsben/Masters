@@ -5,6 +5,51 @@ from pandas import concat, isna
 from numpy.random import permutation
 from numpy import arange, savetxt
 
+
+partial_processes = [
+    original_length,
+    remove_quotes,
+    manage_special_characters,
+    pull_hyperlinks,
+    count_tags,
+    count_images,
+    count_bracket_text,
+    count_emojis,
+    count_handles,
+    split_hashtags,
+    count_upper,
+    count_acronym,
+    count_apostrophe,
+    count_digits,
+    count_repeat_instances,
+    remove_spaces,
+    count_repeat_words,
+    run_partial_clean,
+]
+# Defined pre-processing to be applied
+pre_processes = [
+    original_length,
+    remove_quotes,
+    manage_special_characters,
+    pull_hyperlinks,
+    count_tags,
+    count_images,
+    count_bracket_text,
+    count_emojis,
+    count_handles,
+    split_hashtags,
+    count_upper,
+    count_acronym,
+    count_express,
+    count_apostrophe,
+    count_punctuation,
+    count_digits,
+    count_repeat_instances,
+    remove_spaces,
+    count_repeat_words,
+    remove_spaces,
+]
+
 if __name__ == '__main__':
     runs = [False, True]
     expand_csv_row_size()
@@ -12,16 +57,16 @@ if __name__ == '__main__':
     # TODO re-write this part to dynamically generate the list of datasets
     # Generate path
     data_sets = [
-        {
-            'data_set': '24k-abusive-tweets',
-            'accessor': twitter_24k_accessor,
-            'mutator': twitter_24k_mutator
-        },
-        {
-            'data_set': '100k-abusive-tweets',
-            'accessor': twitter_100k_accessor,
-            'mutator': twitter_100k_mutator
-        },
+        # {
+        #     'data_set': '24k-abusive-tweets',
+        #     'accessor': twitter_24k_accessor,
+        #     'mutator': twitter_24k_mutator
+        # },
+        # {
+        #     'data_set': '100k-abusive-tweets',
+        #     'accessor': twitter_100k_accessor,
+        #     'mutator': twitter_100k_mutator
+        # },
         {
             'data_set': 'kaggle',
             'accessor': kaggle_accessor,
@@ -32,11 +77,16 @@ if __name__ == '__main__':
             'accessor': stormfront_accessor,
             'mutator': stormfront_mutator
         },
-        {
-            'data_set': 'hannah_data',
-            'accessor': hannah_data_accessor,
-            'mutator': hannah_data_mutator
-        },
+        # {
+        #     'data_set': 'storm-front',
+        #     'accessor': stormfront_accessor,
+        #     'mutator': stormfront_mutator
+        # },
+        # {
+        #     'data_set': 'hannah_data',
+        #     'accessor': hannah_data_accessor,
+        #     'mutator': hannah_data_mutator
+        # },
         {
             'data_set': 'manifesto',
             'accessor': manifesto_accessor,
@@ -67,46 +117,6 @@ if __name__ == '__main__':
         set_name = data_set['data_set']
         check_existence(source_directory / set_name / (set_name + '.csv'))
 
-    partial_processes = [
-        original_length,
-        remove_quotes,
-        manage_special_characters,
-        pull_hyperlinks,
-        count_tags,
-        count_images,
-        count_bracket_text,
-        count_emojis,
-        count_handles,
-        split_hashtags,
-        count_upper,
-        count_acronym,
-        count_digits,
-        count_repeat_instances,
-        count_repeat_words,
-        run_partial_clean,
-    ]
-    # Defined pre-processing to be applied
-    pre_processes = [
-        original_length,
-        remove_quotes,
-        manage_special_characters,
-        pull_hyperlinks,
-        count_tags,
-        count_images,
-        count_bracket_text,
-        count_emojis,
-        count_handles,
-        split_hashtags,
-        count_upper,
-        count_acronym,
-        count_express,
-        count_punctuation,
-        count_digits,
-        count_repeat_instances,
-        count_repeat_words,
-        remove_spaces,
-    ]
-
     # Pre process datasets
     for run_partial_process in runs:
         run_name = 'partial' if run_partial_process else 'pre'
@@ -117,8 +127,8 @@ if __name__ == '__main__':
         modified_header = generate_header(processes)
 
         options = {
-            # 'max_documents': 100,
-            # 'encoding': 'utf8'
+            # 'max_documents': 10000,
+            'encoding': 'latin-1'
         }
 
         for data_set in data_sets:

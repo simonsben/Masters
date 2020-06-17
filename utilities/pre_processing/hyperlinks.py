@@ -9,6 +9,7 @@ url_regex = compile(r'http(s)?://(w{3}\.)?(([\w\-_]+\.)+\w{1,6})(/[\w&$\-_.+!*\'
 def pull_hyperlinks(document, get_header=False):
     """ Locates hyperlinks in document and removes them """
     if get_header: return 'hyperlinks'
+    urls = set()
 
     def replace(_match):
         if _match.group(3) != 't.co':
@@ -18,7 +19,6 @@ def pull_hyperlinks(document, get_header=False):
 
         return ' url '
 
-    urls = set()
     document = sub(url_regex, replace, document)
     urls = ('[' + ','.join(list(urls)) + ']') if len(urls) > 0 else ''
 

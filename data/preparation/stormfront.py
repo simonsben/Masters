@@ -7,7 +7,7 @@ from numpy import ndarray, sum
 import config
 
 newline_regex = compile(r'(<br />)[\n\r]?n|[\n\r]n')
-full_run = True
+full_run = False
 
 extension_filename = 'storm-front-extension.tsv'
 file_header = ['date', 'user', 'document_content']

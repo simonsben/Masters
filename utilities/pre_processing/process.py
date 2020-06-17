@@ -1,7 +1,7 @@
 from multiprocessing import Pool
 from pandas import DataFrame, read_csv
 from functools import partial
-import config
+from config import n_threads
 
 
 def apply_process(packed_data, processes, get_content, save_content):
@@ -43,14 +43,10 @@ def process_documents(source_filename, dest_filename, processes, get_content, sa
         max_documents to be pre-processed, (default is entire file)
     """
     delimiter = options['delimiter'] if 'delimiter' in options else ','
-    max_documents = options['max_documents'] if 'max_documents' in options else -1
+    max_documents = options['max_documents'] if 'max_documents' in options else None
     encoding = options['encoding'] if 'encoding' in options else None
 
-    n_threads = config.n_threads
-
-    dataset = read_csv(source_filename, delimiter=delimiter, encoding=encoding, index_col=0).values
-    if max_documents is not None:
-        dataset = dataset[:max_documents]
+    dataset = read_csv(source_filename, delimiter=delimiter, encoding=encoding, index_col=0, nrows=max_documents).values
 
     workers = Pool(n_threads)
     processed_data = workers.map(

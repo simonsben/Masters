@@ -1,4 +1,4 @@
-from pandas import DataFrame, SparseDataFrame, Series
+from pandas import DataFrame, Series
 # from scipy.special import digamma
 from scipy.sparse import csr_matrix
 from numpy import float64, array, ndarray, asarray
@@ -34,7 +34,7 @@ def split_sets(dataset, test_frac=.15, labels=None):
     :return: (train_feat, train_label), (test_feat, test_labels)
     """
 
-    if type(dataset) not in [DataFrame, SparseDataFrame, Series, csr_matrix, ndarray]:
+    if type(dataset) not in [DataFrame, Series, csr_matrix, ndarray]:
         raise TypeError('Dataset must be a DataFrame, Series, sparse matrix, or array')
     if test_frac < 0 or test_frac > 1:
         raise ValueError('test_frac is out of range, must be in [0, 1]')
@@ -79,7 +79,7 @@ def normalize_doc_term(dataset):
 def to_csr_matrix(dataset, conv_type=float64):
     """ Takes a (most likely sparse) dataset and converts it to a Scipy CSR matrix, necessary for XGBoost """
     set_type = type(dataset)
-    if set_type is not DataFrame and set_type is not SparseDataFrame:
+    if set_type is not DataFrame:
         raise TypeError('Dataset must be a (Pandas) [Sparse]DataFrame')
 
     sparse_dataset = csr_matrix(dataset.astype(conv_type).to_coo())
@@ -94,7 +94,7 @@ def to_numpy_array(dataset):
 
     numpy_matrices = []
     for matrix in dataset:
-        if type(matrix) not in [DataFrame, SparseDataFrame, Series]:
+        if type(matrix) not in [DataFrame, Series]:
             raise TypeError('One of the passed datasets is not a (Pandas) [Sparse]DataFrame or Series')
 
         numpy_matrices.append(array(matrix.to_list()))

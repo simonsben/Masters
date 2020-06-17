@@ -1,23 +1,7 @@
 from pathlib import Path
-from config import dataset, fast_text_model
 from keras import backend
 from tensorflow.compat.v1 import global_variables
 from tensorflow.compat.v1.graph_util import convert_variables_to_constants
-
-model_types = {'abuse', 'intent'}
-
-
-def get_model_path(model_type, weights=True):
-    """ Generates the path of the model weights """
-    if model_type not in model_types:
-        raise AttributeError('Supplied model type is invalid.')
-
-    base = Path('data/models') / dataset / 'analysis'
-
-    core_name = model_type + '-' + fast_text_model
-    if weights:
-        return base / (core_name + '_weights.h5')
-    return base / (core_name + '_model')
 
 
 def load_model_weights(model, weights_path):
@@ -61,6 +45,4 @@ def freeze_session(model, clear_devices=True):
         return convert_variables_to_constants(session, input_graph_def, output_names, variables_to_freeze)
 
 
-def intent_verb_filename(name, model_name):
-    """ Generates the filename for intent verb embeddings """
-    return name + '_vectors-' + model_name + '.csv.gz'
+

@@ -8,9 +8,10 @@ digit_regex = compile(r'[0-9]+(\.[0-9]+)?([a-z]{2})?')
 space_regex = compile(r'[\n\r]|[ ]{2,}')
 image_regex = compile(r'Image:\w[\w\s]+.\w{3}')
 repeat_regex = compile(r'(\w)\1{2,}')
-repeat_word_regex = compile(r'((\b\w+\b) )(\1){2,}(\2)?')
-tag_regex = compile(r'(?<!<)<[\w\d/\'"=;:,.&#%?!@+()\[\]{}\-\n ]+>(n(?= ))?')
+repeat_word_regex = compile(r'((\b\w+\b)\s+)(\1){2,}(\2)?')
+tag_regex = compile(r'<[\w\d/\'"=;:,.&#%?!@+()\[\]{}\-\n ]+>(n(?= ))?')
 bracket_regex = compile(r'(?<=\S)[\(\[](\w)[\)\]]')
+apostrophe_regex = compile(r'(\w+)\\?\'(\w+)')
 acronym = compile(r'([a-zA-Z]\.){2,}')
 
 
@@ -93,7 +94,7 @@ def count_repeat_words(document, get_header=False):
     """ Counts the number of sequentially repeated words and removes all but one """
     if get_header: return 'repeat_word_count'
 
-    document, count = subn(repeat_word_regex, lambda pattern: pattern.group(1), document)
+    document, count = repeat_word_regex.subn(lambda match: match[1], document)
     return count, document
 
 
@@ -129,4 +130,13 @@ def count_acronym(document, get_header=False):
         lambda match: match[0].replace('.', '') + ' ',
         document
         )
+    return count, document
+
+
+def count_apostrophe(document, get_header=False):
+    """ Removes apostrophe (not quotes) without leaving a space """
+    if get_header: return 'apostrophe_count'
+
+    document, count = apostrophe_regex.subn(lambda match: match[1] + match[2], document)
+
     return count, document
