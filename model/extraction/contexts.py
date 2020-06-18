@@ -24,23 +24,23 @@ def split_into_contexts(documents, original_indexes=None):
     corpus_contexts = []
 
     # For each document in corpus
-    for index, document in enumerate(documents):
+    for document_index, document in enumerate(documents):
         # Split document into non-zero length contexts
         document_contexts = list(filter(
             lambda content: len(content) > 0 or content == ' ', split_document(document)
         ))
 
         # Compute index of contexts and get index of the original document
-        corpus_index = index if original_indexes is None else original_indexes[index]
+        corpus_index = document_index if original_indexes is None else original_indexes[document_index]
 
         # Add context mapping to dictionary
-        for context_index in range(len(document_contexts)):
+        for context_index, _ in enumerate(document_contexts):
             document_indexes.append((corpus_index, context_index))
 
         # Add the contexts to the list
         corpus_contexts += document_contexts
 
-    document_indexes = asarray(document_indexes)
+    document_indexes = asarray(document_indexes).transpose()
     return corpus_contexts, document_indexes
 
 

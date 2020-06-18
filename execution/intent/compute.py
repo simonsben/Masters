@@ -4,22 +4,23 @@ if __name__ == '__main__':
     from model.expansion.intent_seed import tag_intent_documents
     from utilities.pre_processing import final_clean
     from pandas import DataFrame
-    from numpy import savetxt, zeros, hstack, arange
+    from numpy import savetxt, zeros, hstack, arange, sum, logical_not, vstack
     from numpy.random import choice
-    import config
+    from config import dataset, n_threads
 
-    data_name = config.dataset
     base_path = make_path('data/prepared_data/')
-    data_path = base_path / (data_name + '_partial.csv')
+    data_path = base_path / (dataset + '_partial.csv')
     objective_path = base_path / 'wikipedia_corpus_reduced_partial.csv'
-    dest_dir = make_path('data/processed_data/') / data_name / 'analysis' / 'intent'
+    dest_dir = make_path('data/processed_data/') / dataset / 'analysis' / 'intent'
 
     check_existence(data_path)
     make_dir(dest_dir)
     print('Config complete, starting initial mask computation.')
 
-    raw_documents = open_w_pandas(data_path)
-    raw_objective = open_w_pandas(objective_path)
+    empty_frame = [None, None, None, None, None, -1]
+
+    raw_documents = open_w_pandas(data_path)[:250]
+    raw_objective = open_w_pandas(objective_path)[:250]
 
     documents = raw_documents['document_content'].values
     objective = raw_objective['document_content'].values
@@ -31,25 +32,32 @@ if __name__ == '__main__':
     print('Data loaded.')
 
     # Split documents into contexts
-    document_contexts, context_map = split_into_contexts(documents, original_indexes)
+    document_contexts, (document_indexes, context_indexes) = split_into_contexts(documents, original_indexes)
     print('Contexts extracted, expanded', len(documents), 'to', len(document_contexts))
 
-    intent_values, intent_frames = tag_intent_documents(document_contexts, config.n_threads)
-    print('Initial intent mask computed.')
-
-    document_contexts = list(map(final_clean, document_contexts))
-    document_contexts = DataFrame(document_contexts, columns=['contexts'])
-    document_contexts['document_index'] = context_map[:, 0]
-    document_contexts['context_index'] = context_map[:, 1]
+    document_contexts = DataFrame(list(map(final_clean, document_contexts)), columns=['contexts'])
+    document_contexts['document_index'] = document_indexes
+    document_contexts['context_index'] = context_indexes
     print('Assembled processed data.')
 
-    intent_values[document_contexts['document_index'].values < 0] = 0
+    non_wikipedia = document_contexts['document_index'].values >= 0
+    unknown_contexts = document_contexts['contexts'].values[non_wikipedia]
+    num_wikipedia = sum(logical_not(non_wikipedia))
+    num_contexts = document_contexts.shape[0]
 
-    shuffle_pattern = choice(document_contexts.shape[0], document_contexts.shape[0], replace=False)
+    intent_values, intent_frames = tag_intent_documents(unknown_contexts, 1)
+    print('Initial intent mask computed.')
+
+    # Add negative intent values and empty frames for wikipedia contexts
+    intent_values = hstack([intent_values, zeros(num_wikipedia)])
+    intent_frames = vstack([intent_frames, [empty_frame] * num_wikipedia])
+
+    # Shuffle contexts, rough labels, and frames
+    shuffle_pattern = choice(num_contexts, num_contexts, replace=False)
     document_contexts = document_contexts.iloc[shuffle_pattern]
     intent_values = intent_values[shuffle_pattern]
     intent_frames = intent_frames[shuffle_pattern]
-    print('Mixed data.')
+    print('Data shuffled.')
 
     # Save initial mask, context mapping, and intent frame (mask values)
     intent_frames = DataFrame(intent_frames)
