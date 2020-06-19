@@ -2,16 +2,13 @@ from utilities.data_management import make_path, check_existence, open_w_pandas,
     split_embeddings, intent_verb_filename
 from model.analysis import get_polarizing_mask
 from model.analysis.clustering import reduce_and_cluster
-from utilities.analysis import normalize_embeddings
 from utilities.plotting import show, plot_dendrogram
-import config
+from config import dataset, fast_text_model
 
-dataset = config.dataset
-model_name = config.fast_text_model
 
 base_dir = make_path('data/processed_data') / dataset / 'analysis' / 'embeddings'
-action_path = base_dir / intent_verb_filename('action', model_name)
-desire_path = base_dir / intent_verb_filename('desire', model_name)
+action_path = base_dir / intent_verb_filename('action', fast_text_model)
+desire_path = base_dir / intent_verb_filename('desire', fast_text_model)
 verb_path_generator = lambda name: base_dir / (name + '_verbs.csv')
 figure_dir = make_path('figures') / dataset / 'analysis'
 

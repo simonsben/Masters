@@ -21,6 +21,8 @@ def check_existence(paths):
         paths = [paths]
 
     for path in paths:
+        if isinstance(path, str):
+            path = Path(path)
         if not isinstance(path, Path):
             raise TypeError('Provided path', path, 'is not of type Path.')
         if not path.exists():   # Check if file exists

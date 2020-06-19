@@ -84,7 +84,7 @@ cone_desire_tokens, cone_desire_mask, distances = get_cone_mask(desire, target_d
 print(cone_desire_tokens)
 print('cone didnt keep', set(desire[:, 0]) - set(cone_desire_tokens))
 
-print(contexts[intent_frames[:, 1] == 'estimated'])
+# print(contexts[intent_frames[:, 1] == 'estimated'])
 
 hist_plot(distances, 'Histogram of distances to central desire vector')
 
