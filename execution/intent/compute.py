@@ -6,7 +6,7 @@ if __name__ == '__main__':
     from pandas import DataFrame
     from numpy import savetxt, zeros, hstack, arange, sum, logical_not, vstack
     from numpy.random import choice
-    from config import dataset, n_threads
+    from config import dataset
 
     base_path = make_path('data/prepared_data/')
     data_path = base_path / (dataset + '_partial.csv')
@@ -19,8 +19,8 @@ if __name__ == '__main__':
 
     empty_frame = [None, None, None, None, None, -1]
 
-    raw_documents = open_w_pandas(data_path)[:250]
-    raw_objective = open_w_pandas(objective_path)[:250]
+    raw_documents = open_w_pandas(data_path)
+    raw_objective = open_w_pandas(objective_path)
 
     documents = raw_documents['document_content'].values
     objective = raw_objective['document_content'].values
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     num_wikipedia = sum(logical_not(non_wikipedia))
     num_contexts = document_contexts.shape[0]
 
-    intent_values, intent_frames = tag_intent_documents(unknown_contexts, 1)
+    intent_values, intent_frames = tag_intent_documents(unknown_contexts)
     print('Initial intent mask computed.')
 
     # Add negative intent values and empty frames for wikipedia contexts
