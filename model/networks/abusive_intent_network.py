@@ -1,30 +1,43 @@
-from model.analysis import compute_abusive_intent
-from keras.layers import Input, Bidirectional, LSTM, Dense, TimeDistributed, Embedding
+from utilities.data_management.model_management import load_model_weights
+from utilities.data_management import get_embedding_path, get_model_path
+from utilities.pre_processing import runtime_clean
+from keras.layers import Input, Bidirectional, LSTM, Dense, TimeDistributed, Embedding, Multiply
 from model.layers.attention import AttentionWithContext
 from model.layers.realtime_embedding import RealtimeEmbedding
 from keras.models import Model
 from keras.initializers import Constant
-from config import execute_verbosity
+from fasttext import load_model
+from config import execute_verbosity, max_tokens
 
 
-def predict_abusive_intent(realtime_documents, abusive_intent_network, method='product'):
+def predict_abusive_intent(documents, network=None, return_model=False):
     """
     Makes abusive intent predictions for a list of pre-processed documents
 
-    :param RealtimeEmbedding realtime_documents: list or array of pre-processed documents
-    :param Model abusive_intent_network: keras network trained to predict abuse and intent
-    :param str method: method used to make abusive intent predictions
+    :param RealtimeEmbedding documents: list or array of pre-processed documents
+    :param Model network: keras network trained to predict abuse and intent
+    :param bool return_model: Whether to return the model as well as the predictions
     :return tuple: tuple of abuse, intent, and abusive-intent predictions
     """
-    abuse_predictions, intent_predictions = [
-        predictions.reshape(-1) for predictions in abusive_intent_network.predict_generator(
-            realtime_documents, verbose=execute_verbosity
-        )
-     ]
+    if network is None:
+        embedding_path = get_embedding_path()
+        intent_path = get_model_path('intent')
+        abuse_path = get_model_path('abuse')
 
-    abusive_intent_predictions = compute_abusive_intent(intent_predictions, abuse_predictions, method)
+        embedding_model = load_model(embedding_path)
 
-    return abuse_predictions, intent_predictions, abusive_intent_predictions
+        documents = RealtimeEmbedding(embedding_model, runtime_clean(documents), uniform_weights=True)
+        print('Loaded embeddings')
+
+        network = generate_abusive_intent_network(max_tokens, embedding_dimension=documents.embedding_dimension)
+        load_model_weights(network, intent_path)
+        load_model_weights(network, abuse_path)
+        print(network.summary())
+
+    predictions = network.predict_generator(documents, verbose=execute_verbosity)
+    if return_model:
+        return network, predictions
+    return predictions
 
 
 def generate_abusive_intent_network(max_tokens, embedding_dimension=None, embedding_matrix=None):
@@ -36,6 +49,7 @@ def generate_abusive_intent_network(max_tokens, embedding_dimension=None, embedd
     is_production = embedding_matrix is None
     embedding_dimension = embedding_dimension if is_production else embedding_matrix.shape[1]
     attention_size = int(max_tokens / 2)
+    final_dense_size = 50
 
     # Define network
     input_shape = (max_tokens, embedding_dimension) if is_production else (max_tokens,)
@@ -60,18 +74,26 @@ def generate_abusive_intent_network(max_tokens, embedding_dimension=None, embedd
         name='abuse_time'
     )(abuse_bi)
     abuse_attention = AttentionWithContext(name='abuse_attention')(abuse_time)
-    abuse_dense = Dense(50, name='abuse_hidden_dense')(abuse_attention)
+    abuse_dense = Dense(final_dense_size, name='abuse_hidden_dense')(abuse_attention)
     abuse_prediction = Dense(1, activation='sigmoid', name='abuse_prediction_dense')(abuse_dense)
 
     # Intent
     intent_bi = Bidirectional(
-        LSTM(max_tokens, dropout=.4, recurrent_dropout=.4, name='intent_bi_lstm'),
+        LSTM(max_tokens, dropout=.5, recurrent_dropout=.5, return_sequences=True, name='intent_bi_lstm'),
         name='intent_bi')(core_input)
-    intent_dense = Dense(attention_size, name='intent_hidden_dense')(intent_bi)
+    intent_time = TimeDistributed(
+        Dense(attention_size, name='intent_time_dense'),
+        name='intent_time'
+    )(intent_bi)
+    intent_attention = AttentionWithContext(name='intent_attention')(intent_time)
+    intent_dense = Dense(final_dense_size, name='intent_hidden_dense')(intent_attention)
     intent_prediction = Dense(1, activation='sigmoid', name='intent_prediction_dense')(intent_dense)
 
+    abusive_intent_prediction = Multiply(name='abusive_intent_prediction')([abuse_prediction, intent_prediction])
+
     abusive_intent_network = Model(
-        inputs=network_input, outputs=[abuse_prediction, intent_prediction], name='abuse_intent_network'
+        inputs=network_input, outputs=[abuse_prediction, intent_prediction, abusive_intent_prediction],
+        name='abuse_intent_network'
     )
 
     return abusive_intent_network

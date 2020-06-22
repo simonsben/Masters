@@ -8,7 +8,7 @@ from model.expansion.verb_space import get_cube_mask, get_cone_mask
 import config
 
 target_action_labels = ['kill', 'fight', 'act', 'take']
-target_desire_labels = ['want', 'need', 'going', 'have', 'about', 'planning']
+target_desire_labels = ['want', 'need', 'going', 'have', 'about', 'planning', 'will']
 
 token_mappings = {'gon': 'going', 'll': 'will'}
 
@@ -84,7 +84,7 @@ cone_desire_tokens, cone_desire_mask, distances = get_cone_mask(desire, target_d
 print(cone_desire_tokens)
 print('cone didnt keep', set(desire[:, 0]) - set(cone_desire_tokens))
 
-print(contexts[intent_frames[:, 1] == 'estimated'])
+# print(contexts[intent_frames[:, 1] == 'estimated'])
 
 hist_plot(distances, 'Histogram of distances to central desire vector')
 

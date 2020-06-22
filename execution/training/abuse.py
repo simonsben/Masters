@@ -8,7 +8,7 @@ from config import dataset, max_tokens, training_verbosity, batch_size
 
 
 # Define paths
-abuse_weights_path = get_model_path('intent')
+abuse_weights_path = get_model_path('abuse')
 embedding_path = make_path('data/models/') / dataset / 'derived' / (dataset + '.bin')
 base_path = make_path('data/processed_data/') / dataset / 'analysis'
 data_path = make_path('data/prepared_data/abusive_data.csv')
@@ -28,10 +28,10 @@ print('Loaded data.')
 training_data, testing_data, training_labels, testing_labels = split_sets(documents, labels=labels)
 
 # Generate model
-training = RealtimeEmbedding(embedding_model, training_data, training_labels, mark_initial_labels=True, uniform_weights=True)
+training = RealtimeEmbedding(embedding_model, training_data, training_labels, labels_in_progress=True, uniform_weights=True)
 training.set_usage_mode(True)
 
-testing = RealtimeEmbedding(embedding_model, testing_data, testing_labels, mark_initial_labels=True, uniform_weights=True)
+testing = RealtimeEmbedding(embedding_model, testing_data, testing_labels, labels_in_progress=True, uniform_weights=True)
 testing.set_usage_mode(True)
 
 

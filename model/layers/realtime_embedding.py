@@ -1,21 +1,20 @@
 from fasttext.FastText import _FastText
 from tensorflow.keras.utils import Sequence
-from numpy import zeros, zeros_like, around, ones
-from config import batch_size as b_size, max_tokens
+from numpy import zeros, zeros_like, around, ones, ndarray
+from config import batch_size, max_tokens
+from math import ceil
 
 
 class RealtimeEmbedding(Sequence):
     """ Extends TensorFlow Sequence to provide on-the-fly fastText token embedding """
-    def __init__(self, embedding_model, data_source, labels=None, mark_initial_labels=False, batch_size=b_size,
-                 uniform_weights=False):
+    def __init__(self, embedding_model, data_source, labels=None, labels_in_progress=False, uniform_weights=False):
         """
         Implements Keras data sequence for on-the-fly embedding generation
 
         :param _FastText embedding_model: FastText embedding model
-        :param list data_source: List of documents to embed on the fly
+        :param ndarray data_source: List of documents to embed on the fly
         :param ndarray labels: Array of data labels
-        :param ndarray mark_initial_labels: Whether passed labels should be taken as initial labels and marked
-        :param int batch_size: Batch size when documents are requested
+        :param bool labels_in_progress: Whether passed labels should be taken as initial labels and marked
         :param bool uniform_weights: Whether weights should be uniform (i.e. 1)
         """
 
@@ -23,55 +22,58 @@ class RealtimeEmbedding(Sequence):
         self.embedding_dimension = embedding_model.get_dimension()
         self.embedding_cache = {}
 
-        self.raw_data_source = data_source
-        self.data_source = self.raw_data_source
+        self.data_source = data_source
+        self.working_data_source = self.data_source
 
-        self.raw_labels = labels
-        self.labels = self.raw_labels
+        self.labels = labels
+        self.working_labels = self.labels
 
-        self.mask = None
-        self.raw_initial_labels = None if (not mark_initial_labels or labels is None) else labels != .5
-        self.initial_labels = self.raw_initial_labels
+        self.working_mask = None
+        self.original_initial_labels = None if not labels_in_progress else labels != .5
+        self.working_initial_labels = self.original_initial_labels
         self.is_training = False
 
-        self.batch_size = batch_size
-        self.concrete_weight = 2
+        self.concrete_weight = 1.5
         self.uniform_weights = uniform_weights
-        self.data_length = int(len(self.data_source) / self.batch_size) + 1
+        self.data_length = ceil(len(self.working_data_source) / batch_size)
 
     def update_labels(self, new_labels):
         """ Updates the labels being fed """
-        self.raw_labels = new_labels.copy()
+        self.labels = new_labels.copy()
 
-        if self.initial_labels is not None:
-            definite_mask = self.raw_initial_labels != .5
-            self.raw_labels[definite_mask] = self.raw_initial_labels[definite_mask]
+        # If initial labels contain ground truths apply them to the new labels
+        if self.original_initial_labels is not None:
+            is_ground_truth = self.original_initial_labels != .5
+            self.labels[is_ground_truth] = self.original_initial_labels[is_ground_truth]
 
-        self.set_mask(self.mask)
+        self.set_mask(self.working_mask)
 
     # TODO add line to automatically mask uncertain values when training
     def set_usage_mode(self, is_training):
         """ Changes usage mode """
-        if is_training is True and self.raw_labels is None:
+        if is_training is True and self.labels is None:
             raise AttributeError('Cannot use in training mode if there are no labels.')
 
         self.is_training = is_training
 
     def set_mask(self, definite_mask):
         """ Updates the current mask being applied to the data """
-        self.mask = definite_mask
-        if self.mask is not None:
-            self.data_source = self.raw_data_source[self.mask]
-            self.labels = self.raw_labels[self.mask]
+        self.working_mask = definite_mask
 
-            if self.raw_initial_labels is not None:
-                self.initial_labels = self.raw_initial_labels[self.mask]
+        if self.working_mask is not None:   # If not None, apply mask to data
+            self.working_data_source = self.data_source[self.working_mask]
+            self.working_labels = self.labels[self.working_mask]
+
+            if self.original_initial_labels is not None:
+                self.working_initial_labels = self.original_initial_labels[self.working_mask]
+        # If updated mask is None, make working set entire set
         else:
-            self.data_source = self.raw_data_source
-            self.labels = self.raw_labels
-            self.initial_labels = self.raw_initial_labels
+            self.working_data_source = self.data_source
+            self.working_labels = self.labels
+            self.working_initial_labels = self.original_initial_labels
 
-        self.data_length = int(len(self.data_source) / self.batch_size) + 1
+        # Recompute data length
+        self.data_length = ceil(len(self.working_data_source) / batch_size)
 
     def get_sample_weights(self, batch_start, batch_end, center=.5):
         """
@@ -81,7 +83,7 @@ class RealtimeEmbedding(Sequence):
         if self.uniform_weights:
             return ones(batch_end - batch_start)
 
-        labels = self.labels[batch_start:batch_end]
+        labels = self.working_labels[batch_start:batch_end]
         positive = labels > .5
         negative = labels < .5
 
@@ -90,8 +92,8 @@ class RealtimeEmbedding(Sequence):
         weights[negative] = -2 * (labels[negative] - center)
 
         # If using initial labels, increase their weighting.
-        if self.initial_labels is not None:
-            batch_mask = self.initial_labels[batch_start:batch_end]
+        if self.working_initial_labels is not None:
+            batch_mask = self.working_initial_labels[batch_start:batch_end] != .5
             weights[batch_mask] = self.concrete_weight
 
         return weights
@@ -117,30 +119,34 @@ class RealtimeEmbedding(Sequence):
         return embedded_data
 
     def __len__(self):
-        """ Overrides length method """
+        """ Overrides length method to compute the length in batches """
         if self.is_training:
             return self.data_length
-        return int(len(self.raw_data_source) / self.batch_size) + 1
+
+        return ceil(len(self.data_source) / batch_size)
 
     def __getitem__(self, index):
         """ Provides the batch of data at a given index """
-        batch_start = int(index * self.batch_size)
-        batch_end = batch_start + self.batch_size
+        batch_start = int(index * batch_size)
+        batch_end = batch_start + batch_size
 
         # Get batch of data
-        source = self.data_source if self.is_training else self.raw_data_source
-        data_subset = source[batch_start:batch_end]
+        source = self.working_data_source if self.is_training else self.data_source
+        working_data = source[batch_start:batch_end]
 
+        # Correct batch end to reflect current atch index
         if batch_end > len(source):
             batch_end = len(source)
 
-        embedded_data = self.embed_data(data_subset)
+        embedded_data = self.embed_data(working_data)
 
         # If training also return labels
         if self.is_training:
-            label_subset = self.labels[batch_start:batch_end]
-
+            # Get batch labels and convert to boolean
+            label_subset = self.working_labels[batch_start:batch_end]
             label_subset = around(label_subset).astype(bool)
 
-            return embedded_data, label_subset, self.get_sample_weights(batch_start, batch_end)
+            loss_weights = self.get_sample_weights(batch_start, batch_end)
+
+            return embedded_data, label_subset, loss_weights
         return embedded_data

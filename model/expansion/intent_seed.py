@@ -10,6 +10,7 @@ from config import n_threads
 desire_verb_tags = {'VB', 'VBG', 'VBP', 'VBZ'}
 non_active_desire_tags = {'VBD', 'VBN'}
 special_auxiliaries = {'will', 'must', 'll'}
+special_transforms = {'ll': 'will'}
 
 first_person_pronouns = {'i', 'we', 'me', 'us', 'em', 'mine', 'myself', 'ourselves'}
 
@@ -80,6 +81,7 @@ def identify_basic_intent(context, index=-1):
 
         # Check tense of desire verb
         if desire_verb.tag_ not in desire_verb_tags:
+            intent_score = 0
             continue
 
         # Get action target
@@ -116,6 +118,9 @@ def identify_basic_intent(context, index=-1):
 
     desire_verb = desire_verb.text if desire_verb is not None else None
     action_verb = action_verb.text if action_verb is not None else None
+
+    if desire_verb is not None and desire_verb in special_transforms:
+        desire_verb = special_transforms[desire_verb]
 
     return intent_score, source, desire_verb, action_verb, target, timing, index
 

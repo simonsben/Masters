@@ -19,16 +19,18 @@ initial_label_path = intent_path / (mask_refinement_method + '_mask.csv')
 document_matrix_path = intent_path / 'document_matrix.npz'
 label_path = intent_path / 'intent_training_labels.csv'
 token_path = intent_path / 'ngrams.csv'
+english_mask_path = intent_path / 'english_mask.csv'
 midway_mask_generator = lambda info: intent_path / ('midway_mask_' + str(info[0]) + '_of_' + str(info[1]) + '.csv')
 
 # Check for files and make directories
-check_existence([embedding_path, context_path, initial_label_path, document_matrix_path, token_path])
+check_existence([embedding_path, context_path, initial_label_path, document_matrix_path, token_path, english_mask_path])
 make_dir(intent_weights_path.parent)
 print('Config complete.')
 
 # Load embeddings and contexts
 embedding_model = load_model(str(embedding_path))
 
+# english_mask = load_vector(english_mask_path).astype(bool)
 raw_contexts = open_w_pandas(context_path)['contexts'].values
 initial_labels = load_vector(initial_label_path)
 document_matrix = load_npz(document_matrix_path)
@@ -43,11 +45,11 @@ print('Prepared data')
 # Generate fresh (untrained model)
 labels = initial_labels.copy()
 
-realtime = RealtimeEmbedding(embedding_model, contexts, labels, mark_initial_labels=True)
+realtime = RealtimeEmbedding(embedding_model, contexts, labels, labels_in_progress=True)
 model = generate_intent_network(max_tokens, embedding_dimension=realtime.embedding_dimension)
 print('Generated model\n', model.summary())
 
-rounds = 10  # Number of rounds of training to perform
+rounds = 15  # Number of rounds of training to perform
 
 # Run training rounds
 for round_num in range(rounds):
@@ -66,6 +68,9 @@ for round_num in range(rounds):
     labels = new_labels
 
     vector_to_file(labels, midway_mask_generator((round_num, rounds)))
+print('Model training completed.')
 
 vector_to_file(labels, label_path)
 model.save_weights(str(intent_weights_path))
+
+print('Model saved.')

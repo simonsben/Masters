@@ -27,7 +27,7 @@ def get_cube_mask(embeddings, target_labels, tolerance=3):
     return set(labels[within]), within
 
 
-def get_cone_mask(embeddings, target_labels, tolerance=1):
+def get_cone_mask(embeddings, target_labels, tolerance=1.5):
     """
     Returns labels whose vectors are within the hyper-cone formed by the target labels
 
@@ -46,7 +46,7 @@ def get_cone_mask(embeddings, target_labels, tolerance=1):
     target_verb_magnitudes = [norm(vector) for vector in vectors[target_verb_mask]]
     min_magnitude = min(target_verb_magnitudes)
     max_magnitude = max(target_verb_magnitudes)
-    magnitude_range = max_magnitude - min_magnitude
+    magnitude_range = (max_magnitude - min_magnitude)
 
     if tolerance is not None:
         cone_angle *= (1 + tolerance)

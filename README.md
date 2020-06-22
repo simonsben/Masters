@@ -20,3 +20,15 @@ To setup the repo
 ## Usage
 
 **TODO:** Write usage things.... and make clean enough to be usable..
+
+### Prepare data
+
+### Train intent model
+
+* Add the source dataset to [`config.py`](config.py)
+* Run the [rough label generation script](execution/intent/compute.py)
+* Compute english mask over the contexts with [script](execution/pre_train/english_mask.py)
+* Extract the verbs from the intent frames and compute their embeddings with [collection script](execution/analysis/embeddings/collect_intent_verbs.py)
+* Refine rough labels with [script](execution/intent/refine_initial_mask.py)
+* Compute sequence-context matrix with [script](execution/pre_train/document_term_matrix.py)
+* Train the model with [training script](execution/training/intent.py)
