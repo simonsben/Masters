@@ -35,7 +35,7 @@ def compute_sequence_rates(positive_counts, negative_counts, num_positive_docume
     return positive_rates, negative_rates
 
 
-def get_significant_tokens(token_frequencies, target_column, threshold=75):
+def get_significant_tokens(token_frequencies, target_column, threshold=80):
     """
     Get array of significant tokens for a set of given frequencies
 
@@ -83,8 +83,8 @@ def train_sequence_learner(current_labels, sequences, token_mapping, document_ma
     positive_rates, negative_rates = compute_sequence_rates(positive_count, negative_count,
                                                             num_positive_documents, num_negative_documents)
 
-    sequence_rates = [sequences, positive_rates, negative_rates]
-    token_frequencies = DataFrame(sequence_rates, columns=('token', 'positive', 'negative'))
+    sequence_rates = {'token': sequences, 'positive': positive_rates, 'negative': negative_rates}
+    token_frequencies = DataFrame(sequence_rates)
 
     # Get significant tokens
     positive_tokens = get_significant_tokens(token_frequencies, 1)
@@ -115,7 +115,7 @@ def train_sequence_learner(current_labels, sequences, token_mapping, document_ma
     return_mask[has_intent] += confidence_increment
     return_mask[has_non_intent] -= confidence_increment
 
-    # Limit range of labels to [0, 1]
+    # Bound labels to [0, 1]
     return_mask[return_mask < 0] = 0
     return_mask[return_mask > 1] = 1
 

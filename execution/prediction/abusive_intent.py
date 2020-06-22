@@ -1,4 +1,5 @@
-from utilities.data_management import make_path, check_existence, open_w_pandas, get_model_path, vector_to_file
+from utilities.data_management import make_path, check_existence, open_w_pandas, get_model_path, vector_to_file, \
+    make_dir
 from model.networks import predict_abusive_intent
 from config import dataset
 
@@ -11,6 +12,7 @@ intent_weights_path = get_model_path('intent')
 abuse_weights_path = get_model_path('abuse')
 
 check_existence([embedding_path, context_path, intent_weights_path, abuse_weights_path])
+make_dir(predictions_base)
 print('Config complete.')
 
 raw_contexts = open_w_pandas(context_path)['contexts'].values

@@ -35,4 +35,8 @@ def get_consensus(current_labels, *label_deltas):
     current_labels[positive] += confidence_increment
     current_labels[negative] -= confidence_increment
 
+    # Bound labels to [0, 1]
+    current_labels[current_labels < 0] = 0
+    current_labels[current_labels > 1] = 1
+
     return current_labels

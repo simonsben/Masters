@@ -30,4 +30,5 @@ To setup the repo
 * Compute english mask over the contexts with [script](execution/pre_train/english_mask.py)
 * Extract the verbs from the intent frames and compute their embeddings with [collection script](execution/analysis/embeddings/collect_intent_verbs.py)
 * Refine rough labels with [script](execution/intent/refine_initial_mask.py)
+* Compute sequence-context matrix with [script](execution/pre_train/document_term_matrix.py)
 * Train the model with [training script](execution/training/intent.py)

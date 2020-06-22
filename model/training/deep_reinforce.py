@@ -1,7 +1,7 @@
-from numpy import percentile, min, max, ndarray
+from numpy import percentile, min, max, ndarray, argsort
 from keras.models import Model
 from model.layers.realtime_embedding import RealtimeEmbedding
-from config import training_verbosity, confidence_increment
+from config import training_verbosity, confidence_increment, batch_size
 
 
 def rescale(values):
@@ -33,7 +33,7 @@ def train_deep_learner(model, current_labels, data_source, training_documents=25
     """
     positive_threshold = min_confidence
     negative_threshold = (1 - min_confidence)
-    steps_per = int(training_documents / data_source.batch_size)  # Compute number of batches to train each round
+    steps_per = int(training_documents / batch_size)  # Compute number of batches to train each round
 
     data_source.update_labels(current_labels)
 
@@ -47,8 +47,7 @@ def train_deep_learner(model, current_labels, data_source, training_documents=25
 
     # Make predictions for all documents
     data_source.set_usage_mode(False)
-    predictions = model.predict_generator(data_source, verbose=training_verbosity)\
-        .reshape(-1)
+    predictions = model.predict_generator(data_source, verbose=training_verbosity).reshape(-1)
 
     # Compute mask of documents with positive and negative intent
     new_positives = predictions > positive_threshold
@@ -58,8 +57,14 @@ def train_deep_learner(model, current_labels, data_source, training_documents=25
     current_labels[new_positives] += confidence_increment
     current_labels[new_negatives] -= confidence_increment
 
-    # Restrict label value range to [0, 1]
+    # Bound labels to [0, 1]
     current_labels[current_labels < 0] = 0
     current_labels[current_labels > 1] = 1
+
+    # Print out most intentful contexts for *sanity checking* during training process
+    if training_verbosity > 0:
+        top_contexts = argsort(predictions)[-20:]
+        for index in top_contexts:
+            print(predictions[index], data_source.data_source[index])
 
     return current_labels

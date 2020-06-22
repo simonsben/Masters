@@ -8,7 +8,7 @@ from model.expansion.verb_space import get_cube_mask, get_cone_mask
 import config
 
 target_action_labels = ['kill', 'fight', 'act', 'take']
-target_desire_labels = ['want', 'need', 'going', 'have', 'about', 'planning']
+target_desire_labels = ['want', 'need', 'going', 'have', 'about', 'planning', 'will']
 
 token_mappings = {'gon': 'going', 'll': 'will'}
 
