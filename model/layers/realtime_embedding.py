@@ -1,6 +1,6 @@
 from fasttext.FastText import _FastText
 from tensorflow.keras.utils import Sequence
-from numpy import zeros, zeros_like, around, ones, ndarray
+from numpy import zeros, zeros_like, around, ones, ndarray, mean
 from config import batch_size, max_tokens
 from math import ceil
 
@@ -29,11 +29,12 @@ class RealtimeEmbedding(Sequence):
         self.working_labels = self.labels
 
         self.working_mask = None
-        self.original_initial_labels = None if not labels_in_progress else labels != .5
+        self.original_initial_labels = None if not labels_in_progress else labels.copy()
         self.working_initial_labels = self.original_initial_labels
         self.is_training = False
 
         self.concrete_weight = 1.5
+        self.midpoint = 0.5
         self.uniform_weights = uniform_weights
         self.data_length = ceil(len(self.working_data_source) / batch_size)
 
@@ -75,7 +76,7 @@ class RealtimeEmbedding(Sequence):
         # Recompute data length
         self.data_length = ceil(len(self.working_data_source) / batch_size)
 
-    def get_sample_weights(self, batch_start, batch_end, center=.5):
+    def get_sample_weights(self, batch_start, batch_end):
         """
         Returns sample weights for data samples.
         Weights are computed using the function w = 2(x - .5) when x = (.5, 1], and the negation when x = [0, .5)
@@ -84,12 +85,7 @@ class RealtimeEmbedding(Sequence):
             return ones(batch_end - batch_start)
 
         labels = self.working_labels[batch_start:batch_end]
-        positive = labels > .5
-        negative = labels < .5
-
-        weights = zeros_like(labels, dtype=float)
-        weights[positive] = 2 * (labels[positive] - center)
-        weights[negative] = -2 * (labels[negative] - center)
+        weights = compute_sample_weights(labels, self.midpoint)
 
         # If using initial labels, increase their weighting.
         if self.working_initial_labels is not None:
@@ -144,9 +140,27 @@ class RealtimeEmbedding(Sequence):
         if self.is_training:
             # Get batch labels and convert to boolean
             label_subset = self.working_labels[batch_start:batch_end]
-            label_subset = around(label_subset).astype(bool)
+            label_subset = label_subset > self.midpoint
 
             loss_weights = self.get_sample_weights(batch_start, batch_end)
 
             return embedded_data, label_subset, loss_weights
         return embedded_data
+
+
+def compute_sample_weights(labels, midpoint=0.5):
+    """
+    Computes sample weights for training
+
+    :param ndarray labels: Array of current labels
+    :param float midpoint: Midpoint for computing the loss weight around
+    """
+
+    positive = labels > .5
+    negative = labels < .5
+
+    weights = zeros_like(labels, dtype=float)
+    weights[positive] = 2 * (labels[positive] - midpoint)
+    weights[negative] = -2 * (labels[negative] - midpoint)
+
+    return weights

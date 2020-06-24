@@ -1,4 +1,4 @@
-from numpy import percentile, min, max, ndarray, argsort
+from numpy import percentile, min, max, ndarray, argsort, sum
 from keras.models import Model
 from model.layers.realtime_embedding import RealtimeEmbedding
 from config import training_verbosity, confidence_increment, batch_size
@@ -31,19 +31,23 @@ def train_deep_learner(model, current_labels, data_source, training_documents=25
     :param float min_confidence: Min predicted value for document to *contain intent* [default .985]
     :return model, current labels, new_predictions
     """
-    positive_threshold = min_confidence
-    negative_threshold = (1 - min_confidence)
-    steps_per = int(training_documents / batch_size)  # Compute number of batches to train each round
-
     data_source.update_labels(current_labels)
 
     # Get subset of non uncertain data to use for training
     training_mask = current_labels != .5    # Only use labels that are not *uncertain*
     data_source.set_mask(training_mask)
 
+    positive_threshold = min_confidence
+    negative_threshold = (1 - min_confidence)
+    training_documents = min((training_documents, sum(training_mask)))
+    training_steps = int(training_documents / batch_size)  # Compute number of batches to train each round
+
+    if training_verbosity > 0:
+        print('Training for %d steps over %d documents' % (training_steps, training_documents))
+
     # Train model
     data_source.set_usage_mode(True)
-    model.fit_generator(data_source, verbose=training_verbosity, steps_per_epoch=steps_per, shuffle=True)
+    model.fit_generator(data_source, verbose=training_verbosity, steps_per_epoch=training_steps, shuffle=True)
 
     # Make predictions for all documents
     data_source.set_usage_mode(False)
@@ -63,7 +67,7 @@ def train_deep_learner(model, current_labels, data_source, training_documents=25
 
     # Print out most intentful contexts for *sanity checking* during training process
     if training_verbosity > 0:
-        top_contexts = argsort(predictions)[-20:]
+        top_contexts = argsort(predictions)[-30:]
         for index in top_contexts:
             print(predictions[index], data_source.data_source[index])
 
