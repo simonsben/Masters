@@ -1,16 +1,34 @@
 from utilities.pre_processing import split_pattern, clean_acronym, pre_intent_clean
 from numpy import asarray
 
+# The shortest form of intent is 'I will X', which contains three terms
+min_terms_for_intent = 3
+
 
 def split_document(document):
     """ Splits documents into sub-components (called contexts) """
     if not isinstance(document, str):
         return []
 
-    contexts = split_pattern.split(clean_acronym(document))
-    contexts = [pre_intent_clean(context) for context in contexts if len(context.split(' ')) > 1]
+    # Split document into contexts using regex pattern and apply clean
+    contexts = [pre_intent_clean(context) for context in split_pattern.split(clean_acronym(document))]
 
-    return list(filter(lambda context: len(context) > 1, contexts))
+    # If context contains less than three words add it to the preceding context
+    index = 0
+    while index < len(contexts):
+        # If not the first context and it contains less than the min number of terms
+        if index > 0 and len(contexts[index].split(' ')) < min_terms_for_intent:
+            # Add context to previous and delete it (thereby also *incrementing* the index)
+            contexts[index - 1] += contexts[index]
+            del contexts[index]
+        # If the context contains enough terms, move to the next one
+        else:
+            index += 1
+
+    # If document is a single context with less than the min number of terms, discard it
+    if len(contexts) == 1 and len(contexts[0].split(' ')) < min_terms_for_intent:
+        return []
+    return contexts
 
 
 def split_into_contexts(documents, original_indexes=None):

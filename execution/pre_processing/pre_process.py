@@ -19,7 +19,6 @@ partial_processes = [
     split_hashtags,
     count_upper,
     count_acronym,
-    count_apostrophe,
     count_digits,
     count_repeat_instances,
     remove_spaces,

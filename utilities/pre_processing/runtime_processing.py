@@ -8,11 +8,17 @@ extra_space = compile(r'\s{2,}')     # Replace repeat spaces
 repeats = compile(r'(.)(\1{2,})')
 acronym = compile(r'(\w\.){2,}')
 split_pattern = compile(r'[.?!;]+')
+apostrophe_regex = compile(r'(\w+)\\?\'(\w+)')
 
 
 def clean_acronym(document):
     """ Removes periods from acronyms (ex. U.S.A. -> USA) """
     return acronym.sub(lambda match: match[0].replace('.', '') + ' ', document)
+
+
+def clean_apostrope(document):
+    """ Removes apostrophes without splitting letters (ex. i'm -> im instead of i m) """
+    return apostrophe_regex.sub(lambda match: match[1] + match[2], document)
 
 
 def pre_intent_clean(document):
@@ -35,7 +41,7 @@ def simulated_runtime_clean(documents):
 
         documents[index] = extra_space.sub(' ', non_char.sub(
             ' ',
-            pre_intent_clean(clean_acronym(document))
+            pre_intent_clean(clean_apostrope(clean_acronym(document)))
         ))
 
     return documents
