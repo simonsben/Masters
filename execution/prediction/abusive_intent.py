@@ -1,10 +1,10 @@
 from utilities.data_management import make_path, check_existence, open_w_pandas, get_model_path, vector_to_file, \
-    make_dir
+    make_dir, get_embedding_path
 from model.networks import predict_abusive_intent
 from config import dataset
 
 
-embedding_path = make_path('data/models/') / dataset / 'derived' / (dataset + '.bin')
+embedding_path = get_embedding_path()
 processed_base = make_path('data/processed_data') / dataset / 'analysis'
 context_path = processed_base / 'intent' / 'contexts.csv'
 predictions_base = processed_base / 'intent_abuse'

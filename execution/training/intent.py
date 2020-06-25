@@ -30,7 +30,6 @@ print('Config complete.')
 # Load embeddings and contexts
 embedding_model = load_model(str(embedding_path))
 
-# english_mask = load_vector(english_mask_path).astype(bool)
 raw_contexts = open_w_pandas(context_path)['contexts'].values
 initial_labels = load_vector(initial_label_path)
 document_matrix = load_npz(document_matrix_path)

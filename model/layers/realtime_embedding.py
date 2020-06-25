@@ -33,7 +33,7 @@ class RealtimeEmbedding(Sequence):
         self.working_initial_labels = self.original_initial_labels
         self.is_training = False
 
-        self.concrete_weight = 1.5
+        self.concrete_weight = 2
         self.midpoint = 0.5
         self.uniform_weights = uniform_weights
         self.data_length = ceil(len(self.working_data_source) / batch_size)
