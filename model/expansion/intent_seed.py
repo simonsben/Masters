@@ -68,7 +68,7 @@ def identify_basic_intent(context, index=-1):
         # Check for pronouns
         pronouns = [
             child for child in desire_verb.children
-            if child.pos_ == 'PRON'
+            if child.pos_ == 'PRON' and child.i < desire_verb.i
         ]
         if len(pronouns) < 1: continue
 
@@ -128,7 +128,7 @@ def identify_basic_intent(context, index=-1):
 def worker_init(*props):
     """ Initialization function for Pool workers """
     global parser
-    parser = load('en_core_web_md')
+    parser = load('en_core_web_sm')
 
 
 def tag_intent_documents(contexts):
