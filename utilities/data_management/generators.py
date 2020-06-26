@@ -5,7 +5,7 @@ from pathlib import Path
 model_types = {'abuse', 'intent'}
 
 
-def get_model_path(model_type, weights=True):
+def get_model_path(model_type, weights=True, index=None):
     """ Generates the path of the model weights """
     if model_type not in model_types:
         raise AttributeError('Supplied model type is invalid.')
@@ -13,6 +13,9 @@ def get_model_path(model_type, weights=True):
     base = Path('data/models') / dataset / 'analysis'
 
     core_name = model_type + '-' + fast_text_model
+    if index is not None:
+        core_name += '_' + str(index)
+
     if weights:
         return base / (core_name + '_weights.h5')
     return base / (core_name + '_model')
@@ -20,7 +23,8 @@ def get_model_path(model_type, weights=True):
 
 def get_embedding_path():
     """ Generates the path to the current FastText model """
-    path = Path('data/models/') / dataset / 'derived' / (dataset + '.bin')
+    # path = Path('data/models/') / dataset / 'derived' / (dataset + '.bin')
+    path = Path('data/lexicons/fast_text/') / (fast_text_model + '.bin')
 
     if not path.exists():
         raise FileNotFoundError('Embedding model does not exist.')

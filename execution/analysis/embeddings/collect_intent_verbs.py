@@ -12,17 +12,17 @@ data_dir = base_dir / 'intent'
 destination_dir = base_dir / 'embeddings'
 
 frame_info_path = data_dir / 'intent_frame.csv'
-english_mask = data_dir / 'english_mask.csv'
+# english_mask = data_dir / 'english_mask.csv'
 
 desire_index = 1
 action_index = 2
 
-check_existence([frame_info_path, model_path, english_mask])
+check_existence([frame_info_path, model_path])
 make_dir(destination_dir)
 print('Config complete.')
 
-english_mask = load_vector(english_mask).astype(bool)
-intent_frames = read_csv(frame_info_path, header=None, keep_default_na=False).values[english_mask]
+# english_mask = load_vector(english_mask).astype(bool)
+intent_frames = read_csv(frame_info_path, header=None, keep_default_na=False).values
 print('Loaded data with shape', intent_frames.shape)
 
 desire_verbs = get_verbs(intent_frames, desire_index)
