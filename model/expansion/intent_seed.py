@@ -34,7 +34,13 @@ def assemble_related_information(base, base_dependency, information_dependency):
 
 
 def identify_basic_intent(context, index=-1):
-    """ Determines if parsed document contains a sequence of term that indicate intent """
+    """
+    Determines if parsed document contains a sequence of terms that indicate clear and explicit intent
+
+    Specifically, two forms are checked for, those being will and going-to.
+    Will forms of intent would be a statement such as "I will do X"
+    Going-to forms of intent would be statements such as "I am doing to do X"
+    """
     if isinstance(context, str):
         context = parser(context)
     if not isinstance(context, Iterable):
@@ -53,7 +59,7 @@ def identify_basic_intent(context, index=-1):
 
         # Check auxiliaries of base verb to see if its a short or long intent case
         auxiliaries = [child for child in action_verb.children if child.dep_ == 'aux']
-        if len(auxiliaries) <= 1: continue                                                  # No auxiliaries
+        if len(auxiliaries) < 1: continue                                                  # No auxiliaries
         elif auxiliaries[0].pos_ == 'VERB' and auxiliaries[0].text in special_auxiliaries:  # Short case
             desire_verb = action_verb
             short_desire = auxiliaries[0]
@@ -91,7 +97,10 @@ def identify_basic_intent(context, index=-1):
 
         # Check for negations
         # TODO ?only mark negation if between pronoun and desire?
-        negations = len(list(filter(lambda _token: _token.dep_ == 'neg', desire_verb.children)))
+        negations = len(list(filter(
+            lambda _token: _token.dep_ == 'neg' and _token.i < desire_verb.i,
+            desire_verb.children
+        )))
         questions = len(list(filter(
             lambda _token: _token.tag_ in question_tags or _token.text in question_indicators,
             desire_verb.children
