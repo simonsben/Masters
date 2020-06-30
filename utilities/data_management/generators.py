@@ -3,6 +3,7 @@ from pathlib import Path
 
 
 model_types = {'abuse', 'intent'}
+prediction_types = {'abuse', 'intent', 'abusive_intent'}
 
 
 def get_model_path(model_type, weights=True, index=None):
@@ -35,3 +36,13 @@ def intent_verb_filename(name, model_name):
     """ Generates the filename for intent verb embeddings """
     return name + '_vectors-' + model_name + '.csv.gz'
 
+
+def get_prediction_path(prediction_type, target=None):
+    """ Generates the path for the predictions """
+    if prediction_type not in prediction_types:
+        raise AttributeError('Supplied model type is invalid.')
+
+    target = target if target is not None else dataset
+    base = Path('data/processed_data/') / target / 'analysis' / 'intent_abuse'
+
+    return base / ('%s_predictions.csv' % prediction_type)

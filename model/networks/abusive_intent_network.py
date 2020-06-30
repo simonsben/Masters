@@ -7,14 +7,15 @@ from model.layers.realtime_embedding import RealtimeEmbedding
 from keras.models import Model
 from keras.initializers import Constant
 from fasttext import load_model
-from config import execute_verbosity, max_tokens
+from numpy import hstack
+from config import execute_verbosity, max_tokens, embedding_dimension
 
 
-def predict_abusive_intent(documents, network=None, return_model=False):
+def predict_abusive_intent(raw_documents, network=None, return_model=False):
     """
     Makes abusive intent predictions for a list of pre-processed documents
 
-    :param RealtimeEmbedding documents: list or array of pre-processed documents
+    :param RealtimeEmbedding raw_documents: list or array of pre-processed documents
     :param Model network: keras network trained to predict abuse and intent
     :param bool return_model: Whether to return the model as well as the predictions
     :return tuple: tuple of abuse, intent, and abusive-intent predictions
@@ -24,17 +25,17 @@ def predict_abusive_intent(documents, network=None, return_model=False):
         intent_path = get_model_path('intent')
         abuse_path = get_model_path('abuse')
 
+        documents = runtime_clean(raw_documents)
         embedding_model = load_model(embedding_path)
-
-        documents = RealtimeEmbedding(embedding_model, runtime_clean(documents), uniform_weights=True)
+        raw_documents = RealtimeEmbedding(embedding_model, documents, uniform_weights=True)
         print('Loaded embeddings')
 
-        network = generate_abusive_intent_network(max_tokens, embedding_dimension=documents.embedding_dimension)
+        network = generate_abusive_intent_network(max_tokens, embedding_dimension=embedding_dimension)
         load_model_weights(network, intent_path)
         load_model_weights(network, abuse_path)
         print(network.summary())
 
-    predictions = network.predict_generator(documents, verbose=execute_verbosity)
+    predictions = hstack(network.predict_generator(raw_documents, verbose=execute_verbosity)).transpose()
     if return_model:
         return network, predictions
     return predictions

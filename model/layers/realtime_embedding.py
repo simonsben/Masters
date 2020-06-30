@@ -1,6 +1,6 @@
 from fasttext.FastText import _FastText
 from tensorflow.keras.utils import Sequence
-from numpy import zeros, zeros_like, around, ones, ndarray, mean
+from numpy import zeros, zeros_like, around, ones, ndarray, mean, asarray, abs
 from config import batch_size, max_tokens
 from math import ceil
 
@@ -156,11 +156,12 @@ def compute_sample_weights(labels, midpoint=0.5):
     :param float midpoint: Midpoint for computing the loss weight around
     """
 
-    positive = labels > .5
-    negative = labels < .5
+    weights = 2 * abs(labels - midpoint)
+    # positive = labels > .5
+    # negative = labels < .5
 
-    weights = zeros_like(labels, dtype=float)
-    weights[positive] = 2 * (labels[positive] - midpoint)
-    weights[negative] = -2 * (labels[negative] - midpoint)
+    # weights = zeros_like(labels, dtype=float)
+    # weights[positive] = 2 * (labels[positive] - midpoint)
+    # weights[negative] = -2 * (labels[negative] - midpoint)
 
     return weights

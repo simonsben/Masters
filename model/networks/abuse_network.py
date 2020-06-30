@@ -62,7 +62,7 @@ def generate_abuse_network(max_tokens, embedding_dimension=None, embedding_matri
         model_layers.insert(0, embedding_layer)
 
     # Generate and compile Abuse model
-    abuse_model = Sequential(model_layers, 'abuse_network')
+    abuse_model = Sequential(model_layers, name='abuse_network')
     abuse_model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
     return abuse_model

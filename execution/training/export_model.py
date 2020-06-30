@@ -1,11 +1,6 @@
 from model.networks import generate_abusive_intent_network
 from utilities.data_management import get_model_path, make_path
-import config
-
-# Load config
-dataset = config.dataset
-max_tokens = config.max_tokens
-embedding_dimension = config.embedding_dimension
+from config import dataset, max_tokens, embedding_dimension
 
 # Define file paths
 intent_weights_path = get_model_path('intent')
