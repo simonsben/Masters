@@ -1,80 +1,42 @@
-from numpy import sum, divide, cumsum
-from matplotlib.pyplot import show, savefig
-from multiprocessing import Pool
-from functools import partial
-from time import time
+from utilities.data_management import make_dir, make_path, open_w_pandas, check_existence, vector_to_file, load_vector
+from utilities.plotting import plot_line, show
+from numpy import zeros_like, cumsum
+from config import dataset
 
+computed_path = make_path('data/processed_data') / 'thesis' / 'data' / 'unique_term_rate.csv'
+data_path = make_path('data/prepared_data') / (dataset + '.csv')
+figure_path = make_path('figures') / dataset / 'analysis' / 'new_term_rate.png'
 
-def document_term_rate(document, index):
+check_existence(data_path)
+make_dir(figure_path)
+make_dir(computed_path)
+print('Config complete')
+
+if not computed_path.exists():
+    documents = open_w_pandas(data_path)['document_content'].values
+    term_counts = zeros_like(documents, dtype=int)
+    print('Loaded data')
+
     unique_terms = set()
-    term_rate = [0]
+    for index, document in enumerate(documents):
+        if not isinstance(document, str):
+            continue
 
-    for term in document[index].split(' '):
-        term_value = 0
-        if term not in unique_terms:
-            unique_terms.add(term)
-            term_value = 1
+        for token in document.split(' '):
+            if token not in unique_terms:
+                unique_terms.add(token)
+                term_counts[index] += 1
 
-        term_rate.append(term_rate[-1] + term_value)
+    unique_term_coverage = cumsum(term_counts) / len(unique_terms)
+    print('Computed new term rate')
 
-    term_rate.pop(0)
-    return term_rate
+    vector_to_file(unique_term_coverage, computed_path)
+    print('Saved computed data')
+else:
+    unique_term_coverage = load_vector(computed_path)
 
+axis_labels = ('Number of documents', 'Number of unique terms')
+plot_line(unique_term_coverage, 'New term rate within corpus', figure_path)
+print('Complete.')
 
-def fold_in_list(a, b):
-    large, small = (a, b) if len(a) > len(b) else (b, a)
-    small_len = len(small)
-
-    return list(sum([small, large[:small_len]], axis=0)) + large[small_len:]
-
-
-def corpus_term_rate(documents, index):
-    # work_pool = Pool(n_thread)
-    # term_rates = work_pool.map(partial(document_term_rate, index=index), documents)
-    # work_pool.close()
-    # work_pool.join()
-
-    corpus_rate = []
-    num_docs = 0
-    for document in documents:
-        rate = document_term_rate(document, index)
-        corpus_rate = fold_in_list(corpus_rate, rate)
-        num_docs += 1
-
-        if num_docs % 500000 == 0:
-            print(num_docs)
-
-    return cumsum(divide(corpus_rate, num_docs))
-    # return divide(corpus_rate, len(term_rates))
-
-
-if __name__ == '__main__':
-    from utilities.data_management import make_path, check_existence, prepare_csv_reader, expand_csv_row_size
-    from utilities.plotting import scatter_plot
-    import config
-
-    expand_csv_row_size()
-
-    n_thread = config.n_threads
-    dataset_name = config.dataset
-    dataset_path = make_path('data/prepared_data/') / (dataset_name + '.csv')
-    fig_path = make_path('figures') / dataset_name / 'analysis' / 'term_rate.png'
-
-    check_existence(dataset_path)
-
-    reader, fl, header = prepare_csv_reader(dataset_path)
-    content_ind = header.index('document_content')
-
-    start = time()
-    rate = corpus_term_rate(reader, content_ind)
-    print('Done in', time() - start)
-
-    x = list(range(1, len(rate) + 1))
-    ax = scatter_plot((x, rate), 'New term rate in corpus', size=3)
-
-    ax.set_xlabel('Term in document')
-    ax.set_ylabel('Average number of unique terms')
-
-    savefig(fig_path)
-
-    show()
+show()

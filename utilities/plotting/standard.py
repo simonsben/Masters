@@ -1,5 +1,5 @@
 from matplotlib.pyplot import subplots, tight_layout, savefig, show
-from numpy import arange, ndarray, asarray
+from numpy import arange, ndarray, asarray, min, max
 from utilities.plotting.utilities import generate_3d_figure, set_labels
 from matplotlib.colors import LogNorm
 from pathlib import Path
@@ -159,6 +159,7 @@ def hist_plot(values, fig_title, filename=None, ax_titles=None, cmap='Blues', c_
             c_bar.ax.set_ylabel(c_bar_title)
     else:                       # If single dimensional data is provided, compute a standard hist
         ax.hist(values, bins=bins, log=apply_log)
+        ax.autoscale(enable=True, axis='x', tight=True)
 
     set_labels(ax, fig_title, ax_titles)
     tight_layout()              # Remove extra margin
