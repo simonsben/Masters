@@ -1,9 +1,10 @@
 from model.networks import generate_abuse_network
-from utilities.data_management import make_dir, make_path, open_w_pandas, check_existence, \
-    get_model_path, load_vector, vector_to_file, split_sets, get_embedding_path
+from utilities.data_management import make_dir, make_path, open_w_pandas, check_existence, get_model_path, \
+    vector_to_file, split_sets, get_embedding_path
 from fasttext import load_model
 from model.layers.realtime_embedding import RealtimeEmbedding
 from keras.callbacks import EarlyStopping
+from pandas import DataFrame
 from config import dataset, max_tokens, training_verbosity, batch_size
 from time import time
 
@@ -53,6 +54,9 @@ history = model.fit_generator(training, epochs=50, verbose=training_verbosity, c
 training_time = time() - start
 print('Completed training in', training_time, 's')
 print('Training history', history)
+
+DataFrame(history).to_csv(dest_dir / 'training_history.csv')
+print('History saved.')
 
 evaluated_accuracy = model.evaluate_generator(testing, verbose=training_verbosity, steps=validation_steps)
 print('Model validation accuracy', evaluated_accuracy)
