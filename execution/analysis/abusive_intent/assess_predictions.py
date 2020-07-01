@@ -1,13 +1,12 @@
 from utilities.data_management import read_csv, make_path, output_abusive_intent, load_vector
 from numpy import argsort, sum
 from model.analysis import compute_abusive_intent
-import config
+from config import dataset
 
-base = make_path('data/processed_data/') / config.dataset / 'analysis'
+base = make_path('data/processed_data/') / dataset / 'analysis'
 analysis_base = base / 'intent_abuse'
 intent_base = base / 'intent'
 prediction_path = lambda target: analysis_base / (target + '_predictions.csv')
-
 
 
 # english_mask = load_vector(intent_base / 'english_mask.csv')

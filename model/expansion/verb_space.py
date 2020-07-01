@@ -27,7 +27,7 @@ def get_cube_mask(embeddings, target_labels, tolerance=3):
     return set(labels[within]), within
 
 
-def get_cone_mask(embeddings, target_labels, tolerance=1.5):
+def get_cone_mask(embeddings, target_labels, tolerance=1):
     """
     Returns labels whose vectors are within the hyper-cone formed by the target labels
 

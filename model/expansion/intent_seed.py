@@ -12,7 +12,8 @@ non_active_desire_tags = {'VBD', 'VBN'}
 special_auxiliaries = {'will', 'must', 'll'}
 special_transforms = {'ll': 'will'}
 
-first_person_pronouns = {'i', 'we', 'me', 'us', 'em', 'mine', 'myself', 'ourselves'}
+# Removed pronouns -> 'me', 'mine', 'myself', 'ourselves', 'em', 'us'
+first_person_pronouns = {'i', 'we'}
 
 target_dependencies = {'dobj', 'ccomp', 'acomp', 'xcomp'}
 target_relations = {'det', 'compound', 'poss'}

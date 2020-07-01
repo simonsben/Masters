@@ -27,7 +27,7 @@ def predict_abusive_intent(raw_documents, network=None, return_model=False):
 
         documents = runtime_clean(raw_documents)
         embedding_model = load_model(embedding_path)
-        raw_documents = RealtimeEmbedding(embedding_model, documents, uniform_weights=True)
+        raw_documents = RealtimeEmbedding(embedding_model, documents)
         print('Loaded embeddings')
 
         network = generate_abusive_intent_network(max_tokens, embedding_dimension=embedding_dimension)

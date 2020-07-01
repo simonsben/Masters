@@ -1,7 +1,6 @@
 from utilities.data_management import make_path, check_existence, open_w_pandas
-from numpy import zeros, zeros_like, logical_not, any, sum, asarray, vectorize
-from model.analysis.labelling import enforce_qualifying, count_labels
-from config import dataset
+from numpy import logical_not, any, sum
+from model.analysis import enforce_qualifying, count_labels
 
 label_map = {
     'SKIP': -1,
@@ -26,7 +25,7 @@ contexts = open_w_pandas(context_path, index_col=None)
 labels = open_w_pandas(label_path)
 print('Data loaded.')
 
-# Map to boolean values
+# Convert database enums to values based on the label map (above)
 labels[intent_key] = labels[intent_key].map(label_map)
 labels[abuse_key] = labels[abuse_key].map(label_map)
 

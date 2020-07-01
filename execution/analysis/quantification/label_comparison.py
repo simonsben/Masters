@@ -2,6 +2,10 @@ from utilities.data_management import make_path, check_existence, open_w_pandas,
 from numpy import any, sum, where, all
 from utilities.plotting import confusion_matrix, show, scatter_plot
 
+# Define constants
+min_labels = 3
+midpoint = .5
+
 # Define import paths
 base_path = make_path('data/processed_data/data_labelling/analysis/')
 label_path = base_path / 'intent_abuse' / 'labels.csv'
@@ -21,19 +25,19 @@ print('Data loaded.')
 
 # Get slice of labels
 # Column order: SKIP, FALSE, TRUE, COMPUTED
-labels = raw_labels.values[:, 1:-1]
-valid_label_mask = any(labels >= 3, axis=1)
+labels = raw_labels[['0', '1']].values
+valid_label_mask = any(labels >= min_labels, axis=1)
 
 num_labels = raw_labels.shape[0]
 num_valid_labels = sum(valid_label_mask)
 
 # Get labels as a boolean array
-boolean_labels = raw_labels['1'].values >= 3
+boolean_labels = raw_labels['1'].values >= min_labels
 valid_labels = boolean_labels[valid_label_mask]
 
 # Convert predictions to a boolean array
 truncated_predictions = predictions[:num_labels]
-boolean_predictions = truncated_predictions > .5
+boolean_predictions = truncated_predictions > midpoint
 valid_predictions = boolean_predictions[valid_label_mask]
 
 # Get array of correct predictions
@@ -57,18 +61,18 @@ print('Accuracy', sum(valid_correct_predictions) / num_valid_labels)
 )
 
 valid_contexts = contexts[:num_labels][valid_label_mask]
-bundled_labels = raw_labels.values[valid_label_mask]
+label_votes = raw_labels.values[valid_label_mask]
 
 
 print('\nLabel order: SKIP, FALSE, TRUE, COMPUTED')
 
 print('\nFalse negatives:')
 for index in false_negatives:
-    print(index, truncated_predictions[valid_label_mask][index], bundled_labels[index], valid_contexts[index])
+    print(index, truncated_predictions[valid_label_mask][index], label_votes[index], valid_contexts[index])
 
 print('\nFalse positives:')
 for index in false_positives:
-    print(index, truncated_predictions[valid_label_mask][index], bundled_labels[index], valid_contexts[index])
+    print(index, truncated_predictions[valid_label_mask][index], label_votes[index], valid_contexts[index])
 
 
 # Plot predictions vs. labels

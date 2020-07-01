@@ -190,13 +190,15 @@ type_map = {
 }
 
 
-def vector_to_file(data_vector, filename):
+def vector_to_file(data_vector, filename, fmt=None):
     """ Saves a numpy vector to a csv without a column header """
-    data_type = data_vector.dtype.kind
-    if data_type not in type_map:
-        raise TypeError('Unsupported type,', data_type)
+    if fmt is None:
+        data_type = data_vector.dtype.kind
+        if data_type not in type_map:
+            raise TypeError('Unsupported type,', data_type)
+        fmt = type_map[data_type]
 
-    savetxt(filename, data_vector, delimiter=',', fmt=type_map[data_type])
+    savetxt(filename, data_vector, delimiter=',', fmt=fmt)
 
 
 def load_vector(file_path):

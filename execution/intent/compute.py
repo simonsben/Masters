@@ -1,5 +1,6 @@
 if __name__ == '__main__':
-    from utilities.data_management import make_path, open_w_pandas, check_existence, make_dir, save_dataframe
+    from utilities.data_management import make_path, open_w_pandas, check_existence, make_dir, save_dataframe, \
+        vector_to_file
     from model.extraction import split_into_contexts
     from model.expansion.intent_seed import tag_intent_documents
     from utilities.pre_processing import final_clean
@@ -62,7 +63,7 @@ if __name__ == '__main__':
     # Save initial mask, context mapping, and intent frame (mask values)
     intent_frames = DataFrame(intent_frames)
     intent_frames.to_csv(dest_dir / 'intent_frame.csv', header=False, index=False)
-    savetxt(dest_dir / 'intent_mask.csv', intent_values, delimiter=',', fmt='%.1f')
+    vector_to_file(intent_values, dest_dir / 'intent_mask.csv', fmt='%.1f')
     print('Saved masks, saving contexts.')
 
     save_dataframe(document_contexts, dest_dir / 'contexts.csv')                # Save contexts
