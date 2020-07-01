@@ -42,11 +42,10 @@ def process_documents(source_filename, dest_filename, processes, get_content, sa
         delimiter of the source file, (default ',')
         max_documents to be pre-processed, (default is entire file)
     """
-    delimiter = options['delimiter'] if 'delimiter' in options else ','
     max_documents = options['max_documents'] if 'max_documents' in options else None
     encoding = options['encoding'] if 'encoding' in options else None
 
-    dataset = read_csv(source_filename, delimiter=delimiter, encoding=encoding, index_col=0, nrows=max_documents).values
+    dataset = read_csv(source_filename, encoding=encoding, index_col=0, nrows=max_documents).values
 
     workers = Pool(n_threads)
     processed_data = workers.map(

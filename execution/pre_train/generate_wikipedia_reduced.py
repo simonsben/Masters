@@ -4,7 +4,7 @@ base = make_path('data/prepared_data/')
 original_path = base / 'wikipedia_corpus.csv'
 check_existence(original_path)
 
-num_documents = 50000
+num_documents = 25000
 modifiers = ['', '_partial']
 
 print('Config complete.')

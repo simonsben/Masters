@@ -1,6 +1,6 @@
 from fasttext.FastText import _FastText
 from tensorflow.keras.utils import Sequence
-from numpy import zeros, zeros_like, around, ones, ndarray, mean, asarray, abs
+from numpy import zeros, ones, ndarray, abs
 from config import batch_size, max_tokens
 from math import ceil
 
@@ -33,7 +33,7 @@ class RealtimeEmbedding(Sequence):
         self.working_initial_labels = self.original_initial_labels
         self.is_training = False
 
-        self.concrete_weight = 2
+        self.concrete_weight = 1
         self.midpoint = 0.5
         self.uniform_weights = uniform_weights
         self.data_length = ceil(len(self.working_data_source) / batch_size)
@@ -156,12 +156,4 @@ def compute_sample_weights(labels, midpoint=0.5):
     :param float midpoint: Midpoint for computing the loss weight around
     """
 
-    weights = 2 * abs(labels - midpoint)
-    # positive = labels > .5
-    # negative = labels < .5
-
-    # weights = zeros_like(labels, dtype=float)
-    # weights[positive] = 2 * (labels[positive] - midpoint)
-    # weights[negative] = -2 * (labels[negative] - midpoint)
-
-    return weights
+    return 2 * abs(labels - midpoint)
