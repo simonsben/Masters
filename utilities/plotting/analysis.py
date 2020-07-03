@@ -2,6 +2,7 @@ from matplotlib.pyplot import cm, subplots, title, savefig, tight_layout
 from sklearn.metrics import confusion_matrix as calc_cm
 from numpy import newaxis, sum, around, arange, array, linspace, abs, size, where
 from shap import TreeExplainer
+from utilities.plotting.utilities import set_labels
 
 
 classes = ['neutral', 'abusive']
@@ -29,25 +30,22 @@ def confusion_matrix(predicted, labels, plot_title, filename=None, threshold=.5)
 
     # Create figure and plot
     fig, ax = subplots()
-    im = ax.imshow(confusion, cmap=cm.Greens, vmin=0, vmax=100)
-    ax.figure.colorbar(im, ax=ax)
+    ax.imshow(confusion, cmap=cm.Greens, vmin=0, vmax=100)
 
     # Correct tick scale and add labels
     ax.set_xticks(range(2))
     ax.set_yticks(range(2))
     ax.set_xticklabels(classes)
     ax.set_yticklabels(classes)
-    ax.set_xlabel('Predicted Value')
-    ax.set_ylabel('True Value')
 
     # Add values to confusion matrix
     for p_ind, row in enumerate(confusion):     # For each predicted-value index
         for t_ind, val in enumerate(row):       # For each true-value index
             ax.text(t_ind, p_ind, val, ha='center', va='center',
                     # If square is dark, use white, else black for text
-                    color='w' if val > 50 else 'k')
+                    color=('w' if val > 50 else 'k'))
 
-    title(plot_title)
+    set_labels(ax, plot_title, ('Predicted Value', 'True Value'))
 
     if filename is not None:
         savefig(filename)

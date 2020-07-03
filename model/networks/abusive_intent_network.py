@@ -7,7 +7,7 @@ from model.layers.realtime_embedding import RealtimeEmbedding
 from keras.models import Model
 from keras.initializers import Constant
 from fasttext import load_model
-from numpy import hstack
+from numpy import hstack, ndarray
 from config import execute_verbosity, max_tokens, embedding_dimension
 
 
@@ -15,7 +15,7 @@ def predict_abusive_intent(raw_documents, network=None, return_model=False):
     """
     Makes abusive intent predictions for a list of pre-processed documents
 
-    :param RealtimeEmbedding raw_documents: list or array of pre-processed documents
+    :param ndarray raw_documents: array of pre-processed documents
     :param Model network: keras network trained to predict abuse and intent
     :param bool return_model: Whether to return the model as well as the predictions
     :return tuple: tuple of abuse, intent, and abusive-intent predictions

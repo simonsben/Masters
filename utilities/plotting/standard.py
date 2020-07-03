@@ -168,3 +168,17 @@ def hist_plot(values, fig_title, filename=None, ax_titles=None, cmap='Blues', c_
         savefig(filename)
 
     return ax
+
+
+def pie_chart(values, labels, figure_title, filename=None):
+    fig, ax = subplots()
+
+    ax.pie(values, labels=labels, autopct='%1.1f%%', shadow=True)
+
+    ax.set_title(figure_title)
+    tight_layout()
+
+    if filename is not None:    # If filename provided, save figure
+        savefig(filename)
+
+    return ax

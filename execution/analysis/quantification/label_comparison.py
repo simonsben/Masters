@@ -1,6 +1,8 @@
-from utilities.data_management import make_path, check_existence, open_w_pandas, load_vector
+from utilities.data_management import make_path, check_existence, open_w_pandas, load_vector, make_dir
 from numpy import any, sum, where, all
-from utilities.plotting import confusion_matrix, show, scatter_plot
+from utilities.plotting import confusion_matrix, show, scatter_plot, hist_plot
+
+# TODO redo match-up by just using the context indexes
 
 # Define constants
 min_labels = 3
@@ -11,8 +13,12 @@ base_path = make_path('data/processed_data/data_labelling/analysis/')
 label_path = base_path / 'intent_abuse' / 'labels.csv'
 prediction_path = base_path / 'intent_abuse' / 'intent_predictions.csv'
 context_path = base_path / 'intent' / 'contexts.csv'
+figure_base = make_path('figures/data_labelling/analysis')
+confusion_path = figure_base / 'validation_confusion_matrix.png'
+histogram_path = figure_base / 'validation_histogram.png'
 
 check_existence([label_path, prediction_path, context_path])
+make_dir(confusion_path)
 print('Config complete.')
 
 # Load data
@@ -53,6 +59,13 @@ print('\nValidated labels:')
 print('Correct', sum(valid_correct_predictions), 'of', num_valid_labels)
 print('Accuracy', sum(valid_correct_predictions) / num_valid_labels)
 
+effective_labels = raw_labels['rating'].values[valid_label_mask]
+weights = effective_labels.copy()
+weights[weights < .5] = 1 - weights[weights < .5]
+
+print('Weighted validated accuracy', sum(weights[valid_correct_predictions]) / sum(weights))
+
+
 [false_negatives] = where(
     all([valid_labels == True, valid_predictions == False], axis=0)
 )
@@ -78,7 +91,16 @@ for index in false_positives:
 # Plot predictions vs. labels
 ax_titles = ('Predictions', 'Effective labels')
 
-confusion_matrix(boolean_predictions[valid_label_mask], boolean_labels[valid_label_mask], 'Intent prediction validation')
-scatter_plot((truncated_predictions[valid_label_mask], raw_labels['rating'].values[valid_label_mask]),
+confusion_matrix(boolean_predictions[valid_label_mask], boolean_labels[valid_label_mask],
+                 'Confusion matrix with intent validation labels', confusion_path)
+
+scatter_plot([truncated_predictions[valid_label_mask], effective_labels],
              'Intent prediction validation', ax_titles=ax_titles)
+
+ax = hist_plot(raw_labels['rating'].values[:num_labels][valid_label_mask], 'Histogram of computed validation labels',
+               histogram_path, bins=10, apply_log=False)
+
+y = ax.get_ylim()
+ax.plot((.5, .5), y, '-.r')
+
 show()
