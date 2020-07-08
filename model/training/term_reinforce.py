@@ -35,7 +35,7 @@ def compute_sequence_rates(positive_counts, negative_counts, num_positive_docume
     return positive_rates, negative_rates
 
 
-def get_significant_tokens(token_frequencies, target_column, threshold=80):
+def get_significant_tokens(token_frequencies, target_column, threshold=99):
     """
     Get array of significant tokens for a set of given frequencies
 

@@ -1,4 +1,4 @@
-from utilities.data_management import make_path, make_dir, load_vector, open_w_pandas, check_existence
+from utilities.data_management import make_path, make_dir, open_w_pandas, check_existence
 from utilities.plotting import hist_plot, show
 
 label_path = make_path('data/datasets/data_labelling/labels.csv')

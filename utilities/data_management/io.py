@@ -181,6 +181,19 @@ def output_abusive_intent(index_set, predictions, contexts, filename=None):
         print('%10d %8.4f %8.4f %8.4f  %s' % (index, abusive_intent[index], intent[index], abuse[index], contexts[index]))
 
 
+def output_aggregated_abusive_intent(indexes, predictions, documents):
+    """
+    Outputs peak aggregated values to console
+
+    :param ndarray indexes: Array of peak indexes
+    :param ndarray predictions: Array of aggregated predictions
+    :param list documents: List of aggregated documents
+    """
+
+    for index in indexes:
+        print(predictions[index], documents[index], '\n')
+
+
 type_map = {
     'O': '%s',
     'U': '%s',

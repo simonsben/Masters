@@ -49,7 +49,7 @@ deep_model = generate_intent_network(max_tokens, embedding_dimension=realtime.em
 # tree_model = generate_tree_sequence_network()
 print('Generated model\n', deep_model.summary())
 
-rounds = 15  # Number of rounds of training to perform
+rounds = 20  # Number of rounds of training to perform
 
 # Run training rounds
 for round_num in range(rounds):

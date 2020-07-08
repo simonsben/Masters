@@ -12,11 +12,11 @@ english_mask_path = data_base / 'english_mask.csv'
 
 check_existence([context_path, english_mask_path, initial_label_path])
 
-english_mask = load_vector(english_mask_path).astype(bool)
-raw_contexts = open_w_pandas(context_path).loc[english_mask]
+# english_mask = load_vector(english_mask_path).astype(bool)
+raw_contexts = open_w_pandas(context_path)
 contexts = raw_contexts['contexts'].values
 
-initial_labels = load_vector(initial_label_path)[english_mask]
+initial_labels = load_vector(initial_label_path)
 round_labels = asarray([load_vector(round_label_gen(index)) for index in range(10)]).transpose()
 
 print(contexts.shape, round_labels.shape)

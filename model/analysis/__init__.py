@@ -3,3 +3,4 @@ from model.analysis.intent import *
 from model.analysis.language_analysis import *
 from model.analysis.clustering import *
 from model.analysis.labelling import *
+from model.analysis.aggregation import *
