@@ -135,6 +135,7 @@ def scatter_3_plot(values, fig_title, weights=None, filename=None, ax_titles=Non
 def hist_plot(values, fig_title, filename=None, ax_titles=None, cmap='Blues', c_bar_title=None, bins=25, apply_log=True):
     """
     Generate a histogram of the provided data
+
     :param values: array of data or two arrays of data (i.e. shape (2, N))
     :param fig_title: title of figure
     :param filename: desired filename, optional
@@ -179,6 +180,33 @@ def pie_chart(values, labels, figure_title, filename=None):
     tight_layout()
 
     if filename is not None:    # If filename provided, save figure
+        savefig(filename)
+
+    return ax
+
+
+def stacked_plot(x_values, y_values, labels, figure_title, axis_labels=None, filename=None, figsize=None):
+    """
+    Generates a stacked plot (stacked area plot)
+
+    :param ndarray x_values: Array of N x-values
+    :param ndarray y_values: Array of MxN y-values
+    :param list labels: List of labels for each of the M categories
+    :param str figure_title: Figure title
+    :param tuple[str, str] axis_labels: X and Y axis labels, optional
+    :param Path filename: Path to save generated figure to, optional
+    :param tuple[int, int] figsize: Size of the generated figure, optional
+    :return: Axis
+    """
+    fig, ax = subplots(figsize=figsize)
+    ax.stackplot(x_values, y_values, labels=labels)
+
+    ax.legend()
+    set_labels(ax, figure_title, axis_labels)
+
+    tight_layout()  # Remove extra margin
+
+    if filename is not None:  # If filename provided, save figure
         savefig(filename)
 
     return ax

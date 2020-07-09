@@ -1,7 +1,7 @@
 from numpy import percentile, min, max, ndarray, argsort, sum
 from keras.models import Model
 from model.layers.realtime_embedding import RealtimeEmbedding
-from config import training_verbosity, confidence_increment, batch_size
+from config import training_verbosity, confidence_increment, batch_size, prediction_threshold
 
 
 def rescale(values):
@@ -20,7 +20,7 @@ def print_bits(values):
     )
 
 
-def train_deep_learner(model, current_labels, data_source, training_documents=250000, min_confidence=.99):
+def train_deep_learner(model, current_labels, data_source, training_documents=250000, min_confidence=prediction_threshold):
     """
     Performs X rounds of training on deep network to learn from then update the current labels
 
@@ -35,12 +35,11 @@ def train_deep_learner(model, current_labels, data_source, training_documents=25
 
     # Get subset of non uncertain data to use for training
     training_mask = current_labels != .5    # Only use labels that are not *uncertain*
-    training_size = int(sum(training_mask) / 2)
     data_source.set_mask(training_mask)
 
     positive_threshold = min_confidence
     negative_threshold = (1 - min_confidence)
-    training_documents = min((training_documents, training_size))
+    training_documents = min((training_documents, sum(training_mask)))
     training_steps = int(training_documents / batch_size)  # Compute number of batches to train each round
 
     if training_verbosity > 0:

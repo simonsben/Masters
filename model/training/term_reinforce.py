@@ -1,7 +1,7 @@
 from numpy import around, percentile, logical_not, asarray, ndarray, sum, argsort, all, flip, log
 from scipy.sparse import csr_matrix
 from pandas import DataFrame
-from config import confidence_increment, training_verbosity
+from config import confidence_increment, training_verbosity, prediction_threshold
 
 
 def sequence_counts(document_matrix, mask):
@@ -35,7 +35,7 @@ def compute_sequence_rates(positive_counts, negative_counts, num_positive_docume
     return positive_rates, negative_rates
 
 
-def get_significant_tokens(token_frequencies, target_column, threshold=99):
+def get_significant_tokens(token_frequencies, target_column, threshold=prediction_threshold):
     """
     Get array of significant tokens for a set of given frequencies
 

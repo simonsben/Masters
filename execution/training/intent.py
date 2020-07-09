@@ -3,7 +3,7 @@ from utilities.data_management import make_dir, make_path, open_w_pandas, check_
     get_model_path, load_vector, vector_to_file, get_embedding_path
 from utilities.pre_processing import runtime_clean
 from model.training import train_sequence_learner, train_deep_learner, get_consensus, reinforce_xgboost
-from config import dataset, max_tokens, mask_refinement_method
+from config import dataset, max_tokens, mask_refinement_method, num_training_rounds
 from scipy.sparse import load_npz
 from fasttext import load_model
 from model.layers.realtime_embedding import RealtimeEmbedding
@@ -49,7 +49,7 @@ deep_model = generate_intent_network(max_tokens, embedding_dimension=realtime.em
 # tree_model = generate_tree_sequence_network()
 print('Generated model\n', deep_model.summary())
 
-rounds = 20  # Number of rounds of training to perform
+rounds = num_training_rounds  # Number of rounds of training to perform
 
 # Run training rounds
 for round_num in range(rounds):
