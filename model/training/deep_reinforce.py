@@ -1,6 +1,7 @@
 from numpy import percentile, min, max, ndarray, argsort, sum
 from keras.models import Model
 from model.layers.realtime_embedding import RealtimeEmbedding
+from model.training.rate_limiting import deep_rate_limit
 from config import training_verbosity, confidence_increment, batch_size, prediction_threshold
 
 
@@ -37,8 +38,8 @@ def train_deep_learner(model, current_labels, data_source, training_documents=25
     training_mask = current_labels != .5    # Only use labels that are not *uncertain*
     data_source.set_mask(training_mask)
 
-    positive_threshold = min_confidence
-    negative_threshold = (1 - min_confidence)
+    # positive_threshold = min_confidence
+    # negative_threshold = (1 - min_confidence)
     training_documents = min((training_documents, sum(training_mask)))
     training_steps = int(training_documents / batch_size)  # Compute number of batches to train each round
 
@@ -54,8 +55,9 @@ def train_deep_learner(model, current_labels, data_source, training_documents=25
     predictions = model.predict_generator(data_source, verbose=training_verbosity).reshape(-1)
 
     # Compute mask of documents with positive and negative intent
-    new_positives = predictions > positive_threshold
-    new_negatives = predictions < negative_threshold
+    # new_positives = predictions > positive_threshold
+    # new_negatives = predictions < negative_threshold
+    new_positives, new_negatives = deep_rate_limit(predictions, current_labels, min_confidence)
 
     # Apply confidence modifications to new labels
     current_labels[new_positives] += confidence_increment
@@ -67,6 +69,8 @@ def train_deep_learner(model, current_labels, data_source, training_documents=25
 
     # Print out most intentful contexts for *sanity checking* during training process
     if training_verbosity > 0:
+        print('Deep learner changes', sum(new_positives) + sum(new_negatives))
+
         top_contexts = argsort(predictions)[-30:]
         for index in top_contexts:
             print(predictions[index], data_source.data_source[index])

@@ -1,4 +1,5 @@
-from numpy import around, percentile, logical_not, asarray, ndarray, sum, argsort, all, flip, log
+from model.training.rate_limiting import term_rate_limit
+from numpy import around, percentile, logical_not, asarray, ndarray, sum, argsort, all, flip, log, where
 from scipy.sparse import csr_matrix
 from pandas import DataFrame
 from config import confidence_increment, training_verbosity, prediction_threshold
@@ -48,12 +49,17 @@ def get_significant_tokens(token_frequencies, target_column, threshold=predictio
     threshold_value = percentile(frequencies[frequencies > 1], threshold)   # Compute threshold value
 
     significance_mask = frequencies > threshold_value                       # Compute mask of values above threshold
-    sorted_indexes = flip(argsort(frequencies[significance_mask]))          # Get sorted list of significant indexes
+    [index_map] = where(significance_mask)
 
-    return token_frequencies.values[significance_mask][sorted_indexes, 0]   # Get significant tokens
+    subset_indexes = flip(argsort(frequencies[significance_mask]))
+    return index_map[subset_indexes]
+
+    # sorted_indexes = flip(argsort(frequencies[significance_mask]))          # Get sorted list of significant indexes
+    #
+    # return token_frequencies.values[significance_mask][sorted_indexes, 0]   # Get significant tokens
 
 
-def train_sequence_learner(current_labels, sequences, token_mapping, document_matrix, return_tokens=True):
+def train_sequence_learner(current_labels, sequences, token_mapping, document_matrix):
     """
     Identifies significant token n-grams to current labels and computes a new set of labels
 
@@ -61,7 +67,7 @@ def train_sequence_learner(current_labels, sequences, token_mapping, document_ma
     :param list sequences: List of token n-grams listed in the document matrix
     :param dict token_mapping: Dictionary mapping tokens to the column index in the document matrix
     :param csr_matrix document_matrix: Sparse document matrix
-    :param bool return_tokens: Whether to return the positive and negative tokens
+    # :param bool return_tokens: Whether to return the positive and negative tokens
     :return: intent tokens, non-intent tokens tokens, updated labels
     """
 
@@ -87,23 +93,32 @@ def train_sequence_learner(current_labels, sequences, token_mapping, document_ma
     token_frequencies = DataFrame(sequence_rates)
 
     # Get significant tokens
-    positive_tokens = get_significant_tokens(token_frequencies, 1)
-    negative_tokens = get_significant_tokens(token_frequencies, 2)
+    # positive_tokens = get_significant_tokens(token_frequencies, 1)
+    # negative_tokens = get_significant_tokens(token_frequencies, 2)
+    positive_indexes = get_significant_tokens(token_frequencies, 1)
+    negative_indexes = get_significant_tokens(token_frequencies, 2)
+
+    document_matrix = document_matrix.tocsc()
+    positive_matrix = document_matrix[:, positive_indexes]
+    negative_matrix = document_matrix[:, negative_indexes]
+
+    packed_data = term_rate_limit(positive_matrix, negative_matrix)
+    has_intent_terms, has_non_intent_terms, intent_index, non_intent_index = packed_data
 
     # Get column masks of significant tokens
-    positive_sequence_mask = [token_mapping[feature] for feature in positive_tokens]
-    negative_sequence_mask = [token_mapping[feature] for feature in negative_tokens]
+    # positive_sequence_mask = [token_mapping[feature] for feature in positive_tokens]
+    # negative_sequence_mask = [token_mapping[feature] for feature in negative_tokens]
 
     # Count how many positive tokens are present in each document
-    positive_token_count = asarray(document_matrix[:, positive_sequence_mask].sum(axis=1)).reshape(-1)
-    negative_token_count = asarray(document_matrix[:, negative_sequence_mask].sum(axis=1)).reshape(-1)
+    # positive_token_count = asarray(document_matrix[:, positive_sequence_mask].sum(axis=1)).reshape(-1)
+    # negative_token_count = asarray(document_matrix[:, negative_sequence_mask].sum(axis=1)).reshape(-1)
 
     # Mask for documents with and without intent tokens
-    has_intent_terms = positive_token_count > 0
+    # has_intent_terms = positive_token_count > 0
     no_intent_terms = logical_not(has_intent_terms)
 
     # Mask for documents with and without non-intent tokens
-    has_non_intent_terms = negative_token_count > 0
+    # has_non_intent_terms = negative_token_count > 0
     no_non_intent_terms = logical_not(has_non_intent_terms)
 
     # Get mask of documents that have supporting and no contradicting tokens and are unfrozen
@@ -120,10 +135,10 @@ def train_sequence_learner(current_labels, sequences, token_mapping, document_ma
     return_mask[return_mask > 1] = 1
 
     if training_verbosity > 0:
-        print('Round features')
-        print(positive_tokens)
-        print(negative_tokens)
+        print('Term learner changes', sum(has_intent) + sum(has_non_intent))
 
-    if return_tokens:
-        return positive_tokens, negative_tokens, return_mask
+        print('Round features')
+        print(sequences[positive_indexes][:intent_index])
+        print(sequences[negative_indexes][:non_intent_index])
+
     return return_mask

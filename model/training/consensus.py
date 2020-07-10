@@ -7,6 +7,7 @@ def get_consensus(current_labels, *label_deltas):
     Ensures consensus between label sources and produces new array of labels
 
     :param ndarray current_labels: Current array of labels
+    :param ndarray label_deltas: Array of label changes from each learner
     :return ndarray: New array of labels with changes applied
     """
     if len(label_deltas) < 1:
