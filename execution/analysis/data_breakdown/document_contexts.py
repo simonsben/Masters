@@ -7,7 +7,7 @@ dataset = config.dataset
 base = make_path('data/processed_data/') / dataset / 'analysis'
 prediction_base = base / 'abusive_intent'
 figure_base = make_path('figures/') / dataset / 'analysis'
-hist_path = figure_base / 'num_context_histogram.png'
+hist_path = figure_base / 'contexts_per_document.png'
 
 contexts = open_w_pandas(base / 'intent' / 'contexts.csv')
 
@@ -20,9 +20,12 @@ for document_index, context in contexts[['document_index', 'contexts']].values:
 num_contexts = list(context_pieces.values())
 document_length = list(amount_of_content.values())
 
-ax_titles = ('Number of contexts within document', 'Number of documents')
+print('From', len(set(contexts['document_index'])), 'to', len(contexts))
 
-hist_plot(num_contexts, 'Histogram of number of contexts per document', hist_path, ax_titles)
+ax_titles = ('Number of contexts per document', 'Number of documents')
+
+hist_plot(num_contexts, 'Histogram of contexts per document', hist_path, ax_titles)
+
 scatter_plot((num_contexts, document_length), 'Number of contexts vs number of characters in document')
 
 show()

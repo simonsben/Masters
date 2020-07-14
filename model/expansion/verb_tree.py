@@ -73,7 +73,7 @@ def pull_leaves(tree, target_labels, leaf_type=str, extract_terms=True):
     :param target_labels: Set of labels that sub-tree must contain
     :param leaf_type: Type of leaf labels
     :param extract_terms: Whether to extract the labels from the found sub-tree
-    :return: sub-tree of lists or set of sub-tree labels
+    :return set: sub-tree of lists or set of sub-tree labels
     """
     if isinstance(tree, leaf_type):   # If leaf
         return tree in target_labels

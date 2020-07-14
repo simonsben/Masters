@@ -1,9 +1,11 @@
 from config import dataset, fast_text_model
 from pathlib import Path
+from re import compile
 
 
 model_types = {'abuse', 'intent'}
 prediction_types = {'abuse', 'intent', 'abusive_intent'}
+title_regex = compile(r'[^a-zA-Z\-]')
 
 
 def get_model_path(model_type, weights=True, index=None):
@@ -46,3 +48,7 @@ def get_prediction_path(prediction_type, target=None):
     base = Path('data/processed_data/') / target / 'analysis' / 'intent_abuse'
 
     return base / ('%s_predictions.csv' % prediction_type)
+
+
+def get_dataset_name():
+    return title_regex.sub(' ', dataset).capitalize()

@@ -1,8 +1,11 @@
-from matplotlib.pyplot import subplots, tight_layout, savefig, show
+from matplotlib.pyplot import subplots, tight_layout, savefig, show, rcParams
 from numpy import arange, ndarray, asarray, min, max
 from utilities.plotting.utilities import generate_3d_figure, set_labels
 from matplotlib.colors import LogNorm
 from pathlib import Path
+from config import font_size
+
+rcParams.update({'font.size': font_size})
 
 
 def bar_plot(values, features, fig_title, filename=None, horizontal=False):
@@ -172,6 +175,14 @@ def hist_plot(values, fig_title, filename=None, ax_titles=None, cmap='Blues', c_
 
 
 def pie_chart(values, labels, figure_title, filename=None):
+    """
+    Generates a pie chart
+
+    :param list values: List of category fractions
+    :param list labels: List of labels for each of the category fractions
+    :param str figure_title: Title for the figure
+    :param Path filename: File path to save the figure to, optional
+    """
     fig, ax = subplots()
 
     ax.pie(values, labels=labels, autopct='%1.1f%%', shadow=True)
