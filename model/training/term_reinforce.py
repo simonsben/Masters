@@ -31,7 +31,7 @@ def compute_sequence_rates(positive_counts, negative_counts, num_positive_docume
 
     # Compute normalized sequence rates
     positive_rates = normalizing_constant * (positive_counts / negative_counts)
-    negative_rates = normalizing_constant ** -1 * (negative_counts / positive_counts)
+    negative_rates = positive_rates ** -1
 
     return positive_rates, negative_rates
 
@@ -46,7 +46,7 @@ def get_significant_tokens(token_frequencies, target_column, threshold=predictio
     :return ndarray: Array of significant tokens
     """
     frequencies = token_frequencies.values[:, target_column]                # Extract relevant frequencies
-    threshold_value = percentile(frequencies[frequencies > 1], threshold)   # Compute threshold value
+    threshold_value = max(25, percentile(frequencies[frequencies > 1], threshold))   # Compute threshold value
 
     significance_mask = frequencies > threshold_value                       # Compute mask of values above threshold
     [index_map] = where(significance_mask)
@@ -54,20 +54,14 @@ def get_significant_tokens(token_frequencies, target_column, threshold=predictio
     subset_indexes = flip(argsort(frequencies[significance_mask]))
     return index_map[subset_indexes]
 
-    # sorted_indexes = flip(argsort(frequencies[significance_mask]))          # Get sorted list of significant indexes
-    #
-    # return token_frequencies.values[significance_mask][sorted_indexes, 0]   # Get significant tokens
 
-
-def train_sequence_learner(current_labels, sequences, token_mapping, document_matrix):
+def train_sequence_learner(current_labels, sequences, document_matrix):
     """
     Identifies significant token n-grams to current labels and computes a new set of labels
 
     :param ndarray current_labels: Array of current intent labels
     :param list sequences: List of token n-grams listed in the document matrix
-    :param dict token_mapping: Dictionary mapping tokens to the column index in the document matrix
     :param csr_matrix document_matrix: Sparse document matrix
-    # :param bool return_tokens: Whether to return the positive and negative tokens
     :return: intent tokens, non-intent tokens tokens, updated labels
     """
 
@@ -93,8 +87,6 @@ def train_sequence_learner(current_labels, sequences, token_mapping, document_ma
     token_frequencies = DataFrame(sequence_rates)
 
     # Get significant tokens
-    # positive_tokens = get_significant_tokens(token_frequencies, 1)
-    # negative_tokens = get_significant_tokens(token_frequencies, 2)
     positive_indexes = get_significant_tokens(token_frequencies, 1)
     negative_indexes = get_significant_tokens(token_frequencies, 2)
 
@@ -102,23 +94,10 @@ def train_sequence_learner(current_labels, sequences, token_mapping, document_ma
     positive_matrix = document_matrix[:, positive_indexes]
     negative_matrix = document_matrix[:, negative_indexes]
 
-    packed_data = term_rate_limit(positive_matrix, negative_matrix)
+    packed_data = term_rate_limit(positive_matrix, negative_matrix, current_labels)
     has_intent_terms, has_non_intent_terms, intent_index, non_intent_index = packed_data
 
-    # Get column masks of significant tokens
-    # positive_sequence_mask = [token_mapping[feature] for feature in positive_tokens]
-    # negative_sequence_mask = [token_mapping[feature] for feature in negative_tokens]
-
-    # Count how many positive tokens are present in each document
-    # positive_token_count = asarray(document_matrix[:, positive_sequence_mask].sum(axis=1)).reshape(-1)
-    # negative_token_count = asarray(document_matrix[:, negative_sequence_mask].sum(axis=1)).reshape(-1)
-
-    # Mask for documents with and without intent tokens
-    # has_intent_terms = positive_token_count > 0
     no_intent_terms = logical_not(has_intent_terms)
-
-    # Mask for documents with and without non-intent tokens
-    # has_non_intent_terms = negative_token_count > 0
     no_non_intent_terms = logical_not(has_non_intent_terms)
 
     # Get mask of documents that have supporting and no contradicting tokens and are unfrozen

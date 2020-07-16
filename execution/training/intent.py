@@ -19,7 +19,6 @@ initial_label_path = intent_path / (mask_refinement_method + '_mask.csv')
 document_matrix_path = intent_path / 'document_matrix.npz'
 label_path = intent_path / 'intent_training_labels.csv'
 token_path = intent_path / 'ngrams.csv'
-# english_mask_path = intent_path / 'english_mask.csv'
 midway_mask_generator = lambda info: intent_path / ('midway_mask_' + str(info[0]) + '_of_' + str(info[1]) + '.csv')
 
 # Check for files and make directories
@@ -56,7 +55,7 @@ for round_num in range(rounds):
     print('Starting full round', round_num + 1, 'of', rounds)
 
     # Run term learner
-    token_labels = train_sequence_learner(labels, tokens, token_mapping, document_matrix)
+    token_labels = train_sequence_learner(labels, tokens, document_matrix)
 
     # Run tree sequence learner
     # tree_labels = reinforce_xgboost(tree_model, document_matrix, labels, initial_labels, features=tokens)

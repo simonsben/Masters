@@ -1,7 +1,17 @@
-from numpy import argsort, all, logical_not, zeros_like, sum, zeros, ndarray, flip
+from numpy import argsort, all, logical_not, zeros_like, sum, zeros, ndarray, flip, abs
 from scipy.sparse import csc_matrix
 
-max_movement = 0.2
+
+def get_max_movement(current_labels):
+    """
+    Compute the maximum movement based on the current labels. Allow half the percentage that is already certain
+
+    :param ndarray current_labels: Array of current labels
+    """
+    is_certain = abs(current_labels - .5) > .45
+    num_certain = sum(is_certain)
+
+    return num_certain / len(current_labels)
 
 
 def deep_rate_limit(predictions, current_labels, threshold):
@@ -12,10 +22,12 @@ def deep_rate_limit(predictions, current_labels, threshold):
     :param ndarray current_labels: Array containing the current labels being used in training
     :param float threshold: Threshold value that predictions must pass to have their label changed
     """
+    certain_positives = current_labels == 1
+    max_movement = get_max_movement(current_labels)
+
     num_contexts = len(predictions)
     max_moves = int(num_contexts * max_movement)
 
-    certain_positives = current_labels == 1
     new_positives = all([predictions > threshold, logical_not(certain_positives)], axis=0)
 
     if sum(new_positives) > max_moves:
@@ -33,18 +45,20 @@ def deep_rate_limit(predictions, current_labels, threshold):
 
         new_negatives[sorted_indexes[:max_moves]] = True
 
-    return certain_positives, certain_negatives
+    return new_positives, new_negatives
 
 
-def term_rate_limit(positive_matrix, negative_matrix):
+def term_rate_limit(positive_matrix, negative_matrix, current_labels):
     """
     Compute the contexts that should be incremented positively and negatively within a fixed number of changes
 
     :param csc_matrix positive_matrix: A CSC matrix with the potential positive sequences
     :param csc_matrix negative_matrix: A CSC matrix with the potential negative sequences
+    :param ndarray current_labels: Array of current labels
     :return tuple[ndarray, ndarray, int, int]
     """
     num_contexts = positive_matrix.shape[0]
+    max_movement = get_max_movement(current_labels)
     max_moves = int(num_contexts * max_movement)
 
     new_positive, positive_index = compute_context_sums(positive_matrix, max_moves)
