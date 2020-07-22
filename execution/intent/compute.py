@@ -7,6 +7,7 @@ if __name__ == '__main__':
     from pandas import DataFrame
     from numpy import savetxt, zeros, hstack, arange, sum, logical_not, vstack
     from numpy.random import choice
+    from time import time
     from config import dataset
 
     base_path = make_path('data/prepared_data/')
@@ -46,8 +47,9 @@ if __name__ == '__main__':
     num_wikipedia = sum(logical_not(non_wikipedia))
     num_contexts = document_contexts.shape[0]
 
+    start = time()
     intent_values, intent_frames = tag_intent_documents(unknown_contexts)
-    print('Initial intent mask computed.')
+    print('Computed rough labels in', time() - start, 'seconds')
 
     # Add negative intent values and empty frames for wikipedia contexts
     intent_values = hstack([intent_values, zeros(num_wikipedia)])
