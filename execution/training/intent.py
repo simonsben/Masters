@@ -43,7 +43,7 @@ print('Prepared data')
 # Generate fresh (untrained model)
 labels = initial_labels.copy()
 
-realtime = RealtimeEmbedding(embedding_model, contexts, labels, labels_in_progress=True)
+realtime = RealtimeEmbedding(embedding_model, contexts, labels)
 deep_model = generate_intent_network(max_tokens, embedding_dimension=realtime.embedding_dimension)
 # tree_model = generate_tree_sequence_network()
 print('Generated model\n', deep_model.summary())

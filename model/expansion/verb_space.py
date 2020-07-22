@@ -2,6 +2,7 @@ from utilities.data_management import split_embeddings
 from numpy import max, min, asarray, all, mean, zeros
 from scipy.spatial.distance import cosine
 from scipy.linalg import norm
+from config import training_verbosity
 
 
 def get_cube_mask(embeddings, target_labels, tolerance=3):
@@ -15,8 +16,8 @@ def get_cube_mask(embeddings, target_labels, tolerance=3):
     maximums = max(vectors[target_mask], axis=0)
 
     if tolerance is not None:
-        division = maximums - minimums
-        modifications = division * (1 + tolerance) / 2
+        divisions = maximums - minimums
+        modifications = divisions * (1 + tolerance) / 2
         minimums -= modifications
         maximums += modifications
 
@@ -57,6 +58,9 @@ def get_cone_mask(embeddings, target_labels, tolerance=1):
 
         if min_magnitude < 0:
             min_magnitude = 0
+
+        if training_verbosity > 0:
+            print('Cone mask angle', cone_angle, 'and min max', min_magnitude, max_magnitude)
 
     within = zeros(vectors.shape[0], bool)
     distances = zeros(within.shape, float)

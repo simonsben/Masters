@@ -32,10 +32,10 @@ print('Loaded data.')
 training_data, testing_data, training_labels, testing_labels = split_sets(documents, labels=labels)
 
 # Generate model
-training = RealtimeEmbedding(embedding_model, training_data, training_labels, labels_in_progress=True, uniform_weights=True)
+training = RealtimeEmbedding(embedding_model, training_data, training_labels, uniform_weights=True)
 training.set_usage_mode(True)
 
-testing = RealtimeEmbedding(embedding_model, testing_data, testing_labels, labels_in_progress=True, uniform_weights=True)
+testing = RealtimeEmbedding(embedding_model, testing_data, testing_labels, uniform_weights=True)
 testing.set_usage_mode(True)
 
 

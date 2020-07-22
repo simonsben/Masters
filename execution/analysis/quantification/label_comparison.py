@@ -61,7 +61,7 @@ print('Accuracy', sum(valid_correct_predictions) / num_valid_labels)
 
 effective_labels = raw_labels['rating'].values[valid_label_mask]
 weights = effective_labels.copy()
-weights[weights < .5] = 1 - weights[weights < .5]
+weights[weights < midpoint] = 1 - weights[weights < midpoint]
 
 print('Weighted validated accuracy', sum(weights[valid_correct_predictions]) / sum(weights))
 

@@ -22,13 +22,16 @@ def deep_rate_limit(predictions, current_labels, threshold):
     :param ndarray current_labels: Array containing the current labels being used in training
     :param float threshold: Threshold value that predictions must pass to have their label changed
     """
+    n_thresh = 1 - threshold
+    p_thresh = threshold - (n_thresh / 2)
+
     certain_positives = current_labels == 1
     max_movement = get_max_movement(current_labels)
 
     num_contexts = len(predictions)
     max_moves = int(num_contexts * max_movement)
 
-    new_positives = all([predictions > threshold, logical_not(certain_positives)], axis=0)
+    new_positives = all([predictions > p_thresh, logical_not(certain_positives)], axis=0)
 
     if sum(new_positives) > max_moves:
         sorted_indexes = flip(argsort(predictions))
@@ -37,7 +40,7 @@ def deep_rate_limit(predictions, current_labels, threshold):
         new_positives[sorted_indexes[:max_moves]] = True
 
     certain_negatives = current_labels == 0
-    new_negatives = all([predictions < (1 - threshold), logical_not(certain_negatives)], axis=0)
+    new_negatives = all([predictions < n_thresh, logical_not(certain_negatives)], axis=0)
 
     if sum(new_negatives) > max_moves:
         sorted_indexes = argsort(predictions)

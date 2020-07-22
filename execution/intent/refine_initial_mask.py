@@ -83,6 +83,9 @@ print('Num cube desire tokens', len(cube_desire_tokens))
 refined_cube_desire_mask = refine_rough_labels(rough_labels, cube_desire_tokens, intent_frames, desire_verb_index)
 print('Cube percentage remaining', 1 - sum(refined_cube_desire_mask != rough_labels) / sum(rough_labels == 1))
 
+# Widths plot
+# ax_labels = ('Width of dimension', 'Number of dimensions')
+# hist_plot(divisions, 'Histogram of hyper-cube widths', apply_log=False, ax_titles=ax_labels)
 
 print('\nCone')
 cone_action_tokens, cone_action_mask, _ = get_cone_mask(action, target_action_labels)

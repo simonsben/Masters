@@ -7,7 +7,7 @@ from math import ceil
 
 class RealtimeEmbedding(Sequence):
     """ Extends TensorFlow Sequence to provide on-the-fly fastText token embedding """
-    def __init__(self, embedding_model, data_source, labels=None, labels_in_progress=False, uniform_weights=False):
+    def __init__(self, embedding_model, data_source, labels=None, uniform_weights=False):
         """
         Implements Keras data sequence for on-the-fly embedding generation
 
@@ -29,8 +29,6 @@ class RealtimeEmbedding(Sequence):
         self.working_labels = self.labels
 
         self.working_mask = None
-        self.original_initial_labels = None if not labels_in_progress else labels.copy()
-        self.working_initial_labels = self.original_initial_labels
         self.is_training = False
 
         self.concrete_weight = 1
@@ -41,12 +39,6 @@ class RealtimeEmbedding(Sequence):
     def update_labels(self, new_labels):
         """ Updates the labels being fed """
         self.labels = new_labels.copy()
-
-        # If initial labels contain ground truths apply them to the new labels
-        if self.original_initial_labels is not None:
-            is_ground_truth = self.original_initial_labels != .5
-            self.labels[is_ground_truth] = self.original_initial_labels[is_ground_truth]
-
         self.set_mask(self.working_mask)
 
     # TODO add line to automatically mask uncertain values when training
@@ -65,13 +57,10 @@ class RealtimeEmbedding(Sequence):
             self.working_data_source = self.data_source[self.working_mask]
             self.working_labels = self.labels[self.working_mask]
 
-            if self.original_initial_labels is not None:
-                self.working_initial_labels = self.original_initial_labels[self.working_mask]
         # If updated mask is None, make working set entire set
         else:
             self.working_data_source = self.data_source
             self.working_labels = self.labels
-            self.working_initial_labels = self.original_initial_labels
 
         # Recompute data length
         self.data_length = ceil(len(self.working_data_source) / batch_size)
@@ -86,11 +75,6 @@ class RealtimeEmbedding(Sequence):
 
         labels = self.working_labels[batch_start:batch_end]
         weights = compute_sample_weights(labels, self.midpoint)
-
-        # If using initial labels, increase their weighting.
-        if self.working_initial_labels is not None:
-            batch_mask = self.working_initial_labels[batch_start:batch_end] != .5
-            weights[batch_mask] = self.concrete_weight
 
         return weights
 
