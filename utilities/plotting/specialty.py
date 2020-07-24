@@ -1,6 +1,6 @@
 from scipy.cluster.hierarchy import dendrogram
 from numpy import zeros, column_stack, ndarray
-from matplotlib.pyplot import tight_layout, subplots, savefig, rcParams
+from matplotlib.pyplot import tight_layout, subplots, savefig, rcParams, legend, Axes
 from utilities.plotting.utilities import generate_3d_figure, set_labels
 from config import font_size
 
@@ -85,3 +85,40 @@ def plot_surface(x, y, z, title, filename=None, ax_labels=None, figsize=None, c_
         savefig(filename)
 
     return ax
+
+
+def plot_training_statistics(accuracy, loss, title, filename=None, figsize=(8, 5)):
+    """
+    Plots the training history accuracy and loss at the end of each epoch
+
+    :param ndarray accuracy: Array of accuracy values at the end of each epoch
+    :param ndarray loss: Array of loss values at the end of each epoch
+    :param str title: Figure title
+    :param Path filename: Path to save figure to, optional
+    :param tuple[int] figsize: Figure size, default (8, 5)
+    :return tuple[Axes]: Primary and secondary axes
+    """
+
+    # Initialize figure
+    fig, ax_1 = subplots(figsize=figsize)
+    ax_1.set_xlabel('Epoch')
+
+    # Plot accuracy
+    img_1 = ax_1.plot(accuracy, label='accuracy')
+    ax_1.set_ylabel('Accuracy')
+
+    # Add secondary axis and plot loss
+    ax_2 = ax_1.twinx()
+    img_2 = ax_2.plot(loss, '-.', label='loss')
+    ax_2.set_ylabel('Loss')
+
+    # Add legend and title
+    legend(img_1 + img_2, ['accuracy', 'loss'], loc='center right')
+    ax_1.set_title(title)
+    tight_layout()
+
+    # Save if filename provided
+    if filename is not None:
+        savefig(filename)
+
+    return ax_1, ax_2

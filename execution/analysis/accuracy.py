@@ -1,34 +1,28 @@
-from utilities.data_management import open_w_pandas, make_path, check_existence, split_sets
-from numpy import sum, equal
-import config
+from utilities.data_management import load_vector, open_w_pandas, make_path, make_dir, check_existence
+from utilities.plotting import plot_training_statistics, show
+from config import dataset
 
-# Load execution parameters
-dataset_name = config.dataset
+abuse_keys = ['val_accuracy', 'val_loss']
+intent_keys = ['accuracy', 'loss']
 
-# Define file paths
-pred_base = make_path('data/predictions/') / dataset_name
-pred_path = pred_base / 'test.csv'
-fast_text_path = pred_base / 'fast_text.csv'
-raw_path = make_path('data/prepared_data') / (dataset_name + '.csv')
+base = make_path('data/processed_data') / dataset / 'analysis'
+abuse_path = base / 'abuse' / 'training_history.csv'
+intent_path = base / 'intent' / 'deep_history.csv'
+figure_base = make_path('figures') / dataset / 'analysis'
 
-# Ensure files exist
-check_existence(pred_path)
-check_existence(raw_path)
+check_existence([intent_path, abuse_path])
+make_dir(figure_base)
+print('Config complete.')
 
-# Load data
-predictions = open_w_pandas(pred_path)
-data = open_w_pandas(raw_path)
+abuse = open_w_pandas(abuse_path)
+intent = open_w_pandas(intent_path)
+print('Loaded data.')
 
-# Prepare to calculate accuracy
-cols = predictions.columns.values
-_, test_data = split_sets(data)
-test_data = test_data['is_abusive'].values
-threshold = .5
+accuracy, loss = abuse[abuse_keys].values.transpose()
+plot_training_statistics(accuracy, loss, 'Abuse training statistics', figure_base / 'abuse_training.png')
 
-# Calculate accuracy for each predictor
-for col in cols:
-    accuracy = sum(
-        equal(test_data, predictions[col].values > threshold)
-    ) / test_data.shape[0] * 100
+accuracy, loss = intent[intent_keys].values.transpose()
+plot_training_statistics(accuracy, loss, 'Intent training statistics', figure_base / 'intent_training.png')
+print('Finished plotting and saving figures.')
 
-    print('|', col, '|', accuracy, '|')
+show()

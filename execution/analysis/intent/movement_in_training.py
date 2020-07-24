@@ -1,5 +1,5 @@
 from utilities.data_management import make_path, load_vector, open_w_pandas, check_existence, make_dir
-from utilities.plotting import stacked_plot, show, bar_plot, savefig
+from utilities.plotting import stacked_plot, show, bar_plot, savefig, tight_layout
 from numpy import asarray, sum, zeros, arange, abs
 from config import dataset, confidence_increment, num_training_rounds
 
@@ -44,14 +44,16 @@ class_labels = [('%.1f' % value) for value in label_values]
 title = 'Change in context labels throughout training'
 axis_labels = ('Training round', 'Percentage of labels')
 
-stacked_plot(rounds, shares, class_labels, title, axis_labels, figure_base / 'label_movement.png', (12, 7))
+stacked_plot(rounds, shares, class_labels, title, axis_labels, figure_base / 'label_movement.png', (9, 6))
 
 
-values = sum(round_labels != .5, axis=1)
-labels = [str(round + 1) for round in range(round_labels.shape[0])]
+values = sum(round_labels != .5, axis=1) / 1e6
+labels = [str(i + 1) for i in range(round_labels.shape[0])]
 
 _, ax = bar_plot(values, labels, 'Number of training documents available per epoch')
 ax.set_xlabel('Epoch')
+ax.set_ylabel('Number of training documents (M)')
+tight_layout()
 savefig(figure_base / 'labels_per_round.png')
 
 show()

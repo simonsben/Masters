@@ -210,9 +210,14 @@ def stacked_plot(x_values, y_values, labels, figure_title, axis_labels=None, fil
     :return: Axis
     """
     fig, ax = subplots(figsize=figsize)
-    ax.stackplot(x_values, y_values, labels=labels)
+    ax.stackplot(x_values, y_values, labels=labels, edgecolor='k', linewidth=1)
 
-    ax.legend()
+    ax.set_xlim(min(x_values), max(x_values))
+    ax.set_ylim(0, 1)
+
+    handles, labels = ax.get_legend_handles_labels()
+    ax.legend(handles[::-1], labels[::-1], loc='lower right')
+
     set_labels(ax, figure_title, axis_labels)
 
     tight_layout()  # Remove extra margin
