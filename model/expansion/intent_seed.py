@@ -39,8 +39,8 @@ def identify_basic_intent(context, index=-1):
     Determines if parsed document contains a sequence of terms that indicate clear and explicit intent
 
     Specifically, two forms are checked for, those being will and going-to.
-    Will forms of intent would be a statement such as "I will do X"
-    Going-to forms of intent would be statements such as "I am doing to do X"
+    Will forms of intent would be a statement such as "I will X"
+    Going-to forms of intent would be statements such as "I am going to X"
     """
     if isinstance(context, str):
         context = parser(context)

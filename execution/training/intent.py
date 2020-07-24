@@ -2,12 +2,15 @@ from model.networks import generate_intent_network, generate_tree_sequence_netwo
 from utilities.data_management import make_dir, make_path, open_w_pandas, check_existence, \
     get_model_path, load_vector, vector_to_file, get_embedding_path
 from utilities.pre_processing import runtime_clean
-from model.training import train_sequence_learner, train_deep_learner, get_consensus, reinforce_xgboost
+from model.training import train_sequence_learner, train_deep_learner, get_consensus, reinforce_xgboost, deep_history, \
+    save_sequence_history, save_deep_history
 from config import dataset, max_tokens, mask_refinement_method, num_training_rounds
 from scipy.sparse import load_npz
 from fasttext import load_model
 from model.layers.realtime_embedding import RealtimeEmbedding
 from numpy import sum
+from time import time
+
 
 # Define paths
 intent_weights_path = get_model_path('intent')
@@ -20,10 +23,13 @@ document_matrix_path = intent_path / 'document_matrix.npz'
 label_path = intent_path / 'intent_training_labels.csv'
 token_path = intent_path / 'ngrams.csv'
 midway_mask_generator = lambda info: intent_path / ('midway_mask_' + str(info[0]) + '_of_' + str(info[1]) + '.csv')
+deep_history_path = intent_path / 'deep_history.csv'
+sequence_path_gen = lambda variant: intent_path / (variant + '_sequence_rates.csv')
 
 # Check for files and make directories
 check_existence([embedding_path, context_path, initial_label_path, document_matrix_path, token_path])
 make_dir(intent_weights_path.parent)
+make_dir(base_path)
 print('Config complete.')
 
 # Load embeddings and contexts
@@ -49,6 +55,7 @@ deep_model = generate_intent_network(max_tokens, embedding_dimension=realtime.em
 print('Generated model\n', deep_model.summary())
 
 rounds = num_training_rounds  # Number of rounds of training to perform
+start_time = time()
 
 # Run training rounds
 for round_num in range(rounds):
@@ -74,7 +81,10 @@ for round_num in range(rounds):
     # Save model each round
     vector_to_file(labels, label_path)
     deep_model.save_weights(str(get_model_path('intent', index=round_num)))
-print('Model training completed.')
+print('Model training completed in', time() - start_time)
+
+save_sequence_history(sequence_path_gen)
+save_deep_history(deep_history_path)
 
 vector_to_file(labels, label_path)
 deep_model.save_weights(str(intent_weights_path))

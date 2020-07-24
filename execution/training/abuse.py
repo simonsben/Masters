@@ -49,14 +49,12 @@ start = time()
 
 stopping_conditions = EarlyStopping(monitor='val_loss', patience=3, verbose=1, restore_best_weights=True)
 history = model.fit_generator(training, epochs=50, verbose=training_verbosity, callbacks=[stopping_conditions],
-                    validation_data=testing, shuffle=True).history
+                              validation_data=testing, shuffle=True).history
 
 training_time = time() - start
 print('Completed training in', training_time, 's')
-print('Training history', history)
 
 DataFrame(history).to_csv(dest_dir / 'training_history.csv')
-print('History saved.')
 
 evaluated_accuracy = model.evaluate_generator(testing, verbose=training_verbosity, steps=validation_steps)
 print('Model validation accuracy', evaluated_accuracy)

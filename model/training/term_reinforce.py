@@ -1,8 +1,48 @@
+from utilities.data_management import vector_to_file
 from model.training.rate_limiting import term_rate_limit
 from numpy import around, percentile, logical_not, asarray, ndarray, sum, argsort, all, flip, log, where
 from scipy.sparse import csr_matrix
 from pandas import DataFrame
 from config import confidence_increment, training_verbosity, prediction_threshold
+
+
+sequence_history = None
+positive_key = 'positive'
+negative_key = 'negative'
+
+
+def save_sequence_history(path_generator):
+    """
+    Saves the sequence rate history to a file
+
+    :param callable path_generator: Function that generates a path to save the file to
+    # :param dict history: Dictionary containing the rate histories for positive and negative rates
+    """
+    global sequence_history
+    if sequence_history is None:
+        print('Sequence history is None')
+        return
+    for key in sequence_history:
+        vector_to_file(asarray(sequence_history[key]), path_generator(key))
+
+
+def push_sequence_history(positive_rates, negative_rates):
+    """
+    Push computed sequence rates to history *stack* to save later
+
+    :param ndarray positive_rates: Array of positive rates
+    :param ndarray negative_rates: Array of negative rates
+    """
+
+    global sequence_history
+    if sequence_history is None:
+        sequence_history = {
+            positive_key: [positive_rates],
+            negative_key: [negative_rates]
+        }
+    else:
+        sequence_history[positive_key].append(positive_rates)
+        sequence_history[negative_key].append(negative_rates)
 
 
 def sequence_counts(document_matrix, mask):
@@ -85,6 +125,8 @@ def train_sequence_learner(current_labels, sequences, document_matrix):
 
     sequence_rates = {'token': sequences, 'positive': positive_rates, 'negative': negative_rates}
     token_frequencies = DataFrame(sequence_rates)
+
+    push_sequence_history(positive_rates, negative_rates)
 
     # Get significant tokens
     positive_indexes = get_significant_tokens(token_frequencies, 1)

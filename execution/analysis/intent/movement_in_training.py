@@ -1,5 +1,5 @@
 from utilities.data_management import make_path, load_vector, open_w_pandas, check_existence, make_dir
-from utilities.plotting import stacked_plot, show
+from utilities.plotting import stacked_plot, show, bar_plot, savefig
 from numpy import asarray, sum, zeros, arange, abs
 from config import dataset, confidence_increment, num_training_rounds
 
@@ -8,10 +8,10 @@ data_base = base / 'intent'
 initial_label_path = data_base / 'cone_mask.csv'
 round_label_gen = lambda index: data_base / ('midway_mask_%d_of_%d.csv' % (index, num_training_rounds))
 context_path = data_base / 'contexts.csv'
-figure_path = make_path('figures') / dataset / 'analysis' / 'label_movement.png'
+figure_base = make_path('figures') / dataset / 'analysis'
 
 check_existence([context_path, initial_label_path])
-make_dir(figure_path)
+make_dir(figure_base)
 print('Config complete.')
 
 raw_contexts = open_w_pandas(context_path)
@@ -44,6 +44,14 @@ class_labels = [('%.1f' % value) for value in label_values]
 title = 'Change in context labels throughout training'
 axis_labels = ('Training round', 'Percentage of labels')
 
-stacked_plot(rounds, shares, class_labels, title, axis_labels, figure_path, (12, 7))
+stacked_plot(rounds, shares, class_labels, title, axis_labels, figure_base / 'label_movement.png', (12, 7))
+
+
+values = sum(round_labels != .5, axis=1)
+labels = [str(round + 1) for round in range(round_labels.shape[0])]
+
+_, ax = bar_plot(values, labels, 'Number of training documents available per epoch')
+ax.set_xlabel('Epoch')
+savefig(figure_base / 'labels_per_round.png')
 
 show()
