@@ -3,7 +3,7 @@ from model.training.rate_limiting import term_rate_limit
 from numpy import around, percentile, logical_not, asarray, ndarray, sum, argsort, all, flip, log, where
 from scipy.sparse import csr_matrix
 from pandas import DataFrame
-from config import confidence_increment, training_verbosity, prediction_threshold
+from config import confidence_increment, training_verbosity, sequence_threshold
 
 
 sequence_history = None
@@ -67,16 +67,16 @@ def compute_sequence_rates(positive_counts, negative_counts, num_positive_docume
     negative_counts[negative_counts == 0] = 1
 
     # Compute a 'normalizing constant' that takes into account unequal class sizes
-    normalizing_constant = log(num_positive_documents) / log(num_negative_documents)
+    normalizing_constant = log(num_negative_documents) / log(num_positive_documents)
 
     # Compute normalized sequence rates
-    positive_rates = normalizing_constant * (positive_counts / negative_counts)
+    positive_rates = normalizing_constant * positive_counts / negative_counts
     negative_rates = positive_rates ** -1
 
     return positive_rates, negative_rates
 
 
-def get_significant_tokens(token_frequencies, target_column, threshold=prediction_threshold):
+def get_significant_tokens(token_frequencies, target_column, threshold=sequence_threshold):
     """
     Get array of significant tokens for a set of given frequencies
 
@@ -86,7 +86,7 @@ def get_significant_tokens(token_frequencies, target_column, threshold=predictio
     :return ndarray: Array of significant tokens
     """
     frequencies = token_frequencies.values[:, target_column]                # Extract relevant frequencies
-    threshold_value = max(25, percentile(frequencies[frequencies > 1], threshold))   # Compute threshold value
+    threshold_value = percentile(frequencies[frequencies > 1], threshold)   # Compute threshold value
 
     significance_mask = frequencies > threshold_value                       # Compute mask of values above threshold
     [index_map] = where(significance_mask)

@@ -1,17 +1,20 @@
-from numpy import argsort, all, logical_not, zeros_like, sum, zeros, ndarray, flip, abs
+from numpy import argsort, all, logical_not, zeros_like, sum, zeros, ndarray, flip, abs, asarray
 from scipy.sparse import csc_matrix
 
+midpoint = 0.5
 
-def get_max_movement(current_labels):
+
+def get_max_moves(current_labels):
     """
     Compute the maximum movement based on the current labels. Allow half the percentage that is already certain
 
     :param ndarray current_labels: Array of current labels
+    :return tuple[int,int]: Max moves for positive and negative labels
     """
-    is_certain = abs(current_labels - .5) > .45
-    num_certain = sum(is_certain)
+    num_positive = sum(current_labels == 1)
+    num_negative = sum(current_labels == 0)
 
-    return num_certain / len(current_labels)
+    return num_positive, num_negative
 
 
 def deep_rate_limit(predictions, current_labels, threshold):
@@ -22,31 +25,25 @@ def deep_rate_limit(predictions, current_labels, threshold):
     :param ndarray current_labels: Array containing the current labels being used in training
     :param float threshold: Threshold value that predictions must pass to have their label changed
     """
-    n_thresh = 1 - threshold
-    p_thresh = threshold - (n_thresh / 2)
-
     certain_positives = current_labels == 1
-    max_movement = get_max_movement(current_labels)
+    max_positive, max_negative = get_max_moves(current_labels)
 
-    num_contexts = len(predictions)
-    max_moves = int(num_contexts * max_movement)
+    new_positives = all([predictions > threshold, logical_not(certain_positives)], axis=0)
 
-    new_positives = all([predictions > p_thresh, logical_not(certain_positives)], axis=0)
-
-    if sum(new_positives) > max_moves:
+    if sum(new_positives) > max_positive:
         sorted_indexes = flip(argsort(predictions))
         new_positives = zeros_like(new_positives, dtype=bool)
 
-        new_positives[sorted_indexes[:max_moves]] = True
+        new_positives[sorted_indexes[:max_positive]] = True
 
     certain_negatives = current_labels == 0
-    new_negatives = all([predictions < n_thresh, logical_not(certain_negatives)], axis=0)
+    new_negatives = all([predictions < (1 - threshold), logical_not(certain_negatives)], axis=0)
 
-    if sum(new_negatives) > max_moves:
+    if sum(new_negatives) > max_negative:
         sorted_indexes = argsort(predictions)
         new_negatives = zeros_like(new_negatives, dtype=bool)
 
-        new_negatives[sorted_indexes[:max_moves]] = True
+        new_negatives[sorted_indexes[:max_negative]] = True
 
     return new_positives, new_negatives
 
@@ -60,12 +57,10 @@ def term_rate_limit(positive_matrix, negative_matrix, current_labels):
     :param ndarray current_labels: Array of current labels
     :return tuple[ndarray, ndarray, int, int]
     """
-    num_contexts = positive_matrix.shape[0]
-    max_movement = get_max_movement(current_labels)
-    max_moves = int(num_contexts * max_movement)
+    max_positive, max_negative = get_max_moves(current_labels)
 
-    new_positive, positive_index = compute_context_sums(positive_matrix, max_moves)
-    new_negative, negative_index = compute_context_sums(negative_matrix, max_moves)
+    new_positive, positive_index = compute_context_sums(positive_matrix, max_positive)
+    new_negative, negative_index = compute_context_sums(negative_matrix, max_negative)
 
     return new_positive, new_negative, positive_index, negative_index
 
@@ -80,8 +75,11 @@ def compute_context_sums(matrix, max_moves):
     if not isinstance(matrix, csc_matrix):
         raise TypeError('Passed matrix must be a CSC matrix')
 
-    num_contexts = matrix.shape[0]
+    contains_sequence = asarray(matrix.sum(axis=1)).reshape(-1) > 0
+    if sum(contains_sequence) <= max_moves:
+        return contains_sequence > 0, matrix.shape[1]
 
+    num_contexts = matrix.shape[0]
     context_sums = zeros(num_contexts, dtype=int)
     for feature_index in range(matrix.shape[1]):
         data_slice = matrix[:, feature_index]
@@ -90,4 +88,4 @@ def compute_context_sums(matrix, max_moves):
         if sum(context_sums > 0) > max_moves:
             return context_sums > 0, feature_index
 
-    return context_sums > 0, matrix.shape[1]
+    raise RuntimeError('Loop should have terminated. Error in stopping condition.')
