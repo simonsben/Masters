@@ -24,6 +24,25 @@ def get_model_path(model_type, weights=True, index=None):
     return base / (core_name + '_model')
 
 
+def get_latest_model(model_type):
+    """
+    Gets the path for the latest model trained
+
+    :param str model_type: Name of the model type
+    :return tuple[int,Path]: Number of epochs trained for and model path
+    """
+    latest = None
+
+    epochs = 0
+    while True:
+        next_model = get_model_path(model_type, index=epochs)
+        if next_model.exists():
+            latest = next_model
+        else:
+            return epochs, latest
+        epochs += 1
+
+
 def get_embedding_path():
     """ Generates the path to the current FastText model """
     # path = Path('data/models/') / dataset / 'derived' / (dataset + '.bin')

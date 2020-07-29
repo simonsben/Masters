@@ -1,5 +1,5 @@
-from utilities.data_management import make_path, make_dir, load_vector, open_w_pandas, check_existence
-from utilities.plotting import scatter_plot, show, subplots, set_labels
+from utilities.data_management import make_path, make_dir, load_vector, check_existence
+from utilities.plotting import show, subplots, set_labels, savefig
 from numpy import loadtxt, percentile, zeros, arange, min, max
 from config import dataset
 
@@ -41,6 +41,9 @@ def plot_percentiles(values, labels, title, ax_labels):
 axis_labels = ('Epoch', 'Sequence rate')
 
 plot_percentiles(positive_percentiles, plot_labels, 'Positive sequence rates during training', axis_labels)
+savefig(figure_base / 'positive_sequence_rates.png')
+
 plot_percentiles(negative_percentiles, plot_labels, 'Negative sequence rates during training', axis_labels)
+savefig(figure_base / 'negative_sequence_rates.png')
 
 show()

@@ -54,7 +54,7 @@ def print_bits(values):
     )
 
 
-def train_deep_learner(model, current_labels, data_source, training_documents=500000, min_confidence=prediction_threshold):
+def train_deep_learner(model, current_labels, data_source, training_documents=250000, min_confidence=prediction_threshold):
     """
     Performs X rounds of training on deep network to learn from then update the current labels
 

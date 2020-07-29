@@ -28,6 +28,8 @@ def deep_rate_limit(predictions, current_labels, threshold):
     certain_positives = current_labels == 1
     max_positive, max_negative = get_max_moves(current_labels)
 
+    neg_threshold = (1 - threshold) * 2
+
     new_positives = all([predictions > threshold, logical_not(certain_positives)], axis=0)
 
     if sum(new_positives) > max_positive:
@@ -37,7 +39,7 @@ def deep_rate_limit(predictions, current_labels, threshold):
         new_positives[sorted_indexes[:max_positive]] = True
 
     certain_negatives = current_labels == 0
-    new_negatives = all([predictions < (1 - threshold), logical_not(certain_negatives)], axis=0)
+    new_negatives = all([predictions < neg_threshold, logical_not(certain_negatives)], axis=0)
 
     if sum(new_negatives) > max_negative:
         sorted_indexes = argsort(predictions)

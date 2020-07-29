@@ -230,3 +230,15 @@ def check_execution_targets():
             print('Specified data does not exist, using environment target.')
             return False
     return True
+
+
+def get_input(message, options=None):
+    """
+    Gets user's console input to a question
+    """
+    response = input(message)
+
+    while options is not None and response not in options:
+        response = input('Please choose one of the following options %s' % str(options))
+
+    return response

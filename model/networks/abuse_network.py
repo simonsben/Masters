@@ -17,10 +17,6 @@ def get_core_abuse_layers(max_tokens):
             LSTM(max_tokens, dropout=.5, recurrent_dropout=.5, return_sequences=True, name='abuse_bi_lstm'),
             name='abuse_bi'
         ),
-        TimeDistributed(
-            Dense(attention_size, name='abuse_time_dense'),
-            name='abuse_time'
-        ),
         AttentionWithContext(name='abuse_attention'),
         Dense(50, name='abuse_hidden_dense'),
         Dense(1, activation='sigmoid', name='abuse_prediction_dense')

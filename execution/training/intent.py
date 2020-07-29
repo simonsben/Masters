@@ -1,6 +1,6 @@
-from model.networks import generate_intent_network, generate_tree_sequence_network
+from model.networks import generate_intent_network, generate_tree_sequence_network, load_model_weights
 from utilities.data_management import make_dir, make_path, open_w_pandas, check_existence, \
-    get_model_path, load_vector, vector_to_file, get_embedding_path
+    get_model_path, load_vector, vector_to_file, get_embedding_path, get_input, get_latest_model
 from utilities.pre_processing import runtime_clean
 from model.training import train_sequence_learner, train_deep_learner, get_consensus, reinforce_xgboost, deep_history, \
     save_sequence_history, save_deep_history
@@ -11,6 +11,8 @@ from model.layers.realtime_embedding import RealtimeEmbedding
 from numpy import sum
 from time import time
 
+
+resume = True
 
 # Define paths
 intent_weights_path = get_model_path('intent')
@@ -28,7 +30,7 @@ sequence_path_gen = lambda variant: intent_path / (variant + '_sequence_rates.cs
 
 # Check for files and make directories
 check_existence([embedding_path, context_path, initial_label_path, document_matrix_path, token_path])
-make_dir(intent_weights_path.parent)
+make_dir(intent_weights_path)
 make_dir(base_path)
 print('Config complete.')
 
@@ -39,27 +41,36 @@ raw_contexts = open_w_pandas(context_path)['contexts'].values
 initial_labels = load_vector(initial_label_path)
 document_matrix = load_npz(document_matrix_path)
 tokens = load_vector(token_path)
-token_mapping = {token: index for index, token in enumerate(tokens)}
 print('Loaded data.')
 
 # Clean contexts and enumerate tokens
 contexts = runtime_clean(raw_contexts)
 print('Prepared data')
 
-# Generate fresh (untrained model)
-labels = initial_labels.copy()
-
-realtime = RealtimeEmbedding(embedding_model, contexts, labels)
+realtime = RealtimeEmbedding(embedding_model, contexts)
 deep_model = generate_intent_network(max_tokens, embedding_dimension=realtime.embedding_dimension)
 # tree_model = generate_tree_sequence_network()
 print('Generated model\n', deep_model.summary())
 
-rounds = num_training_rounds  # Number of rounds of training to perform
+# Generate fresh (untrained model)
+resume_round, latest_path = get_latest_model('intent')
+midway_labels = midway_mask_generator((resume_round - 1, num_training_rounds))
+
+prompt = 'Do you want to resume training from round %d?' % resume_round
+
+if resume and resume_round < num_training_rounds and latest_path is not None and midway_labels.exists() and \
+        (get_input(prompt, {'y', 'n'}) == 'y'):
+    labels = load_vector(midway_labels)
+    load_model_weights(deep_model, latest_path)
+else:
+    labels = initial_labels.copy()
+    resume_round = 0
+
 start_time = time()
 
 # Run training rounds
-for round_num in range(rounds):
-    print('Starting full round', round_num + 1, 'of', rounds)
+for round_num in range(resume_round, num_training_rounds):
+    print('Starting full round', round_num + 1, 'of', num_training_rounds)
 
     # Run term learner
     token_labels = train_sequence_learner(labels, tokens, document_matrix)
@@ -76,10 +87,8 @@ for round_num in range(rounds):
     print(sum(labels != new_labels), 'classification changes.')
     labels = new_labels
 
-    vector_to_file(labels, midway_mask_generator((round_num, rounds)))
-
     # Save model each round
-    vector_to_file(labels, label_path)
+    vector_to_file(labels, midway_mask_generator((round_num, num_training_rounds)))
     deep_model.save_weights(str(get_model_path('intent', index=round_num)))
 print('Model training completed in', time() - start_time)
 

@@ -70,11 +70,7 @@ def generate_abusive_intent_network(max_tokens, embedding_dimension=None, embedd
         LSTM(max_tokens, dropout=.5, recurrent_dropout=.5, return_sequences=True, name='abuse_bi_lstm'),
         name='abuse_bi'
     )(core_input)
-    abuse_time = TimeDistributed(
-        Dense(attention_size, name='abuse_time_dense'),
-        name='abuse_time'
-    )(abuse_bi)
-    abuse_attention = AttentionWithContext(name='abuse_attention')(abuse_time)
+    abuse_attention = AttentionWithContext(name='abuse_attention')(abuse_bi)
     abuse_dense = Dense(final_dense_size, name='abuse_hidden_dense')(abuse_attention)
     abuse_prediction = Dense(1, activation='sigmoid', name='abuse_prediction_dense')(abuse_dense)
 
@@ -82,11 +78,7 @@ def generate_abusive_intent_network(max_tokens, embedding_dimension=None, embedd
     intent_bi = Bidirectional(
         LSTM(max_tokens, dropout=.5, recurrent_dropout=.5, return_sequences=True, name='intent_bi_lstm'),
         name='intent_bi')(core_input)
-    intent_time = TimeDistributed(
-        Dense(attention_size, name='intent_time_dense'),
-        name='intent_time'
-    )(intent_bi)
-    intent_attention = AttentionWithContext(name='intent_attention')(intent_time)
+    intent_attention = AttentionWithContext(name='intent_attention')(intent_bi)
     intent_dense = Dense(final_dense_size, name='intent_hidden_dense')(intent_attention)
     intent_prediction = Dense(1, activation='sigmoid', name='intent_prediction_dense')(intent_dense)
 

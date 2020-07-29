@@ -17,10 +17,6 @@ def get_core_intent_layers(max_tokens):
             LSTM(max_tokens, dropout=.5, recurrent_dropout=.5, return_sequences=True, name='intent_bi_lstm'),
             name='intent_bi'
         ),
-        TimeDistributed(
-            Dense(attention_size, name='intent_time_dense'),
-            name='intent_time'
-        ),
         AttentionWithContext(name='intent_attention'),
         Dense(50, name='intent_hidden_dense'),
         Dense(1, activation='sigmoid', name='intent_prediction_dense')
