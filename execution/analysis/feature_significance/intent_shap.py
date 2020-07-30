@@ -1,11 +1,10 @@
-from shap import DeepExplainer
+from shap import GradientExplainer
 from model.networks import generate_intent_network, load_model_weights
 from model.layers.realtime_embedding import RealtimeEmbedding
 from utilities.data_management import get_model_path, make_path, check_existence, make_dir, get_embedding_path, open_w_pandas, load_vector
 from config import dataset, max_tokens, embedding_dimension
 from fasttext import load_model
-
-from numpy import asarray
+from numpy import asarray, sum, abs
 from numpy.random import choice
 
 target_contexts = asarray([
@@ -29,6 +28,8 @@ target_contexts = asarray([
     'but if you don t i will look for you i will find you and i will kill you',
     'those white idiots are begging her not to kill black babies i want to buy her a beer honestly if that represents christianity then i want no part of it'
 ])
+num = len(target_contexts)
+
 
 base = make_path('data/processed_data') / dataset / 'analysis' / 'intent'
 context_path = base / 'contexts.csv'
@@ -49,12 +50,20 @@ fast_text_model = load_model(embedding_path)
 realtime = RealtimeEmbedding(fast_text_model, contexts)
 
 # Get random selection of contexts
-selection = choice(len(contexts), 250, replace=False)
+selection = choice(len(contexts), 5000, replace=False)
 embedded_data = realtime.embed_data(contexts[selection])
 
 # Load the prepare the shap explainer
-explainer = DeepExplainer(model, embedded_data)
-shap_values = explainer.shap_values(realtime.embed_data(target_contexts[:1]))
+explainer = GradientExplainer(model, embedded_data)
 
-print(shap_values)
-print(shap_values.shape)
+for context in target_contexts[:num]:
+    check_data = realtime.embed_data(asarray([context]))
+    [shap_values] = explainer.shap_values(check_data)
+    print(context)
+
+    token_values = sum(abs(shap_values), axis=2).reshape(-1)
+
+    # total = sum(token_values)
+    # token_values /= total
+    for index, token in enumerate(context.split(' ')):
+        print('%.3f %s' % (token_values[index], token))
