@@ -10,8 +10,6 @@ def get_core_intent_layers(max_tokens):
     :param max_tokens: Maximum tokens for input sequence
     :return: Core model layers
     """
-    attention_size = int(max_tokens / 2)
-
     core_layers = [
         Bidirectional(
             LSTM(max_tokens, dropout=.5, recurrent_dropout=.5, return_sequences=True, name='intent_bi_lstm'),

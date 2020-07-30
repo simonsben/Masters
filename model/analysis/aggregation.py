@@ -1,4 +1,4 @@
-from numpy import ndarray, zeros_like, max, min, asarray
+from numpy import ndarray, zeros_like, max, min, asarray, mean
 
 
 def group_document_predictions(_abuse, _intent, contexts, document_indexes, method='max'):
@@ -34,7 +34,8 @@ def group_document_predictions(_abuse, _intent, contexts, document_indexes, meth
 
         abuse.append(_abuse[index])
         intent.append(_intent[index])
-        document += ('\n%d - (%.3f, %.3f)\t%s' % (index, abuse[-1], intent[-1], contexts[index]))
+        a, i = abuse[-1], intent[-1]
+        document += ('\n%d - %.3f, %.3f, %.3f\t%s' % (index, a, i, a * i, contexts[index]))
 
     return asarray(predictions), documents
 
@@ -53,6 +54,8 @@ def aggregate_document(abuse, intent, method='max'):
 
     if method == 'max':
         pass
+    elif method == 'average':
+        return mean(abuse * intent)
     elif method == 'window':
         window_intent = compute_window(intent)
         window_abuse = compute_window(abuse)

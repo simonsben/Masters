@@ -14,8 +14,6 @@ contexts = read_csv(base / 'intent' / 'contexts.csv')['contexts'].values
 print('Content loaded.')
 
 # Rescale value range
-intent = rescale_data(intent)
-abuse = rescale_data(abuse)
 print('Content prepared.')
 
 # Compute the euclidean norm of the (abuse, intent) vectors for each context
@@ -24,8 +22,7 @@ hybrid = rescale_data(hybrid)
 hybrid_indexes = argsort(hybrid)
 print('Finished computations.')
 
-# gen_filename = lambda name: analysis_base / (name + '.csv')
-predictions = (hybrid, intent, abuse)
+predictions = (abuse, intent, hybrid)
 
 # Print records
 num_records = 50

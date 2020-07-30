@@ -42,9 +42,6 @@ testing.set_usage_mode(True)
 model = generate_abuse_network(max_tokens, embedding_dimension=training.embedding_dimension)
 print('Generated model\n', model.summary())
 
-training_steps = int(len(training_data) / batch_size) + 1
-validation_steps = int(len(testing_data) / batch_size) + 1
-
 start = time()
 
 stopping_conditions = EarlyStopping(monitor='val_loss', patience=3, verbose=1, restore_best_weights=True)
@@ -56,7 +53,7 @@ print('Completed training in', training_time, 's')
 
 DataFrame(history).to_csv(dest_dir / 'training_history.csv')
 
-evaluated_accuracy = model.evaluate_generator(testing, verbose=training_verbosity, steps=validation_steps)
+evaluated_accuracy = model.evaluate_generator(testing, verbose=training_verbosity)
 print('Model validation accuracy', evaluated_accuracy)
 
 model.save_weights(str(abuse_weights_path))

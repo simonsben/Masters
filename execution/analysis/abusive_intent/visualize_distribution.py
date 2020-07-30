@@ -1,5 +1,5 @@
 from utilities.data_management import make_path, load_vector, open_w_pandas
-from utilities.plotting import show, hist_plot, plot_cumulative_distribution, plot_joint_distribution, scatter_plot
+from utilities.plotting import show, hist_plot, plot_cumulative_distribution, plot_joint_distribution
 from numpy import sum
 from config import dataset, mask_refinement_method
 
@@ -45,7 +45,5 @@ plot_joint_distribution(intent, abuse, 'Joint intent-abuse cumulative distributi
 #
 # scatter_plot((edges[:-1], hist), 'bla')
 # print(hist)
-
-scatter_plot([refined, intent], 'Refined vs predicted')
 
 show()

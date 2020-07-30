@@ -1,6 +1,6 @@
 from utilities.data_management import make_path, make_dir, load_vector, check_existence
 from utilities.plotting import show, subplots, set_labels, savefig
-from numpy import loadtxt, percentile, zeros, arange, min, max
+from numpy import loadtxt, percentile, zeros, arange, min, max, flip, argsort
 from config import dataset
 
 base = make_path('data/processed_data') / dataset / 'analysis' / 'intent'
@@ -45,5 +45,12 @@ savefig(figure_base / 'positive_sequence_rates.png')
 
 plot_percentiles(negative_percentiles, plot_labels, 'Negative sequence rates during training', axis_labels)
 savefig(figure_base / 'negative_sequence_rates.png')
+
+for e_index, epoch in enumerate(positive):
+    indexes = flip(argsort(epoch))[:15]
+    print('Epoch', e_index + 1)
+
+    for s_index in indexes:
+        print('\t%20s %5.2f' % (ngrams[s_index], positive[e_index, s_index]))
 
 show()

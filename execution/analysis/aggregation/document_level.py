@@ -33,22 +33,25 @@ unique_document_indexes = unique(contexts['document_index'].values)
 content = contexts['contexts'].values
 
 # Aggregate documents and predicted values
-standard, documents = group_document_predictions(abuse, intent, content, document_indexes)
+maximum, documents = group_document_predictions(abuse, intent, content, document_indexes)
+average, _ = group_document_predictions(abuse, intent, content, document_indexes, method='average')
 windowed, _ = group_document_predictions(abuse, intent, content, document_indexes, method='window')
 print('Grouped.')
 
 # Identify peak aggregated values
 to_output = 25
-standard_indexes = flip(argsort(standard))[:to_output]
+standard_indexes = flip(argsort(maximum))[:to_output]
 windowed_indexes = flip(argsort(windowed))[:to_output]
 
 # Output data to console
 print('\n\n\nStandard')
-output_aggregated_abusive_intent(standard_indexes, standard, documents)
+output_aggregated_abusive_intent(standard_indexes, maximum, documents)
 
 print('\n\n\nWindowed')
 output_aggregated_abusive_intent(windowed_indexes, windowed, documents)
 
 # Save data
-data = DataFrame({'document_indexes': unique_document_indexes, 'standard': standard, 'windowed': windowed})
+data = DataFrame({'document_indexes': unique_document_indexes, 'maximum': maximum, 'windowed': windowed})
 data.to_csv(data_path)
+
+print(data)

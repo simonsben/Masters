@@ -8,7 +8,7 @@ embedding_path = get_embedding_path()
 processed_base = make_path('data/processed_data') / dataset / 'analysis'
 context_path = processed_base / 'intent' / 'contexts.csv'
 
-# Check path existance
+# Check path existence
 check_existence([embedding_path, context_path])
 make_dir(get_prediction_path('abuse'))
 print('Config complete.')

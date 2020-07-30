@@ -176,9 +176,9 @@ def output_abusive_intent(index_set, predictions, contexts, filename=None):
     if filename is not None:
         savetxt(filename, index_set, delimiter=',', fmt='%d')
 
-    print('%10s %8s %8s %8s  %s' % ('index', 'hybrid', 'intent', 'abuse', 'context'))
+    print('%10s %8s %8s %8s  %s' % ('index', 'abuse', 'intent', 'joint', 'context'))
     for index in index_set:
-        print('%10d %8.4f %8.4f %8.4f  %s' % (index, abusive_intent[index], intent[index], abuse[index], contexts[index]))
+        print('%10d %8.3f %8.3f %8.3f  %s' % (index, abusive_intent[index], intent[index], abuse[index], contexts[index]))
 
 
 def output_aggregated_abusive_intent(indexes, predictions, documents):

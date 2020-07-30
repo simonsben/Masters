@@ -5,7 +5,7 @@ from scipy.linalg import norm
 from config import training_verbosity
 
 
-def get_cube_mask(embeddings, target_labels, tolerance=3):
+def get_cube_mask(embeddings, target_labels, tolerance=6):
     """ Returns the labels whose vectors are within the hyper-cube formed by the target labels """
     target_labels = set(target_labels)
     labels, vectors = split_embeddings(embeddings)
