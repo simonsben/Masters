@@ -1,7 +1,8 @@
-from numpy import ndarray, zeros_like, max, min, asarray, mean
+from numpy import ndarray, zeros_like, max, min, asarray, mean, product
+from scipy.linalg import norm as euclidean_norm
 
 
-def group_document_predictions(_abuse, _intent, contexts, document_indexes, method='max'):
+def group_document_predictions(_abuse, _intent, contexts, document_indexes, method='max', norm_method='product'):
     """
     Aggregate documents and predictions
 
@@ -10,12 +11,14 @@ def group_document_predictions(_abuse, _intent, contexts, document_indexes, meth
     :param ndarray contexts: Array of contexts
     :param ndarray document_indexes: Array of document indexes for each context
     :param str method: Method to use to aggregate the documents
+    :param str norm_method: Method to use to compute abusive intent from abuse and intent predictions
     :return tuple[ndarray, list]: Aggregated predictions and documents
     """
     predictions = []
-    abuse, intent = [], []
+    document_abuse, document_intent = [], []
     document, documents = '', []
     current_index = document_indexes[0]
+    norm = get_norm(norm_method)
 
     for index, document_index in enumerate(document_indexes):
         new_document = document_index != current_index
@@ -25,22 +28,22 @@ def group_document_predictions(_abuse, _intent, contexts, document_indexes, meth
             current_index = document_index
 
             predictions.append(aggregate_document(
-                asarray(abuse), asarray(intent), method
+                asarray(document_abuse), asarray(document_intent), norm, method
             ))
             documents.append(document)
 
-            abuse, intent = [], []
+            document_abuse, document_intent = [], []
             document = ''
 
-        abuse.append(_abuse[index])
-        intent.append(_intent[index])
-        a, i = abuse[-1], intent[-1]
-        document += ('\n%d - %.3f, %.3f, %.3f\t%s' % (index, a, i, a * i, contexts[index]))
+        document_abuse.append(_abuse[index])
+        document_intent.append(_intent[index])
+        abuse, intent = document_abuse[-1], document_intent[-1]
+        document += ('\n%d - %.3f, %.3f, %.3f\t%s' % (index, abuse, intent, norm((abuse, intent)), contexts[index]))
 
     return asarray(predictions), documents
 
 
-def aggregate_document(abuse, intent, method='max'):
+def aggregate_document(abuse, intent, norm, method='max'):
     """
     Computes the document-level prediction given an array of context predictions
 
@@ -55,13 +58,13 @@ def aggregate_document(abuse, intent, method='max'):
     if method == 'max':
         pass
     elif method == 'average':
-        return mean(abuse * intent)
+        return mean(norm(abuse, intent))
     elif method == 'window':
         window_intent = compute_window(intent)
         window_abuse = compute_window(abuse)
-        return aggregate_document(window_intent, window_abuse)
+        return aggregate_document(window_intent, window_abuse, norm)
 
-    return max(intent * abuse)
+    return max(norm(intent, abuse))
 
 
 # TODO re-write so its not slow af
@@ -82,3 +85,22 @@ def compute_window(predictions, window_size=3):
         window_predictions[index] = max(predictions[start:end])
 
     return window_predictions
+
+
+def get_norm(method='product'):
+    """
+    Get the norm function used to compute abusive intent from the abuse and intent predictions
+
+    :param str method: Method to use for computing the joint prediction, default product
+    :return function: Norm function
+    """
+    if method == 'product':
+        pass
+    elif method == 'average':
+        return mean
+    elif method == 'infinite':
+        return max
+    elif method == 'euclidean':
+        return euclidean_norm
+
+    return product

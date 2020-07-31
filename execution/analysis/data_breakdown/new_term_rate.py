@@ -35,8 +35,8 @@ if not computed_path.exists():
 else:
     unique_term_coverage = load_vector(computed_path)
 
-axis_labels = ('Number of documents', 'Number of unique terms')
-plot_line(unique_term_coverage, 'New term rate within corpus', figure_path)
+axis_labels = ('Number of documents', 'Fraction of unique terms')
+plot_line(unique_term_coverage, 'Cumulative distribution of unique tokens', figure_path)
 print('Complete.')
 
 show()
