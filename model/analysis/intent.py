@@ -54,22 +54,22 @@ def estimate_cumulative(data, num_bins=1000):
     distribution, bin_edges = histogram(data, bins=num_bins)
     bin_edges = bin_edges[:-1]
 
-    cumulative = cumsum(distribution)
-    cumulative -= cumulative[0]
-    cumulative = cumulative / cumulative[-1]
+    cumulative = cumsum(distribution)           # Get cumulative sum
+    cumulative -= cumulative[0]                 # Shift distribution to align with bin edges
+    cumulative = cumulative / cumulative[-1]    # Convert cumulative to percentile
 
     def cumulative_function(prediction):
         relative_locations = bin_edges <= prediction
         if relative_locations[-1]:              # If its in the last bin
             return cumulative[-1]
 
-        bin_index = argmin(relative_locations)  # Get index of the bin
+        bin_index = argmin(relative_locations) - 1  # Get index of the bin
         return cumulative[bin_index]            # Return approx cumulative sum at the point
 
     return cumulative_function
 
 
-def estimate_joint_cumulative(data_a, data_b, resolution=.001):
+def estimate_joint_cumulative(data_a, data_b, resolution=0.001):
     """
     Estimates an (independent) joint distribution of two datasets
 
@@ -85,7 +85,7 @@ def estimate_joint_cumulative(data_a, data_b, resolution=.001):
     cumulative_function_b = vectorize(cumulative_function_b)
 
     def join_cumulative_function(prediction_a, prediction_b):
-        return cumulative_function_a(prediction_a) * cumulative_function_b(prediction_b)
+        return sqrt(cumulative_function_a(prediction_a) * cumulative_function_b(prediction_b))
 
     return join_cumulative_function
 
@@ -144,6 +144,7 @@ def refine_rough_labels(rough_labels, refined_tokens, document_tokens, token_ind
     :param list refined_tokens: List of refined tokens (that indicate *strong* intent)
     :param ndarray document_tokens: Array of tokens for each document
     :param int token_index: Index of tokens within document_tokens array [optional]
+    :return ndarray: Refined rough labels
     """
     refined_tokens = set(refined_tokens).copy()     # Compute set of unique tokens
 
@@ -157,7 +158,7 @@ def refine_rough_labels(rough_labels, refined_tokens, document_tokens, token_ind
     correction_mask = asarray([token not in refined_tokens for token in document_tokens])
 
     # Apply refinements to labels where current label is positive
-    rough_labels = rough_labels.copy()
-    rough_labels[all([correction_mask, rough_labels == 1], axis=0)] = .5
+    refined_labels = rough_labels.copy()
+    refined_labels[all([correction_mask, refined_labels == 1], axis=0)] = .5
 
-    return rough_labels
+    return refined_labels

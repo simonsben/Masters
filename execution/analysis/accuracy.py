@@ -1,5 +1,5 @@
 from utilities.data_management import load_vector, open_w_pandas, make_path, make_dir, check_existence
-from utilities.plotting import plot_training_statistics, show
+from utilities.plotting import plot_training_statistics, show, confusion_matrix
 from config import dataset
 
 abuse_keys = ['val_accuracy', 'val_loss']

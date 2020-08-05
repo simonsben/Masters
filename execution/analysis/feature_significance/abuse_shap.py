@@ -1,5 +1,5 @@
 from shap import GradientExplainer
-from model.networks import generate_intent_network, load_model_weights
+from model.networks import generate_abuse_network, load_model_weights
 from model.layers.realtime_embedding import RealtimeEmbedding
 from utilities.data_management import get_model_path, make_path, check_existence, make_dir, get_embedding_path, \
     open_w_pandas
@@ -34,11 +34,11 @@ num = len(target_contexts)
 
 base = make_path('data/processed_data') / dataset / 'analysis' / 'intent'
 context_path = base / 'contexts.csv'
-weight_path = get_model_path('intent')
+weight_path = get_model_path('abuse')
 embedding_path = get_embedding_path()
 
 figure_base = make_path('figures') / dataset / 'analysis' / 'shap'
-figure_path_gen = lambda example_num: figure_base / ('intent_example_%d.png' % example_num)
+figure_path_gen = lambda example_num: figure_base / ('abuse_example_%d.png' % example_num)
 
 check_existence([context_path, weight_path, embedding_path])
 make_dir(figure_path_gen(0), max_levels=3)
@@ -46,7 +46,7 @@ make_dir(figure_path_gen(0), max_levels=3)
 contexts = open_w_pandas(context_path)['contexts'].values
 
 # Generate model and load weights
-model = generate_intent_network(max_tokens, embedding_dimension)
+model = generate_abuse_network(max_tokens, embedding_dimension)
 load_model_weights(model, weight_path)
 
 fast_text_model = load_model(embedding_path)
@@ -69,6 +69,6 @@ for index, context in enumerate(target_contexts[:num]):
     token_values = sum(shap_values, axis=2).reshape(-1)
 
     package = list(reversed(list(zip(tokens, token_values))))
-    feature_significance(package, 'SHAP values for intent model', figure_path_gen(index))
+    feature_significance(package, 'SHAP values for abuse model', figure_path_gen(index))
 
 show()

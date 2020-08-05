@@ -1,6 +1,6 @@
 from utilities.data_management import make_path, check_existence, open_w_pandas, load_vector, make_dir
 from numpy import any, sum, where, all
-from utilities.plotting import confusion_matrix, show, scatter_plot, hist_plot
+from utilities.plotting import confusion_matrix, show, scatter_plot, hist_plot, savefig
 
 # TODO redo match-up by just using the context indexes
 
@@ -94,15 +94,16 @@ for index in false_positives:
 ax_titles = ('Predictions', 'Effective labels')
 
 confusion_matrix(boolean_predictions[valid_label_mask], boolean_labels[valid_label_mask],
-                 'Confusion matrix with intent validation labels', confusion_path)
+                 'Confusion matrix of intent model predictions', confusion_path)
 
 scatter_plot([truncated_predictions[valid_label_mask], effective_labels],
              'Intent prediction validation', ax_titles=ax_titles)
 
 ax = hist_plot(raw_labels['rating'].values[:num_labels][valid_label_mask], 'Histogram of computed validation labels',
-               histogram_path, bins=10, apply_log=False)
+               bins=10, apply_log=False)
 
 y = ax.get_ylim()
 ax.plot((.5, .5), y, '-.r')
+savefig(histogram_path)
 
 show()

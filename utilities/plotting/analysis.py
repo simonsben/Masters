@@ -1,11 +1,11 @@
-from matplotlib.pyplot import cm, subplots, title, savefig, tight_layout
+from matplotlib.pyplot import cm, subplots, title, savefig, Axes
 from sklearn.metrics import confusion_matrix as calc_cm
-from numpy import newaxis, sum, around, arange, array, linspace, abs, size, where
+from numpy import newaxis, sum, around, arange, array, linspace, abs, size, where, max
 from shap import TreeExplainer
 from utilities.plotting.utilities import set_labels
 
 
-classes = ['neutral', 'abusive']
+classes = ['negative', 'positive']
 
 
 def confusion_matrix(predicted, labels, plot_title, filename=None, threshold=.5):
@@ -45,36 +45,39 @@ def confusion_matrix(predicted, labels, plot_title, filename=None, threshold=.5)
                     # If square is dark, use white, else black for text
                     color=('w' if val > 50 else 'k'))
 
-    set_labels(ax, plot_title, ('Predicted Value', 'True Value'))
+    set_labels(ax, plot_title, ('Predicted Value', 'Label Value'))
 
     if filename is not None:
         savefig(filename)
 
 
-def feature_significance(feature_weights, figure_title, filename=None, max_features=20, is_weight=True, x_log=False):
+def feature_significance(feature_weights, figure_title, filename=None, max_features=50, x_log=False, figsize=(8, 8)):
     """
     Generates a bar plot of feature significance values
-    :param feature_weights: List of tuples in the form (feature name, feature weight)
-    :param figure_title: Figure title
-    :param filename: File path to save figure to, (default doesn't save)
-    :param max_features: Maximum number of features to include in plot (default 20)
-    :param is_weight: Whether value is considered a weight vs. gain, (default True)
-    :param x_log: Whether the values should be plotted on a log scale, (default False)
+    :param list feature_weights: List of tuples in the form (feature name, feature weight)
+    :param str figure_title: Figure title
+    :param Path filename: File path to save figure to, (default doesn't save)
+    :param int max_features: Maximum number of features to include in plot (default 20)
+    :param bool x_log: Whether the values should be plotted on a log scale, (default False)
+    :return Axes: Figure axis
     """
-    feature_weights = array(feature_weights[:max_features])
+    tokens, weights = array(feature_weights[:max_features]).T
+    weights = weights.astype(float)
 
-    y_ticks = arange(len(feature_weights))
-    x_ticks = around(linspace(0, max(feature_weights[:, 1].astype(float)), 10, dtype=float), decimals=1)
+    y_ticks = arange(len(tokens))
+    x_ticks = around(linspace(0, max(weights), 10), decimals=1)
 
-    fig, ax = subplots()
-    ax.barh(y_ticks, feature_weights[:, 1].astype(float), edgecolor='k')
+    fig, ax = subplots(figsize=figsize)
+    ax.barh(y_ticks, weights, edgecolor='k')
 
     ax.set_xticks(x_ticks)
-    ax.set_yticks(y_ticks)
-    ax.set_yticklabels(feature_weights[:, 0])
     ax.set_xticklabels(x_ticks)
-    ax.set_ylabel('Feature')
-    ax.set_xlabel('Weight' if is_weight else 'Gain')
+
+    ax.set_yticks(y_ticks)
+    ax.set_yticklabels(tokens)
+
+    ax.set_ylabel('Token')
+    ax.set_xlabel('SHAP Value')
 
     if x_log:
         ax.set_xscale('log')
@@ -84,6 +87,8 @@ def feature_significance(feature_weights, figure_title, filename=None, max_featu
 
     if filename is not None:
         savefig(filename)
+
+    return ax
 
 
 def shap_feature_significance(model, document_matrix, figure_title, features=None, filename=None):

@@ -218,7 +218,7 @@ def load_vector(file_path):
     """ Loads data from a csv with a single column and no header """
     file_path = make_path(file_path)
 
-    return read_csv(file_path, header=None)[0].values
+    return read_csv(file_path, header=None, skip_blank_lines=False)[0].values
 
 
 def check_execution_targets():
