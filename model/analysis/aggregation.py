@@ -49,6 +49,7 @@ def aggregate_document(abuse, intent, norm, method='max'):
 
     :param ndarray abuse: Array of context-level abuse predictions
     :param ndarray intent: Array of context-level intent predictions
+    :param function norm: Function to compute norm
     :param str method: Method to use to compute the document level prediction
     :return float: Aggregated value
     """
@@ -58,13 +59,13 @@ def aggregate_document(abuse, intent, norm, method='max'):
     if method == 'max':
         pass
     elif method == 'average':
-        return mean(norm(abuse, intent))
+        return mean(norm((abuse, intent)))
     elif method == 'window':
         window_intent = compute_window(intent)
         window_abuse = compute_window(abuse)
         return aggregate_document(window_intent, window_abuse, norm)
 
-    return max(norm(intent, abuse))
+    return max(norm((intent, abuse)))
 
 
 # TODO re-write so its not slow af

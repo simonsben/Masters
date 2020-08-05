@@ -9,6 +9,8 @@ make_dir(figure_path)
 
 raw_labels = open_w_pandas(label_path)
 
+print(len(raw_labels), 'total labels')
+
 # Get number of unique respondents
 num_volunteers = len(set(raw_labels['user_id']))
 print(num_volunteers, 'unique volunteers')

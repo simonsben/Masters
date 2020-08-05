@@ -3,9 +3,14 @@ from numpy import arange, ndarray, asarray, min, max
 from utilities.plotting.utilities import generate_3d_figure, set_labels
 from matplotlib.colors import LogNorm
 from pathlib import Path
-from config import font_size
+from config import font_size as default_font_size
 
-rcParams.update({'font.size': font_size})
+
+def set_font_size(font_size=default_font_size):
+    rcParams.update({'font.size': font_size})
+
+
+set_font_size()
 
 
 def bar_plot(values, features, fig_title, filename=None, horizontal=False):

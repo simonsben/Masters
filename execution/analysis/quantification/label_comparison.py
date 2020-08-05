@@ -81,11 +81,13 @@ print('\nLabel order: SKIP, FALSE, TRUE, COMPUTED')
 
 print('\nFalse negatives:')
 for index in false_negatives:
-    print(index, truncated_predictions[valid_label_mask][index], label_votes[index], valid_contexts[index])
+    # print(index, label_votes[index], truncated_predictions[valid_label_mask][index], valid_contexts[index])
+    print('%.3f & %.2f & %s \\\\ \\hline' % (truncated_predictions[valid_label_mask][index], label_votes[index][-1], valid_contexts[index]))
 
 print('\nFalse positives:')
 for index in false_positives:
-    print(index, truncated_predictions[valid_label_mask][index], label_votes[index], valid_contexts[index])
+    # print(index, label_votes[index], truncated_predictions[valid_label_mask][index], valid_contexts[index])
+    print('%.3f & %.2f & %s \\\\ \\hline' % (truncated_predictions[valid_label_mask][index], label_votes[index][-1], valid_contexts[index]))
 
 
 # Plot predictions vs. labels

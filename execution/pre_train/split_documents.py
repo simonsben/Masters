@@ -8,7 +8,7 @@ data_path = make_path('data/prepared_data') / (dataset + '_partial.csv')
 context_path = make_path('data/processed_data') / dataset / 'analysis' / 'intent' / 'contexts.csv'
 
 check_existence([data_path])
-make_dir(context_path)
+make_dir(context_path, max_levels=3)
 
 raw_documents = open_w_pandas(data_path)
 documents = raw_documents['document_content'].values

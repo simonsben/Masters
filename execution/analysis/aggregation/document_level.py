@@ -33,7 +33,7 @@ unique_document_indexes = unique(contexts['document_index'].values)
 content = contexts['contexts'].values
 
 # Aggregate documents and predicted values
-norm = 'infinite'
+norm = 'product'
 maximum, documents = group_document_predictions(abuse, intent, content, document_indexes, norm_method=norm)
 average, _ = group_document_predictions(abuse, intent, content, document_indexes, method='average', norm_method=norm)
 windowed, _ = group_document_predictions(abuse, intent, content, document_indexes, method='window', norm_method=norm)

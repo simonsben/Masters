@@ -43,7 +43,7 @@ def compute_abusive_intent(intent_predictions, abuse_predictions, method='produc
 
 
 # TODO correct to space bins based on distribution
-def estimate_cumulative(data, num_bins=250):
+def estimate_cumulative(data, num_bins=1000):
     """
     Estimates the cumulative distribution of a dataset
 
@@ -56,7 +56,7 @@ def estimate_cumulative(data, num_bins=250):
 
     cumulative = cumsum(distribution)
     cumulative -= cumulative[0]
-    cumulative = sqrt(cumulative / cumulative[-1])
+    cumulative = cumulative / cumulative[-1]
 
     def cumulative_function(prediction):
         relative_locations = bin_edges <= prediction
@@ -69,7 +69,7 @@ def estimate_cumulative(data, num_bins=250):
     return cumulative_function
 
 
-def estimate_joint_cumulative(data_a, data_b, resolution=.01):
+def estimate_joint_cumulative(data_a, data_b, resolution=.001):
     """
     Estimates an (independent) joint distribution of two datasets
 
