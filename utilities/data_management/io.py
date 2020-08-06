@@ -168,7 +168,7 @@ def write_context_map(filename, context_map):
             fl.write(','.join(line) + '\n')
 
 
-def output_abusive_intent(index_set, predictions, contexts, filename=None):
+def output_abusive_intent(index_set, predictions, contexts, filename=None, latex_style=False):
     """ Prints abusive intent results to console and saves to disk """
     index_set = asarray(list(index_set))
     abuse, intent, abusive_intent = predictions
@@ -178,7 +178,10 @@ def output_abusive_intent(index_set, predictions, contexts, filename=None):
 
     print('%10s %8s %8s %8s  %s' % ('index', 'abuse', 'intent', 'joint', 'context'))
     for index in index_set:
-        print('%10d %8.3f %8.3f %8.3f  %s' % (index, abuse[index], intent[index], abusive_intent[index], contexts[index]))
+        if latex_style:
+            print('%.3f & %.3f & %.3f & %s \\\\ \\hline' % (abuse[index], intent[index], abusive_intent[index], contexts[index]))
+        else:
+            print('%10d %8.3f %8.3f %8.3f  %s' % (index, abuse[index], intent[index], abusive_intent[index], contexts[index]))
 
 
 def output_aggregated_abusive_intent(indexes, predictions, documents):

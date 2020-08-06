@@ -59,13 +59,13 @@ def aggregate_document(abuse, intent, norm, method='max'):
     if method == 'max':
         pass
     elif method == 'average':
-        return mean(norm((abuse, intent)))
+        return mean(norm((abuse, intent), axis=0))
     elif method == 'window':
         window_intent = compute_window(intent)
         window_abuse = compute_window(abuse)
         return aggregate_document(window_intent, window_abuse, norm)
 
-    return max(norm((intent, abuse)))
+    return max(norm((intent, abuse), axis=0))
 
 
 # TODO re-write so its not slow af
@@ -97,11 +97,11 @@ def get_norm(method='product'):
     """
     if method == 'product':
         pass
-    elif method == 'average':
+    elif method == 'one':
         return mean
     elif method == 'infinite':
         return max
-    elif method == 'euclidean':
+    elif method == 'two':
         return euclidean_norm
 
     return product
