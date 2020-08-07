@@ -94,7 +94,8 @@ for index in false_positives:
 ax_titles = ('Predictions', 'Effective labels')
 
 confusion_matrix(boolean_predictions[valid_label_mask], boolean_labels[valid_label_mask],
-                 'Confusion matrix of intent model predictions', confusion_path)
+                 'Confusion matrix of intent model predictions', confusion_path,
+                 ax_labels=('Model predictions', 'Volunteer labels'))
 
 scatter_plot([truncated_predictions[valid_label_mask], effective_labels],
              'Intent prediction validation', ax_titles=ax_titles)

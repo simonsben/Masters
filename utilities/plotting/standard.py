@@ -140,7 +140,7 @@ def scatter_3_plot(values, fig_title, weights=None, filename=None, ax_titles=Non
     return ax
 
 
-def hist_plot(values, fig_title, filename=None, ax_titles=None, cmap='Blues', c_bar_title=None, bins=25, apply_log=True):
+def hist_plot(values, fig_title, filename=None, ax_titles=None, cmap='Blues', c_bar_title=None, bins=25, apply_log=True, x_angle=0):
     """
     Generate a histogram of the provided data
 
@@ -169,6 +169,9 @@ def hist_plot(values, fig_title, filename=None, ax_titles=None, cmap='Blues', c_
     else:                       # If single dimensional data is provided, compute a standard hist
         ax.hist(values, bins=bins, log=apply_log)
         ax.autoscale(enable=True, axis='x', tight=True)
+
+        for tick in ax.get_xticklabels():
+            tick.set_rotation(x_angle)
 
     set_labels(ax, fig_title, ax_titles)
     tight_layout()              # Remove extra margin

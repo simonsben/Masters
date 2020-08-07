@@ -6,9 +6,9 @@ from utilities.plotting.utilities import set_labels
 
 
 classes = ['negative', 'positive']
+axis_labels = ('Predicted Value', 'Label Value')
 
-
-def confusion_matrix(predicted, labels, plot_title, filename=None, threshold=.5):
+def confusion_matrix(predicted, labels, plot_title, filename=None, threshold=.5, ax_labels=axis_labels):
     """
     Generates confusion matrix for a given set of predicted and labelled data
     :param predicted: List of predictions
@@ -45,7 +45,7 @@ def confusion_matrix(predicted, labels, plot_title, filename=None, threshold=.5)
                     # If square is dark, use white, else black for text
                     color=('w' if val > 50 else 'k'))
 
-    set_labels(ax, plot_title, ('Predicted Value', 'Label Value'))
+    set_labels(ax, plot_title, ax_labels)
 
     if filename is not None:
         savefig(filename)

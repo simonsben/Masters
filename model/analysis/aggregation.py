@@ -1,4 +1,4 @@
-from numpy import ndarray, zeros_like, max, min, asarray, mean, product
+from numpy import ndarray, zeros_like, max, min, asarray, mean, product, sqrt
 from scipy.linalg import norm as euclidean_norm
 
 
@@ -88,6 +88,10 @@ def compute_window(predictions, window_size=3):
     return window_predictions
 
 
+def two_norm(vectors, axis=0):
+    return sqrt(euclidean_norm(vectors, axis=axis)) / sqrt(euclidean_norm((1, 1)))
+
+
 def get_norm(method='product'):
     """
     Get the norm function used to compute abusive intent from the abuse and intent predictions
@@ -102,6 +106,6 @@ def get_norm(method='product'):
     elif method == 'infinite':
         return max
     elif method == 'two':
-        return euclidean_norm
+        return two_norm
 
     return product

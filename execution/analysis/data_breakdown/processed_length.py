@@ -1,5 +1,5 @@
 from utilities.data_management import open_w_pandas, make_path, check_existence, get_dataset_name, make_dir
-from utilities.plotting import hist_plot, show
+from utilities.plotting import hist_plot, show, set_font_size
 from config import dataset
 
 data_path = make_path('data/prepared_data') / (dataset + '_partial.csv')
@@ -23,7 +23,8 @@ print('Percentage removed', (original_length - processed_length) / original_leng
 
 dataset_name = get_dataset_name()
 
-hist_plot(original_lengths, dataset_name + ' original document length', figure_base / 'original_length.png')
-hist_plot(processed_lengths, dataset_name + ' processed document length', figure_base / 'processed_length.png')
+set_font_size(16)
+hist_plot(original_lengths, dataset_name + ' original document length', figure_base / 'original_length.png', x_angle=30)
+hist_plot(processed_lengths, dataset_name + ' processed document length', figure_base / 'processed_length.png', x_angle=30)
 
 show()
