@@ -46,11 +46,22 @@ savefig(figure_base / 'positive_sequence_rates.png')
 plot_percentiles(negative_percentiles, plot_labels, 'Negative sequence rates during training', axis_labels)
 savefig(figure_base / 'negative_sequence_rates.png')
 
+num_samples = 30
+
 for e_index, epoch in enumerate(positive):
-    indexes = flip(argsort(epoch))[:15]
+    indexes = flip(argsort(epoch))[:num_samples]
     print('Epoch', e_index + 1)
 
     for s_index in indexes:
         print('\t%20s %5.2f' % (ngrams[s_index], positive[e_index, s_index]))
+
+
+from numpy import asarray
+mask = asarray(['going' in gram for gram in ngrams])
+indexes = flip(argsort(positive[-1, mask]))[:num_samples]
+
+print('\n' * 5)
+for index in indexes:
+    print('%20s %.3f %.3f' % (ngrams[mask][index], positive[-1, mask][index], negative[-1, mask][index]))
 
 show()

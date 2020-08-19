@@ -2,7 +2,8 @@ from utilities.data_management import make_path, load_vector, check_existence, o
 from utilities.plotting import hist_plot, show
 from krippendorff import alpha as compute_alpha
 from sklearn.metrics import cohen_kappa_score
-from numpy import vstack, any, where
+from misc.alpha import krippendorff_alpha
+from numpy import vstack, any, where, abs, around
 
 base = make_path('data/processed_data/data_labelling/analysis/intent_abuse')
 label_path = base / 'labels.csv'
@@ -28,7 +29,11 @@ kappa = cohen_kappa_score(labels > .5, predictions[enough_labels] > .5)
 print('Alpha: %.3f' % alpha)
 print('Alpha with rounded values: %.3f' % cat_alpha)
 print('Kappa: %.3f' % kappa)
+print('Alternate alpha: %.3f' % krippendorff_alpha(reliability_data))
 
-hist_plot(labels - predictions[enough_labels], 'Deltas', apply_log=False)
+print((reliability_data >= .5).mean(axis=1), reliability_data.shape)
+
+hist_plot(abs(labels - predictions[enough_labels]), 'Deltas', apply_log=False, bins=6)
+hist_plot(abs(around(labels) - predictions[enough_labels]), 'Deltas', apply_log=False, bins=6)
 
 show()
