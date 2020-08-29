@@ -196,7 +196,7 @@ def pie_chart(values, labels, figure_title, filename=None):
     ax.pie(values, labels=labels, autopct='%1.1f%%', shadow=True)
 
     ax.set_title(figure_title)
-    tight_layout()
+    # tight_layout()
 
     if filename is not None:    # If filename provided, save figure
         savefig(filename)
