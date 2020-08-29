@@ -9,9 +9,11 @@ context_path = make_path('data/processed_data') / dataset / 'analysis' / 'intent
 
 check_existence([data_path])
 make_dir(context_path, max_levels=3)
+print('Config complete.')
 
 raw_documents = open_w_pandas(data_path)
 documents = raw_documents['document_content'].values
+print('Loaded data')
 
 document_contexts, (document_indexes, context_indexes) = split_into_contexts(documents, raw_documents.index.values)
 print('Contexts extracted, expanded', len(documents), 'to', len(document_contexts))

@@ -15,7 +15,7 @@ if __name__ == '__main__':
     objective_path = base_path / 'wikipedia_corpus_reduced_partial.csv'
     dest_dir = make_path('data/processed_data/') / dataset / 'analysis' / 'intent'
 
-    check_existence(data_path)
+    check_existence([data_path, objective_path])
     make_dir(dest_dir)
     print('Config complete, starting initial mask computation.')
 
