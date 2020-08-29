@@ -28,7 +28,8 @@ target_contexts = asarray([
     'we are fully aware of how high the humidity is so shut the hell up spend your money and get the hell out of here or we ll kick your ass',
     'i would recommend to say hey don t act a negro who are they for you',
     'but if you don t i will look for you i will find you and i will kill you',
-    'those white idiots are begging her not to kill black babies i want to buy her a beer honestly if that represents christianity then i want no part of it'
+    'those white idiots are begging her not to kill black babies i want to buy her a beer honestly if that represents christianity then i want no part of it',
+    'those words just make me want to break things on you people like you make me sick'
 ])
 num = len(target_contexts)
 

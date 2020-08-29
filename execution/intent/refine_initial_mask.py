@@ -52,14 +52,14 @@ for index, tokens in enumerate(intent_frames):
 
 print('desire mods', desire_mods)
 
-print('\nDictionary')
-empath = Empath()
-empath.create_category('desire_verbs', target_desire_labels)
-
-dictionary_tokens = [token.lower() for token in set(empath.cats['desire_verbs'])]
-print('Num dictionary desire tokens', len(dictionary_tokens))
-refined_dictionary_mask = refine_rough_labels(rough_labels, dictionary_tokens, intent_frames, desire_verb_index)
-print('Dictionary percentage remaining', 1 - sum(refined_dictionary_mask != rough_labels) / sum(rough_labels == 1))
+# print('\nDictionary')
+# empath = Empath()
+# empath.create_category('desire_verbs', target_desire_labels)
+#
+# dictionary_tokens = [token.lower() for token in set(empath.cats['desire_verbs'])]
+# print('Num dictionary desire tokens', len(dictionary_tokens))
+# refined_dictionary_mask = refine_rough_labels(rough_labels, dictionary_tokens, intent_frames, desire_verb_index)
+# print('Dictionary percentage remaining', 1 - sum(refined_dictionary_mask != rough_labels) / sum(rough_labels == 1))
 
 
 print('\nTree')
@@ -91,7 +91,7 @@ print('\nCone')
 cone_action_tokens, cone_action_mask, _ = get_cone_mask(action, target_action_labels)
 print('Num cone action tokens', len(cone_action_tokens))
 
-cone_desire_tokens, cone_desire_mask, distances = get_cone_mask(desire, target_desire_labels)
+cone_desire_tokens, cone_desire_mask, distances = get_cone_mask(desire, target_desire_labels, tolerance=.18)
 print('Num cone desire tokens', len(cone_desire_tokens))
 print('cone didnt keep', set(desire[:, 0]) - set(cone_desire_tokens))
 
@@ -104,18 +104,18 @@ hist_plot(distances, 'Histogram of distances to central desire vector')
 refined_cone_desire_mask = refine_rough_labels(rough_labels, cone_desire_tokens, intent_frames, desire_verb_index)
 print('Cone percentage remaining', 1 - sum(refined_cone_desire_mask != rough_labels) / sum(rough_labels == 1))
 
-savetxt(intent_dir / 'tree_mask.csv', refined_dictionary_mask, fmt='%.1f')
-savetxt(intent_dir / 'tree_mask.csv', refined_tree_desire_mask, fmt='%.1f')
-savetxt(intent_dir / 'cube_mask.csv', refined_cube_desire_mask, fmt='%.1f')
-savetxt(intent_dir / 'cone_mask.csv', refined_cone_desire_mask, fmt='%.1f')
-
-sub_dimensions = 100
-sub_action_model, sub_action_mask = get_sub_tree(action_leaves, action_tokens, action_vectors)
-sub_desire_model, sub_desire_mask = get_sub_tree(desire_leaves, desire_tokens, desire_vectors)
-
-plot_dendrogram(sub_action_model, action_tokens[sub_action_mask][:min(len(action_leaves), sub_dimensions)],
-                'Action sub-tree dendrogram', figsize=(15, 8), filename=(figure_dir / 'action_refinement_tree.png'))
-plot_dendrogram(sub_desire_model, desire_tokens[sub_desire_mask][:min(len(desire_leaves), sub_dimensions)],
-                'Desire sub-tree dendrogram', figsize=(15, 8), filename=(figure_dir / 'desire_refinement_tree.png'))
+# savetxt(intent_dir / 'tree_mask.csv', refined_dictionary_mask, fmt='%.1f')
+# savetxt(intent_dir / 'tree_mask.csv', refined_tree_desire_mask, fmt='%.1f')
+# savetxt(intent_dir / 'cube_mask.csv', refined_cube_desire_mask, fmt='%.1f')
+# savetxt(intent_dir / 'cone_mask.csv', refined_cone_desire_mask, fmt='%.1f')
+#
+# sub_dimensions = 100
+# sub_action_model, sub_action_mask = get_sub_tree(action_leaves, action_tokens, action_vectors)
+# sub_desire_model, sub_desire_mask = get_sub_tree(desire_leaves, desire_tokens, desire_vectors)
+#
+# plot_dendrogram(sub_action_model, action_tokens[sub_action_mask][:min(len(action_leaves), sub_dimensions)],
+#                 'Action sub-tree dendrogram', figsize=(15, 8), filename=(figure_dir / 'action_refinement_tree.png'))
+# plot_dendrogram(sub_desire_model, desire_tokens[sub_desire_mask][:min(len(desire_leaves), sub_dimensions)],
+#                 'Desire sub-tree dendrogram', figsize=(15, 8), filename=(figure_dir / 'desire_refinement_tree.png'))
 
 # show()

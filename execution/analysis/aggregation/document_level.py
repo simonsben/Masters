@@ -1,5 +1,6 @@
 from utilities.data_management import make_path, load_vector, open_w_pandas, get_prediction_path, check_existence, \
     output_aggregated_abusive_intent, make_dir
+from utilities.plotting import hist_plot, show, set_font_size
 from model.analysis import group_document_predictions
 from numpy import argsort, unique, flip
 from pandas import DataFrame
@@ -12,9 +13,11 @@ abuse_path = get_prediction_path('abuse')
 intent_path = get_prediction_path('intent')
 abusive_intent_path = get_prediction_path('abusive_intent')
 data_path = base / 'intent_abuse' / 'document_aggregation.csv'
+figure_gen = lambda target: make_path('figures') / dataset / 'analysis' / ('document_%s.png' % target)
 
 check_existence([abuse_path, intent_path, abusive_intent_path, context_path])
 make_dir(data_path)
+make_dir(figure_gen('maximum'))
 print('Config complete.')
 
 # Load data and remove wikipedia contexts
@@ -55,8 +58,15 @@ output_aggregated_abusive_intent(averaged_indexes, average, documents)
 print('\n\n\nWindowed')
 output_aggregated_abusive_intent(windowed_indexes, windowed, documents)
 
-# Save data
-data = DataFrame({'document_indexes': unique_document_indexes, 'maximum': maximum, 'windowed': windowed})
-data.to_csv(data_path)
+set_font_size(16)
+hist_plot(maximum, 'Document-level using maximum', figure_gen('maximum'))
+hist_plot(average, 'Document-level using average', figure_gen('average'))
+hist_plot(windowed, 'Document-level using windowed', figure_gen('windowed'))
 
-print(data)
+# Save data
+print(len(unique_document_indexes), maximum.shape, windowed.shape)
+# data = DataFrame({'document_indexes': unique_document_indexes, 'maximum': maximum, 'windowed': windowed})
+# data.to_csv(data_path)
+# print(data)
+
+show()
