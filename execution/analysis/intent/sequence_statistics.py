@@ -1,5 +1,5 @@
 from utilities.data_management import make_path, make_dir, load_vector, check_existence
-from utilities.plotting import show, subplots, set_labels, savefig
+from utilities.plotting import show, subplots, set_labels, savefig, set_font_size
 from numpy import loadtxt, percentile, zeros, arange, min, max, flip, argsort
 from config import dataset
 
