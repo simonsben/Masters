@@ -61,4 +61,9 @@ This will make and save a prediction for each document in the targeted corpus to
 
 ### Analysis
 
+The analysis scripts are under [execution](execution/analysis/) and should be named/placed intuitively corresponding to how they're referred to in the thesis.
 
+
+## Note on cleanliness
+
+Most of the outdated files should have been removed by im sure unused functions and files are still here and there, ignore them.
