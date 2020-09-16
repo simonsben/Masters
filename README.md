@@ -28,10 +28,14 @@ model evaluation, and analysis.
 
 To prepare for training and evaluation several things have to be pre-computed and configured.
 
+* Download and extract the wikipedia data with the [script](data/scripts/extract_wikipedia_corpus.py)
 * Train a fastText model on a local dataset (see [GitHub for info](https://github.com/facebookresearch/fastText/)) [optional]
   * Place the trained model into `data/lexicons/fast_text/`
 * Prepare the datasets for pre-processing by running their [individual scripts](data/preparation/) or all at once using 
 * Execute the pre-processing [scipt](execution/pre_processing/pre_process.py)
+* If you are planning on training the intent model
+    * Pull subset of wikipedia document with [script](execution/pre_train/wikipedia_subset.py)
+    * Generate subset of storm-front data with the [script](execution/pre_train/storm_front_subset.py)
 * Specify your working dataset and fastText model in [`config.py`](config.py)
   * If you do not have a `config.py` file already then start one using a copy of [`config_template.py`](config_template.py).
 
