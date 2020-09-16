@@ -1,4 +1,4 @@
-from matplotlib.pyplot import subplots, show, savefig
+from matplotlib.pyplot import subplots, show, savefig, tight_layout
 from matplotlib import rcParams
 from numpy import sin, cos, arctan, asarray, min, max, sqrt, linspace, mean
 from utilities.data_management import make_dir, make_path
@@ -75,6 +75,8 @@ ax.tick_params(which='both', bottom=False, left=False, labelleft=False, labelbot
 # Add axis labels
 ax.set_xlabel('Dimension 1')
 ax.set_ylabel('Dimension 2')
+
+tight_layout()
 
 # Save figure
 dir = make_path('figures/thesis/')

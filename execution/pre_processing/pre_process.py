@@ -1,7 +1,8 @@
 from data.accessors import *
 from utilities.pre_processing import *
-from utilities.data_management import make_path, check_existence, check_writable, open_w_pandas, expand_csv_row_size
+from utilities.data_management import make_path, check_existence, check_writable, expand_csv_row_size
 
+# Stupid pre-processing script I dont want to re-write
 
 partial_processes = [
     original_length,
@@ -50,19 +51,8 @@ if __name__ == '__main__':
     runs = [False, True]
     expand_csv_row_size()
 
-    # TODO re-write this part to dynamically generate the list of datasets
     # Generate path
     data_sets = [
-        # {
-        #     'data_set': '24k-abusive-tweets',
-        #     'accessor': twitter_24k_accessor,
-        #     'mutator': twitter_24k_mutator
-        # },
-        # {
-        #     'data_set': '100k-abusive-tweets',
-        #     'accessor': twitter_100k_accessor,
-        #     'mutator': twitter_100k_mutator
-        # },
         {
             'data_set': 'kaggle',
             'accessor': kaggle_accessor,
@@ -73,21 +63,11 @@ if __name__ == '__main__':
             'accessor': stormfront_accessor,
             'mutator': stormfront_mutator
         },
-        # {
-        #     'data_set': 'storm-front',
-        #     'accessor': stormfront_accessor,
-        #     'mutator': stormfront_mutator
-        # },
         {
             'data_set': 'iron_march',
             'accessor': iron_march_accessor,
             'mutator': iron_march_mutator
         },
-        # {
-        #     'data_set': 'hannah_data',
-        #     'accessor': hannah_data_accessor,
-        #     'mutator': hannah_data_mutator
-        # },
         {
             'data_set': 'manifesto',
             'accessor': manifesto_accessor,

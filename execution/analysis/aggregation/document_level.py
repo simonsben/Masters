@@ -65,8 +65,8 @@ hist_plot(windowed, 'Document-level using windowed', figure_gen('windowed'))
 
 # Save data
 print(len(unique_document_indexes), maximum.shape, windowed.shape)
-# data = DataFrame({'document_indexes': unique_document_indexes, 'maximum': maximum, 'windowed': windowed})
-# data.to_csv(data_path)
-# print(data)
+data = DataFrame({'document_indexes': unique_document_indexes, 'maximum': maximum, 'windowed': windowed})
+data.to_csv(data_path)
+print(data)
 
 show()

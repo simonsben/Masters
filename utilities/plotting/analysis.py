@@ -41,7 +41,7 @@ def confusion_matrix(predicted, labels, plot_title, filename=None, threshold=.5,
     # Add values to confusion matrix
     for p_ind, row in enumerate(confusion):     # For each predicted-value index
         for t_ind, val in enumerate(row):       # For each true-value index
-            ax.text(t_ind, p_ind, val, ha='center', va='center',
+            ax.text(t_ind, p_ind, ('%.1f%%' % val), ha='center', va='center',
                     # If square is dark, use white, else black for text
                     color=('w' if val > 50 else 'k'))
 

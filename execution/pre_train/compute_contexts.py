@@ -26,4 +26,3 @@ print('Assembled processed data.')
 # Save contexts
 save_dataframe(document_contexts, context_path)
 print('Contexts saved.')
-

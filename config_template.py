@@ -5,7 +5,7 @@ dataset = 'dataset'
 fast_text_model = 'model_name'
 
 # Plotting constants
-font_size = 0
+font_size = 12
 
 # Execution platform constants
 n_threads = 0
@@ -15,7 +15,7 @@ max_token_values = {
 }
 
 embedding_dimensions = {
-    'dataset': 0
+    'model_name': 0
 }
 
 max_tokens = max_token_values[dataset]
@@ -28,7 +28,7 @@ batch_size = 512
 confidence_increment = .1
 prediction_threshold = 0.99
 sequence_threshold = 0.999
-num_training_rounds = 6
+num_training_rounds = 20
 mask_refinement_method = 'cone'
 
 warn('Loaded execution params with dataset %s and fastText model %s' % (dataset, fast_text_model), RuntimeWarning)

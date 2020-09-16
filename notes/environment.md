@@ -30,7 +30,7 @@ To generate custom FastText embeddings for a given corpus simply do the followin
 1. Follow the steps above to install FastText
 2. Pre-process the desired dataset
 3. Copy **only the document content** to the fast text directory (optional, can also reference the file)
-    * This can be done by running [`fast_text_prep.py`](../execution/pre_train/fast_text_prep.py) 
+    * This can be done by running [`fast_text_prep.py`](../execution/pre_train/export_for_fast_text_training.py) 
     (NOTE: ensure the FastText installation location is the same, assumed to be in the same directory as this project)
 4. Run `./fasttext skipgram -input "data/$1" -output "data/$2" -dim 300 -thread NUM_THREADS` in the FastText directory
     * `$1` is the source filename (ex. `mixed_dataset.csv`)

@@ -52,14 +52,15 @@ for index, tokens in enumerate(intent_frames):
 
 print('desire mods', desire_mods)
 
-# print('\nDictionary')
-# empath = Empath()
-# empath.create_category('desire_verbs', target_desire_labels)
-#
-# dictionary_tokens = [token.lower() for token in set(empath.cats['desire_verbs'])]
-# print('Num dictionary desire tokens', len(dictionary_tokens))
-# refined_dictionary_mask = refine_rough_labels(rough_labels, dictionary_tokens, intent_frames, desire_verb_index)
-# print('Dictionary percentage remaining', 1 - sum(refined_dictionary_mask != rough_labels) / sum(rough_labels == 1))
+
+print('\nDictionary')
+empath = Empath()
+empath.create_category('desire_verbs', target_desire_labels)
+
+dictionary_tokens = [token.lower() for token in set(empath.cats['desire_verbs'])]
+print('Num dictionary desire tokens', len(dictionary_tokens))
+refined_dictionary_mask = refine_rough_labels(rough_labels, dictionary_tokens, intent_frames, desire_verb_index)
+print('Dictionary percentage remaining', 1 - sum(refined_dictionary_mask != rough_labels) / sum(rough_labels == 1))
 
 
 print('\nTree')
@@ -83,9 +84,10 @@ print('Num cube desire tokens', len(cube_desire_tokens))
 refined_cube_desire_mask = refine_rough_labels(rough_labels, cube_desire_tokens, intent_frames, desire_verb_index)
 print('Cube percentage remaining', 1 - sum(refined_cube_desire_mask != rough_labels) / sum(rough_labels == 1))
 
-# Widths plot
+# Widths plot - Add to cube code (usually best to do with de-bugging breakpoints)
 # ax_labels = ('Width of dimension', 'Number of dimensions')
 # hist_plot(divisions, 'Histogram of hyper-cube widths', apply_log=False, ax_titles=ax_labels)
+
 
 print('\nCone')
 cone_action_tokens, cone_action_mask, _ = get_cone_mask(action, target_action_labels)
@@ -104,18 +106,20 @@ hist_plot(distances, 'Histogram of distances to central desire vector')
 refined_cone_desire_mask = refine_rough_labels(rough_labels, cone_desire_tokens, intent_frames, desire_verb_index)
 print('Cone percentage remaining', 1 - sum(refined_cone_desire_mask != rough_labels) / sum(rough_labels == 1))
 
-# savetxt(intent_dir / 'tree_mask.csv', refined_dictionary_mask, fmt='%.1f')
-# savetxt(intent_dir / 'tree_mask.csv', refined_tree_desire_mask, fmt='%.1f')
-# savetxt(intent_dir / 'cube_mask.csv', refined_cube_desire_mask, fmt='%.1f')
-# savetxt(intent_dir / 'cone_mask.csv', refined_cone_desire_mask, fmt='%.1f')
-#
-# sub_dimensions = 100
-# sub_action_model, sub_action_mask = get_sub_tree(action_leaves, action_tokens, action_vectors)
-# sub_desire_model, sub_desire_mask = get_sub_tree(desire_leaves, desire_tokens, desire_vectors)
-#
-# plot_dendrogram(sub_action_model, action_tokens[sub_action_mask][:min(len(action_leaves), sub_dimensions)],
-#                 'Action sub-tree dendrogram', figsize=(15, 8), filename=(figure_dir / 'action_refinement_tree.png'))
-# plot_dendrogram(sub_desire_model, desire_tokens[sub_desire_mask][:min(len(desire_leaves), sub_dimensions)],
-#                 'Desire sub-tree dendrogram', figsize=(15, 8), filename=(figure_dir / 'desire_refinement_tree.png'))
+# Save data
+savetxt(intent_dir / 'tree_mask.csv', refined_dictionary_mask, fmt='%.1f')
+savetxt(intent_dir / 'tree_mask.csv', refined_tree_desire_mask, fmt='%.1f')
+savetxt(intent_dir / 'cube_mask.csv', refined_cube_desire_mask, fmt='%.1f')
+savetxt(intent_dir / 'cone_mask.csv', refined_cone_desire_mask, fmt='%.1f')
 
-# show()
+# Plot tree refinement dendrogram
+sub_dimensions = 100
+sub_action_model, sub_action_mask = get_sub_tree(action_leaves, action_tokens, action_vectors)
+sub_desire_model, sub_desire_mask = get_sub_tree(desire_leaves, desire_tokens, desire_vectors)
+
+plot_dendrogram(sub_action_model, action_tokens[sub_action_mask][:min(len(action_leaves), sub_dimensions)],
+                'Action sub-tree dendrogram', figsize=(15, 8), filename=(figure_dir / 'action_refinement_tree.png'))
+plot_dendrogram(sub_desire_model, desire_tokens[sub_desire_mask][:min(len(desire_leaves), sub_dimensions)],
+                'Desire sub-tree dendrogram', figsize=(15, 8), filename=(figure_dir / 'desire_refinement_tree.png'))
+
+show()

@@ -3,7 +3,7 @@ from utilities.plotting import plot_line, show
 from numpy import zeros_like, cumsum
 from config import dataset
 
-computed_path = make_path('data/processed_data') / 'thesis' / 'data' / 'unique_term_rate.csv'
+computed_path = make_path('data/processed_data') / dataset / 'data' / 'unique_term_rate.csv'
 data_path = make_path('data/prepared_data') / (dataset + '.csv')
 figure_path = make_path('figures') / dataset / 'analysis' / 'new_term_rate.png'
 

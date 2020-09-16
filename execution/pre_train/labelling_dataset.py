@@ -4,9 +4,7 @@ from numpy.random import choice
 from utilities.analysis import rescale_data
 from model.analysis import compute_abusive_intent, estimate_cumulative
 from utilities.plotting import hist_plot, show
-import config
-
-dataset = config.dataset
+from config import dataset
 
 base = make_path('data/processed_data/') / dataset / 'analysis'
 analysis_base = base / 'intent_abuse'
